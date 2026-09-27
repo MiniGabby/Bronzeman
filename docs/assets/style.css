@@ -175,3 +175,10 @@ td.top{color:var(--gold);font-weight:600}
 .reqmeta{font-size:13px;color:var(--ink-3)}
 .reqnotes{margin:4px 0 0;font-size:14px;color:var(--ink-2);white-space:pre-wrap}
 @media (max-width:760px){ .reqform{grid-template-columns:1fr} }
+
+/* ---- unlocked items page ---- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.stat .big{font:600 26px/1.1 var(--mono)}
+.stat .val{font-size:15px;font-weight:600}
+.toolbar .field.grow{flex:1 1 240px}

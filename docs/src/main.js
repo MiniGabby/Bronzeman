@@ -1,14 +1,16 @@
 // App entry: starts the data services and swaps pages based on the URL hash (#/money, #/training/magic, #/group).
 import * as prices from "./core/prices.js";
 import * as group from "./core/players.js";
+import * as unlocks from "./core/unlocks.js";
 import * as money from "./views/money.js";
 import * as training from "./views/training.js";
 import * as groupView from "./views/group.js";
 import * as requests from "./views/requests.js";
+import * as unlocked from "./views/unlocks.js";
 
 // To add a page: create src/views/<name>.js exporting mount(root, params) and title,
 // add it here, and add a link with href="#/<name>" to the nav in index.html.
-const ROUTES = { money, training, group: groupView, requests };
+const ROUTES = { money, training, group: groupView, unlocked, requests };
 
 const view = document.getElementById("view");
 let cleanup = null;
@@ -56,5 +58,6 @@ prices.onChange(() => { renderMode(); renderStatus(); });
 renderMode();
 prices.start();
 group.load();
+unlocks.load();
 window.addEventListener("hashchange", () => { a11yFocus = true; route(); });
 route();

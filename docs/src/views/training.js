@@ -4,6 +4,7 @@ import METHODS from "../../data/methods/index.js";
 import * as prices from "../core/prices.js";
 import * as calc from "../core/calc.js";
 import * as group from "../core/players.js";
+import * as unlocks from "../core/unlocks.js";
 import { SKILLS, skillByKey, xpForLevel, levelForXp } from "../core/osrs.js";
 import { store } from "../core/store.js";
 import { esc, gp, short, signed, cls, duration, nf } from "../core/format.js";
@@ -154,7 +155,7 @@ function mountSkill(root, skill) {
     document.getElementById(a.dataset.jump)?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render)];
+  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render)];
   render();
   return () => offs.forEach(off => off());
 }

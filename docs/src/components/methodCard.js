@@ -4,6 +4,7 @@ import { esc, gp, short, signed, cls, qty, nf } from "../core/format.js";
 import * as prices from "../core/prices.js";
 import * as calc from "../core/calc.js";
 import * as group from "../core/players.js";
+import * as unlocks from "../core/unlocks.js";
 
 export function reqList(m) {
   const r = m.reqs || {};
@@ -84,7 +85,7 @@ export function createMethodCard(m) {
       const side = isOut ? "sell" : "buy";
       const tot = r.total == null ? null : r.total * mult;
       return `<tr>
-        <td><a href="https://prices.runescape.wiki/osrs/item/${r.id}" target="_blank" rel="noopener">${esc(r.it.name)}</a></td>
+        <td><a href="https://prices.runescape.wiki/osrs/item/${r.id}" target="_blank" rel="noopener">${esc(r.it.name)}</a>${!isOut && unlocks.has(r.id) === false ? ` <span class="pill bad" title="Nobody in the group has unlocked this item yet">Locked</span>` : ""}</td>
         <td class="r num">${qty(r.qty * mult)}</td>
         <td class="r"><input class="pin num${r.own ? " own" : ""}" data-id="${r.id}" data-side="${side}" value="${r.price == null ? "" : Math.round(r.price)}" inputmode="numeric" aria-label="Price of ${esc(r.it.name)}">
           <div class="sub2">${r.own ? `<button type="button" class="reset" data-id="${r.id}" data-side="${side}">your price · reset</button>` : side}</div></td>
@@ -117,6 +118,11 @@ export function createMethodCard(m) {
     el.querySelector('[data-f="group"]').innerHTML = groupChips(m) || `<span class="muted">Loading stats…</span>`;
 
     const notes = [];
+    const locked = unlocks.lockedInputs(m);
+    if (locked?.length) {
+      const names = locked.map(x => c.ins.find(r => r.id === x.id)?.it.name || `Item ${x.id}`);
+      notes.push(`<div class="note warn">Not unlocked yet: <b>${esc(names.join(", "))}</b>. In bronzeman you can't buy this on the GE until someone in the group has obtained it.</div>`);
+    }
     const pace = calc.limitPace(c);
     if (c.limitItem && isFinite(c.limitActions)) {
       const r = c.limitItem;
