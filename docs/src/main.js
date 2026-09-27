@@ -7,10 +7,11 @@ import * as training from "./views/training.js";
 import * as groupView from "./views/group.js";
 import * as requests from "./views/requests.js";
 import * as unlocked from "./views/unlocks.js";
+import * as alchemy from "./views/alchemy.js";
 
 // To add a page: create src/views/<name>.js exporting mount(root, params) and title,
 // add it here, and add a link with href="#/<name>" to the nav in index.html.
-const ROUTES = { money, training, group: groupView, unlocked, requests };
+const ROUTES = { money, training, alchemy, group: groupView, unlocked, requests };
 
 const view = document.getElementById("view");
 let cleanup = null;

@@ -182,3 +182,11 @@ td.top{color:var(--gold);font-weight:600}
 .stat .big{font:600 26px/1.1 var(--mono)}
 .stat .val{font-size:15px;font-weight:600}
 .toolbar .field.grow{flex:1 1 240px}
+
+/* ---- alchemy page ---- */
+.stat small{font:500 13px var(--sans);color:var(--ink-3)}
+.stat .muted{font-size:13px}
+.check{font-size:13px;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+td.how{white-space:normal;min-width:260px;max-width:420px;font-size:13px;color:var(--ink-2)}
+.toolbar .presets{align-self:flex-end;padding-bottom:4px}
+.toolbar .goal{line-height:1.6}

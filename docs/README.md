@@ -5,6 +5,7 @@ A small website for our Old School RuneScape bronzeman group. It shows money mak
 - **Money makers:** methods ranked by profit per hour, with an item-by-item breakdown, GE tax, buy-limit warnings and who in the group can do them.
 - **Skill training:** pick a skill, enter your level (or pick a player) and a target level, and compare every method that trains it: gp per XP, XP per hour, and time and cost to reach the target.
 - **Group:** an Update stats button that refreshes everyone's levels on Wise Old Man, XP gained today, this week or this month, and everyone's levels side by side.
+- **Alchemy:** live High Level Alchemy margins for every unlocked item, a best plan per 4-hour buy-limit window, and items that take one shop purchase to unlock (`data/alch-unlocks.js`, with how to unlock them).
 - **Unlocked:** every item the group has unlocked (bronzeman), with who unlocked it, when and the GE price. The Money makers page also flags methods whose inputs nobody has unlocked yet.
 - **Requests:** a form to ask for a new guide. It opens a pre-filled GitHub issue; the list of requests on the page comes from `data/requests.json`, which a GitHub Action keeps in sync with the issues.
 
@@ -20,6 +21,7 @@ assets/style.css         All styling (colors, light and dark theme)
 data/
   players.js             Group members' RuneScape names
   site.js                Site settings (the GitHub repository name)
+  alch-unlocks.js        Easy-to-unlock alch items and how to unlock them
   requests.json          Guide requests, written by the GitHub Action (don't edit by hand)
   unlocks.json           Unlocked items, built from the plugin exports (don't edit by hand)
   methods/
@@ -45,6 +47,7 @@ src/
     group.js             Group page
     requests.js          Guide requests page
     unlocks.js           Unlocked items page
+    alchemy.js           High alchemy page
 ```
 
 ## Adding a method

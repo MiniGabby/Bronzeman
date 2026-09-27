@@ -39,7 +39,7 @@ export async function refresh() {
   try {
     if (!state.mapping) {
       const list = await getJSON("/mapping");
-      state.mapping = Object.fromEntries(list.map(it => [it.id, { name: it.name, limit: it.limit ?? null }]));
+      state.mapping = Object.fromEntries(list.map(it => [it.id, { name: it.name, limit: it.limit ?? null, highalch: it.highalch ?? null, members: !!it.members }]));
     }
     const [latest, hour] = await Promise.all([getJSON("/latest"), getJSON("/1h")]);
     state.latest = latest.data || {};
@@ -57,6 +57,9 @@ export function start() {
   setInterval(refresh, REFRESH_MS);
 }
 
+/** Every item id the price API knows. */
+export const allIds = () => Object.keys(state.mapping || {}).map(Number);
+
 /** Item info. Prices are last hour's average trade, or the latest trade if it didn't trade that hour. */
 export function item(id) {
   const m = state.mapping?.[id] || {}, l = state.latest[id] || {}, h = state.hour[id] || {};
@@ -64,6 +67,7 @@ export function item(id) {
     id,
     name: m.name || `Item ${id}`,
     limit: m.limit || null,
+    highalch: m.highalch ?? null,
     high: h.avgHighPrice ?? l.high ?? null,
     low: h.avgLowPrice ?? l.low ?? null,
     vol: (h.highPriceVolume || 0) + (h.lowPriceVolume || 0)
