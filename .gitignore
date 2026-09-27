@@ -1,0 +1,11 @@
+# Local-only working files: handoff notes, research, test tools, old versions.
+workspace/
+
+# macOS and editor clutter
+.DS_Store
+.vscode/
+.idea/
+
+# Test tooling output (if you ever run tools from elsewhere)
+node_modules/
+*.png.tmp

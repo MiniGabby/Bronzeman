@@ -1,9 +1,0 @@
-{
-  "_note": "Levels from Wise Old Man on 25 Sep 2026, used to fake the Wise Old Man API in tests. Only relevant skills listed; missing skills count as 1.",
-  "mini gabby":   { "attack": 29, "strength": 16, "hitpoints": 17, "prayer": 10, "magic": 27, "cooking": 24, "woodcutting": 16, "fishing": 14, "firemaking": 5, "crafting": 7, "mining": 20, "herblore": 30, "agility": 22, "thieving": 18, "slayer": 9, "hunter": 9, "construction": 8, "sailing": 5 },
-  "key kode":     { "attack": 14, "defence": 12, "strength": 3, "hitpoints": 19, "prayer": 14, "magic": 32, "cooking": 11, "woodcutting": 24, "fletching": 22, "fishing": 2, "firemaking": 4, "crafting": 14, "smithing": 18, "mining": 23, "herblore": 21, "agility": 23, "thieving": 8 },
-  "lil oldkitty": { "attack": 20, "defence": 17, "strength": 12, "hitpoints": 19, "prayer": 15, "magic": 4, "cooking": 13, "woodcutting": 15, "fishing": 7, "firemaking": 18, "crafting": 22, "smithing": 5, "mining": 8 },
-  "dreammancer":  { "attack": 33, "defence": 21, "strength": 19, "hitpoints": 31, "ranged": 25, "prayer": 27, "magic": 35, "cooking": 45, "woodcutting": 62, "fletching": 62, "fishing": 41, "firemaking": 49, "crafting": 49, "smithing": 46, "mining": 59, "herblore": 9, "agility": 31, "thieving": 40, "farming": 26, "runecrafting": 29, "hunter": 42 },
-  "lil fool":     { "attack": 21, "defence": 26, "strength": 11, "hitpoints": 43, "ranged": 7, "prayer": 22, "magic": 53, "cooking": 19, "woodcutting": 17, "fishing": 10, "firemaking": 11, "smithing": 3, "mining": 10, "agility": 20, "thieving": 5, "slayer": 11 },
-  "medi uso":     { "attack": 10, "strength": 11, "hitpoints": 17, "ranged": 19, "prayer": 15, "magic": 4, "cooking": 57, "woodcutting": 11, "fishing": 55, "firemaking": 6, "crafting": 7, "mining": 2 }
-}

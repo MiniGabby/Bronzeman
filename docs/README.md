@@ -4,7 +4,7 @@ A small website for our Old School RuneScape bronzeman group. It shows money mak
 
 - **Money makers:** methods ranked by profit per hour, with an item-by-item breakdown, GE tax, buy-limit warnings and who in the group can do them.
 - **Skill training:** pick a skill, enter your level (or pick a player) and a target level, and compare every method that trains it: gp per XP, XP per hour, and time and cost to reach the target.
-- **Group:** everyone's levels side by side.
+- **Group:** an Update stats button that refreshes everyone's levels on Wise Old Man, XP gained today, this week or this month, and everyone's levels side by side.
 
 Prices come from the [OSRS Wiki real-time prices API](https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices) and refresh every minute. Levels come from [Wise Old Man](https://wiseoldman.net).
 
@@ -27,7 +27,7 @@ src/
   core/
     prices.js            Fetches live prices, price modes, your own prices
     calc.js              Profit, XP, GE tax and buy-limit maths for a method
-    players.js           Group stats from Wise Old Man, requirement checks
+    players.js           Group stats from Wise Old Man: levels, updates, XP gains, requirement checks
     osrs.js              Skill list and XP table
     format.js            Number formatting helpers
     store.js             Remembers settings in your browser
@@ -54,7 +54,7 @@ Tips:
 
 ## Adding a group member
 
-Add their RuneScape name to `data/players.js`. They need to exist on Wise Old Man: search the name on wiseoldman.net and press **Update** once.
+Add their RuneScape name to `data/players.js`. Press **Update stats** on the Group page once and Wise Old Man starts tracking them.
 
 ## Adding a page
 
