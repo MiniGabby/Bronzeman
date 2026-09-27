@@ -8,16 +8,19 @@ import { esc, ago, nf, short } from "../core/format.js";
 export const title = "Group";
 
 const PERIODS = { day: "Today", week: "This week", month: "This month" };
-const COOLDOWN_MS = 60_000;
+// One update per hour is plenty: hiscores only change when people play, and Wise Old Man
+// asks not to update more often than every 1–6 hours.
+const COOLDOWN_MS = 60 * 60_000;
 
 export function mount(root) {
   let period = store.get("gainsPeriod", "week");
   let message = "";
 
   root.innerHTML = `
-    <p class="lead">Stats come from <a href="https://wiseoldman.net" target="_blank" rel="noopener">Wise Old Man</a>, which reads the OSRS hiscores. Press <b>Update stats</b> after a session to pull in everyone's latest levels.</p>
+    <p class="lead">Stats come from <a href="https://wiseoldman.net" target="_blank" rel="noopener">Wise Old Man</a>, which reads the OSRS hiscores. Press <b>Update stats</b> after a session to pull in everyone's latest levels. It can be pressed once an hour.</p>
     <div class="toolbar">
       <button type="button" class="btn primary" data-f="update">Update stats</button>
+      <span class="updmsg" data-f="last"></span>
       <span class="updmsg" data-f="msg" role="status"></span>
     </div>
 
@@ -39,19 +42,30 @@ export function mount(root) {
   const $ = s => root.querySelector(s);
   const btn = $('[data-f="update"]');
 
+  // When the group's stats were last updated: the oldest update among players with stats,
+  // so it's shared by everyone who opens the site (not just this browser).
+  function lastUpdate() {
+    const times = group.all().filter(p => p.skills && p.updatedAt).map(p => new Date(p.updatedAt).getTime());
+    return times.length ? Math.min(...times) : null;
+  }
+
   function cooldownLeft() {
-    return Math.max(0, store.get("lastWomUpdate", 0) + COOLDOWN_MS - Date.now());
+    const last = lastUpdate();
+    return last ? Math.max(0, last + COOLDOWN_MS - Date.now()) : 0;
   }
 
   function renderButton() {
     const left = cooldownLeft();
     btn.disabled = group.updating() || left > 0;
-    btn.textContent = group.updating() ? "Updating…" : left > 0 ? `Update stats (${Math.ceil(left / 1000)} s)` : "Update stats";
+    btn.textContent = group.updating() ? "Updating…" : "Update stats";
+    const last = lastUpdate();
+    $('[data-f="last"]').textContent = !group.loaded() ? "" : last
+      ? `Last updated ${ago(last)}` + (left > 0 ? ` · next update in ${Math.ceil(left / 60_000)} min` : "")
+      : "Not updated yet";
     $('[data-f="msg"]').innerHTML = message;
   }
 
   btn.addEventListener("click", async () => {
-    store.set("lastWomUpdate", Date.now());
     message = "";
     const failed = await group.updateAll();
     const ok = group.all().length - failed.length;
@@ -133,7 +147,7 @@ export function mount(root) {
   }
 
   const off = group.onChange(render);
-  const tick = setInterval(renderButton, 1000);
+  const tick = setInterval(renderButton, 30_000);
   group.loadGains(period);
   render();
   return () => { off(); clearInterval(tick); };
