@@ -25,6 +25,11 @@ export function mount(root) {
     </div>
 
     <section class="section">
+      <h2 class="pagetitle small">Levels</h2>
+      <div data-f="levels"></div>
+    </section>
+
+    <section class="section">
       <div class="sechead">
         <h2 class="pagetitle small">XP gained</h2>
         <div class="seg" role="group" aria-label="Period" data-f="period">
@@ -32,11 +37,6 @@ export function mount(root) {
         </div>
       </div>
       <div data-f="gains"></div>
-    </section>
-
-    <section class="section">
-      <h2 class="pagetitle small">Levels</h2>
-      <div data-f="levels"></div>
     </section>`;
 
   const $ = s => root.querySelector(s);
