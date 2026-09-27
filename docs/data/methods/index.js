@@ -6,6 +6,8 @@ import cleanRanarr from "./clean-ranarr.js";
 import superheatLead from "./superheat-lead.js";
 import aerialFishing from "./aerial-fishing.js";
 import masterFarmers from "./master-farmers.js";
+import motherlodeMine from "./motherlode-mine.js";
+import birdHousesRegular from "./bird-houses-regular.js";
 
 export default [
   sapphireRings,
@@ -14,5 +16,7 @@ export default [
   cleanRanarr,
   superheatLead,
   aerialFishing,
-  masterFarmers
+  masterFarmers,
+  motherlodeMine,
+  birdHousesRegular
 ];
