@@ -26,7 +26,7 @@
 html,body{margin:0}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
-.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:28px 60px;display:flex;flex-direction:column;gap:20px}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:28px 60px;display:flex;flex-direction:column;gap:20px}
 a{color:var(--gold)}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
@@ -110,8 +110,9 @@ footer{font-size:12px;color:var(--ink-3);display:flex;flex-direction:column;gap:
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* ---- navigation & pages ---- */
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto}
-.tabs a{padding:9px 14px;color:var(--ink-2);text-decoration:none;font-weight:600;font-size:15px;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{padding:9px 14px;color:var(--ink-2);text-decoration:none;font-weight:600;font-size:15px;border-bottom:2px solid transparent;white-space:nowrap}
 .tabs a:hover{color:var(--ink)}
 .tabs a[aria-current]{color:var(--ink);border-bottom-color:var(--gold)}
 #view{display:flex;flex-direction:column;gap:18px;outline:none}
@@ -190,3 +191,8 @@ td.top{color:var(--gold);font-weight:600}
 td.how{white-space:normal;min-width:260px;max-width:420px;font-size:13px;color:var(--ink-2)}
 .toolbar .presets{align-self:flex-end;padding-bottom:4px}
 .toolbar .goal{line-height:1.6}
+
+/* Table cells that may wrap onto more lines instead of widening the table */
+td.wrapcell{white-space:normal;min-width:110px}
+.board th,.board td{padding-inline:12px}
+td.wrapcell .pill{white-space:normal;border-radius:6px}

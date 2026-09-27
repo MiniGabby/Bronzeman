@@ -45,14 +45,14 @@ export function mount(root) {
       const pace = calc.limitPace(c);
       const able = group.loaded() ? group.all().filter(p => group.missing(p, m)?.length === 0) : null;
       return `<tr>
-        <td><span class="rank">${i + 1}</span><a href="#/money" data-jump="${m.id}">${esc(m.name)}</a></td>
+        <td class="wrapcell"><span class="rank">${i + 1}</span><a href="#/money" data-jump="${m.id}">${esc(m.name)}</a></td>
         <td class="r num ${cls(c.profitHr)}" title="${gp(c.profitHr)} gp">${short(c.profitHr)}</td>
         <td class="r num ${cls(c.profit)}">${gp(c.profit)}</td>
         <td class="r num">${short(c.xpTotalHr)}</td>
         <td class="r num">${gp(c.perHour)}</td>
-        <td><span class="pill ${pace.pill}">${pace.text}</span></td>
-        <td>${unlockCell(m, c)}</td>
-        <td>${able == null ? "…" : able.length ? esc(able.map(p => p.name).join(", ")) : `<span class="muted">Nobody yet</span>`}</td>
+        <td class="wrapcell"><span class="pill ${pace.pill}">${pace.text}</span></td>
+        <td class="wrapcell">${unlockCell(m, c)}</td>
+        <td class="wrapcell">${able == null ? "…" : able.length ? esc(able.map(p => p.name).join(", ")) : `<span class="muted">Nobody yet</span>`}</td>
       </tr>`;
     }).join("");
 
