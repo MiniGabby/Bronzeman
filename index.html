@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bronzeman Money Makers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#ECEEEA; --surface:#FFFFFF; --surface-2:#F4F5F1; --line:#D5D9D0;
+  --ink:#1D221F; --ink-2:#56605A; --ink-3:#7A847E;
+  --gold:#8A5E00; --gold-soft:#F3E6C4;
+  --good:#1E7A3C; --good-soft:#DDF0E2; --bad:#B3261E; --bad-soft:#F7DEDB; --warn:#8A5A00; --warn-soft:#F6EACB;
+  --sans:"IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#141614; --surface:#1D201D; --surface-2:#232723; --line:#343A34;
+    --ink:#E9ECE6; --ink-2:#A9B2AA; --ink-3:#848E86;
+    --gold:#E3B341; --gold-soft:#3A3120;
+    --good:#5CCB7D; --good-soft:#1C3324; --bad:#F2847A; --bad-soft:#3D2220; --warn:#E8B64E; --warn-soft:#3A3020;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#141614; --surface:#1D201D; --surface-2:#232723; --line:#343A34;
+  --ink:#E9ECE6; --ink-2:#A9B2AA; --ink-3:#848E86;
+  --gold:#E3B341; --gold-soft:#3A3120;
+  --good:#5CCB7D; --good-soft:#1C3324; --bad:#F2847A; --bad-soft:#3D2220; --warn:#E8B64E; --warn-soft:#3A3020;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:28px 60px;display:flex;flex-direction:column;gap:20px}
+a{color:var(--gold)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+h1 .coin{display:inline-block;width:.62em;height:.62em;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE38A,#D9A21B 60%,#8A5F00);margin-right:.25em;vertical-align:.05em;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.18)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px}
+.seg button{font:600 13px var(--sans);border:0;background:transparent;color:var(--ink-2);padding:6px 10px;border-radius:6px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.status{font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.dot.fresh{background:var(--good);box-shadow:0 0 0 3px var(--good-soft)}
+.dot.old{background:var(--warn);box-shadow:0 0 0 3px var(--warn-soft)}
+.modehelp{font-size:13px;color:var(--ink-2);margin:0;max-width:75ch}
+.banner{border:1px solid var(--line);background:var(--surface);padding:12px 14px;border-radius:8px;font-size:14px;color:var(--ink-2)}
+
+.board{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{padding:10px 14px;text-align:left;white-space:nowrap}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;border-bottom:1px solid var(--line)}
+td{border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+.board td:first-child a{color:var(--ink);text-decoration:none;font-weight:600}
+.board td:first-child a:hover{text-decoration:underline}
+.rank{color:var(--ink-3);font-family:var(--mono);margin-right:8px}
+.pill{display:inline-block;font:600 12px var(--sans);padding:2px 8px;border-radius:999px}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+
+.methods{display:flex;flex-direction:column;gap:18px}
+.method{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column}
+.mhead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.mhead h2{margin:0;font-size:21px;line-height:1.15;text-wrap:balance}
+.mhead h2 a{color:inherit;text-decoration:none}
+.mhead h2 a:hover{text-decoration:underline}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--ink-2);background:var(--surface-2)}
+.hero{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.hero .big{font:600 28px/1 var(--mono)}
+.hero .sub{font-size:12px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+
+.mbody{display:grid;grid-template-columns:minmax(0,1fr) 280px}
+.ledger{overflow-x:auto;border-right:1px solid var(--line)}
+.ledger td,.ledger th{padding:8px 12px}
+.ledger .sect td{background:var(--surface-2);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:6px 12px}
+.ledger .total td{font-weight:600}
+.pin{font:500 14px var(--mono);width:84px;text-align:right;padding:4px 6px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--ink)}
+.pin:hover{border-color:var(--line)}
+.pin:focus{border-color:var(--gold);background:var(--surface-2)}
+.pin.own{border-color:var(--gold);background:var(--gold-soft)}
+.sub2{font-size:11px;color:var(--ink-3);margin-top:1px}
+.reset{font:500 11px var(--sans);background:none;border:0;color:var(--gold);cursor:pointer;padding:0;text-decoration:underline}
+.side{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.field input{font:500 16px var(--mono);padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface-2);color:var(--ink);width:100%}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button{font:500 12px var(--sans);border:1px solid var(--line);background:transparent;color:var(--ink-2);padding:4px 8px;border-radius:6px;cursor:pointer}
+.presets button:hover{border-color:var(--gold);color:var(--gold)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:14px;margin:0}
+.kv dt{color:var(--ink-2)} .kv dd{margin:0;text-align:right}
+.notes{display:flex;flex-direction:column;gap:8px}
+.note{font-size:13px;padding:8px 10px;border-radius:7px;background:var(--surface-2);color:var(--ink-2)}
+.note.warn{background:var(--warn-soft);color:var(--ink)}
+.note b{color:var(--ink)}
+footer{font-size:12px;color:var(--ink-3);display:flex;flex-direction:column;gap:4px}
+
+@media (max-width:760px){
+  .mbody{grid-template-columns:1fr}
+  .ledger{border-right:0;border-bottom:1px solid var(--line)}
+  .hero{align-items:flex-start;text-align:left}
+  h1{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">Old School RuneScape · Grand Exchange</span>
+      <h1><span class="coin" aria-hidden="true"></span>Bronzeman Money Makers</h1>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Price mode" id="modeSeg">
+        <button type="button" data-mode="instant">Instant</button>
+        <button type="button" data-mode="offers">Offers</button>
+        <button type="button" data-mode="mid">Mid</button>
+      </div>
+      <span class="status"><span class="dot" id="dot"></span><span id="statusText">Loading prices…</span></span>
+    </div>
+  </header>
+  <p class="modehelp" id="modeHelp"></p>
+  <div class="banner" id="banner" hidden></div>
+
+  <section class="board" aria-label="Methods ranked by profit per hour">
+    <table>
+      <thead><tr>
+        <th>Method</th><th class="r">Profit / hr</th><th class="r">Profit / action</th><th class="r">XP / hr</th><th class="r">Actions / hr</th><th>Buy limit</th>
+      </tr></thead>
+      <tbody id="boardBody"></tbody>
+    </table>
+  </section>
+
+  <section class="methods" id="methods"></section>
+
+  <footer>
+    <span>Prices: average trades over the last hour from the <a href="https://prices.runescape.wiki/osrs/" target="_blank" rel="noopener">OSRS Wiki real-time prices</a> (the latest trade if an item didn't trade that hour). Refreshes every minute. Click a price to enter the price you see on the GE; the page remembers it only for you.</span>
+    <span>GE tax: 2% of the sell price per item, rounded down, capped at 5M per item. Items sold under 50 gp are tax-free.</span>
+  </footer>
+</div>
+
+<script>
+const METHODS = [
+  {
+    key: "sapphire-rings",
+    name: "Enchanting sapphire rings",
+    guide: "https://oldschool.runescape.wiki/w/Money_making_guide/Enchanting_sapphire_rings",
+    reqs: ["Magic 7", "Staff of water"],
+    action: "cast",
+    actionLabel: "Casts per hour",
+    actionsPerHour: 1900,
+    presets: [["Focused", 1900], ["AFK, fast banking", 800], ["AFK", 700]],
+    inputs:  [{ id: 1637, qty: 1 }, { id: 564, qty: 1 }],
+    outputs: [{ id: 2550, qty: 1 }],
+    xp: { Magic: 17.5 },
+    note: "Lvl-1 Enchant. The jewellery market swings a lot, so test a small batch first."
+  },
+  {
+    key: "clean-harralander",
+    name: "Cleaning grimy harralander",
+    guide: "https://oldschool.runescape.wiki/w/Money_making_guide/Cleaning_grimy_harralander",
+    reqs: ["Herblore 20", "Druidic Ritual"],
+    action: "herb",
+    actionLabel: "Herbs per hour",
+    actionsPerHour: 5000,
+    presets: [["Wiki pace", 5000], ["Fast", 7000], ["Relaxed", 3500]],
+    inputs:  [{ id: 205, qty: 1 }],
+    outputs: [{ id: 255, qty: 1 }],
+    xp: { Herblore: 6.3 },
+    note: "An inventory of 28 herbs takes 10 to 20 seconds to clean. Use mouse keys to spare your wrist."
+  },
+  {
+    key: "superheat-lead",
+    name: "Superheating lead bars",
+    guide: "https://oldschool.runescape.wiki/w/Lead_bar",
+    reqs: ["Magic 43", "Smithing 25", "Staff of fire"],
+    action: "cast",
+    actionLabel: "Casts per hour",
+    actionsPerHour: 1400,
+    presets: [["Efficient", 1700], ["Steady", 1400], ["Relaxed", 1100]],
+    inputs:  [{ id: 31716, qty: 2 }, { id: 561, qty: 1 }],
+    outputs: [{ id: 32889, qty: 1 }],
+    xp: { Magic: 53, Smithing: 15.5 },
+    note: "The wiki has no money making guide for this, so the casts per hour are an estimate: one inventory holds 13 bars' worth of ore, so you bank often. With a staff of fire the 4 fire runes per cast are free. Lead is a newer Sailing item and trades thinly, so check that your offers fill."
+  },
+  {
+    key: "aerial-fishing",
+    name: "Aerial fishing",
+    guide: "https://oldschool.runescape.wiki/w/Money_making_guide/Aerial_fishing",
+    reqs: ["Fishing 43", "Hunter 35"],
+    action: "catch",
+    actionLabel: "Catches per hour",
+    actionsPerHour: 2000,
+    presets: [["Wiki pace", 2400], ["Steady", 2000], ["Relaxed", 1500]],
+    inputs:  [{ id: 11334, qty: 0.286 }],
+    outputs: [{ id: 30900, qty: 1.5 }],
+    xp: { Fishing: 11.5, Hunter: 16.5 },
+    note: "Profit comes from trading Molch pearls for shark lures (100 per pearl). Around Fishing 43 and Hunter 42 about 1 in 66 catches gives a pearl, which is 1.5 lures per catch. At 99/99 it is 1 in 50. XP is for bluegill, the fish you catch at these levels. Fish offcuts come from filleting your own catches with a knife."
+  },
+  {
+    key: "master-farmers",
+    name: "Pickpocketing master farmers",
+    guide: "https://oldschool.runescape.wiki/w/Money_making_guide/Pickpocketing_master_farmers",
+    reqs: ["Thieving 38"],
+    action: "pickpocket",
+    actionLabel: "Successful pickpockets per hour",
+    ledger: "hour",
+    actionsPerHour: 650,
+    presets: [["Thieving 38-40", 650], ["Thieving 50 + rogue", 805], ["Thieving 60", 977], ["Thieving 70", 1191]],
+    inputs:  [],
+    outputs: [
+      { id: 5295,  qty: 0.00755 },
+      { id: 22879, qty: 0.007693 },
+      { id: 5300,  qty: 0.00108 },
+      { id: 5304,  qty: 0.000217 },
+      { id: 5296,  qty: 0.004513 },
+      { id: 5301,  qty: 0.000673 },
+      { id: 5299,  qty: 0.00144 },
+      { id: 5298,  qty: 0.002113 },
+      { id: 5303,  qty: 0.000287 },
+      { id: 5302,  qty: 0.00048 },
+      { id: 5311,  qty: 0.02817 },
+      { id: 5321,  qty: 0.010583 }
+    ],
+    xp: { Thieving: 43 },
+    note: "Treat this as an upper bound. The wiki's own estimate at Thieving 38 is about 124K gp/hr. This page does not count food, dodgy necklaces or the lower herb seed rates below Farming 85, and leaves out cheap hop and allotment seeds. Seeds you get yourself unlock buying them on the GE."
+  }
+];
+
+const MODES = {
+  instant: "Instant: you buy at the instant-buy price and sell at the instant-sell price. The safe estimate.",
+  offers:  "Offers: you place buy offers at the low price and sell offers at the high price. Best case, but slower to fill.",
+  mid:     "Mid: halfway between the high and low price of each item."
+};
+
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem("bmm:"+k); return v == null ? d : JSON.parse(v); }catch{ return d; } },
+  set(k, v){ try{ localStorage.setItem("bmm:"+k, JSON.stringify(v)); }catch{} }
+};
+let mode = store.get("mode", "instant");
+const aph = store.get("aph", {});
+const own = store.get("own", {});   // key `${id}:${side}` -> price
+let snap = null;                     // {fetchedAt, items:{id:{name,high,low,vol,limit}}}
+
+const nf = new Intl.NumberFormat("en-US");
+const gp = n => n == null || !isFinite(n) ? "–" : nf.format(Math.round(n));
+function short(n){
+  if (n == null || !isFinite(n)) return "–";
+  const a = Math.abs(n), s = n < 0 ? "-" : "";
+  if (a >= 1e9) return s + (a/1e9).toFixed(2) + "B";
+  if (a >= 1e6) return s + (a/1e6).toFixed(2) + "M";
+  if (a >= 1e4) return s + (a/1e3).toFixed(1) + "K";
+  return s + nf.format(Math.round(a));
+}
+const tax = p => p < 50 ? 0 : Math.min(Math.floor(p * 0.02), 5_000_000);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cls = n => n > 0 ? "pos" : n < 0 ? "neg" : "";
+function ago(iso){
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (!isFinite(s)) return "";
+  if (s < 5400) return Math.max(1, Math.round(s/60)) + " min ago";
+  if (s < 172800) return Math.round(s/3600) + " h ago";
+  return Math.round(s/86400) + " days ago";
+}
+
+function item(id){ return (snap && snap.items && snap.items[id]) || { name: "Item " + id }; }
+function pick(it, side){
+  const {high, low} = it;
+  if (high == null && low == null) return null;
+  const hi = high ?? low, lo = low ?? high;
+  if (mode === "mid") return (hi + lo) / 2;
+  if (mode === "instant") return side === "buy" ? hi : lo;
+  return side === "buy" ? lo : hi;
+}
+function priceFor(id, side){
+  const o = own[id + ":" + side];
+  if (o != null && o > 0) return { p: o, own: true };
+  return { p: pick(item(id), side), own: false };
+}
+
+function compute(m){
+  const perHour = Number(aph[m.key] ?? m.actionsPerHour) || 0;
+  const ins = m.inputs.map(x => { const it = item(x.id); const {p, own} = priceFor(x.id, "buy");
+    return { ...x, it, price: p, own, total: p == null ? null : p * x.qty }; });
+  const outs = m.outputs.map(x => { const it = item(x.id); const {p, own} = priceFor(x.id, "sell");
+    const tx = p == null ? null : tax(Math.floor(p));
+    return { ...x, it, price: p, own, tax: tx, total: p == null ? null : (p - tx) * x.qty }; });
+  const missing = [...ins, ...outs].some(r => r.total == null);
+  const cost = ins.reduce((a, r) => a + (r.total || 0), 0);
+  const rev  = outs.reduce((a, r) => a + (r.total || 0), 0);
+  const taxEach = outs.reduce((a, r) => a + (r.tax || 0) * r.qty, 0);
+  const profit = missing ? null : rev - cost;
+  let limitActions = Infinity, limitItem = null;
+  for (const r of ins) if (r.it.limit){ const a = r.it.limit / r.qty; if (a < limitActions){ limitActions = a; limitItem = r; } }
+  const xpHr = Object.fromEntries(Object.entries(m.xp).map(([k, v]) => [k, v * perHour]));
+  return { perHour, ins, outs, cost, taxEach, profit, profitHr: profit == null ? null : profit * perHour, limitActions, limitItem, xpHr };
+}
+function pace(c){
+  if (!c.limitItem || !isFinite(c.limitActions)) return { text: "No buy limit", pill: "good", minutes: Infinity };
+  const minutes = c.perHour > 0 ? c.limitActions / c.perHour * 60 : Infinity;
+  return { minutes, pill: minutes >= 240 ? "good" : minutes >= 120 ? "warn" : "bad",
+           text: minutes >= 240 ? "Keeps up with your pace" : `${Math.round(minutes)} min of work per 4 h` };
+}
+
+function renderMode(){
+  document.querySelectorAll("#modeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+  document.getElementById("modeHelp").textContent = MODES[mode];
+}
+function renderStatus(){
+  const t = document.getElementById("statusText"), d = document.getElementById("dot");
+  if (!snap){ return; }
+  d.className = "dot fresh";
+  const when = new Date(snap.fetchedAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  t.textContent = `Live prices · updated ${when}`;
+}
+
+function render(){
+  if (!snap) return;
+  renderStatus();
+  const rows = METHODS.map(m => ({ m, c: compute(m) }))
+    .sort((a, b) => (b.c.profitHr ?? -Infinity) - (a.c.profitHr ?? -Infinity));
+
+  document.getElementById("boardBody").innerHTML = rows.map(({ m, c }, i) => {
+    const p = pace(c);
+    const xpTotal = Object.values(c.xpHr).reduce((a, b) => a + b, 0);
+    return `<tr>
+      <td><span class="rank">${i + 1}</span><a href="#${m.key}">${esc(m.name)}</a></td>
+      <td class="r num ${cls(c.profitHr)}" title="${gp(c.profitHr)} gp">${short(c.profitHr)}</td>
+      <td class="r num ${cls(c.profit)}">${gp(c.profit)}</td>
+      <td class="r num">${short(xpTotal)}</td>
+      <td class="r num">${gp(c.perHour)}</td>
+      <td><span class="pill ${p.pill}">${p.text}</span></td>
+    </tr>`;
+  }).join("");
+
+  const host = document.getElementById("methods");
+  for (const { m, c } of rows){
+    let el = document.getElementById(m.key);
+    if (!el){
+      el = document.createElement("article");
+      el.className = "method"; el.id = m.key;
+      el.innerHTML = `
+        <div class="mhead">
+          <div>
+            <h2><a href="${m.guide}" target="_blank" rel="noopener">${esc(m.name)}</a></h2>
+            <div class="meta">${m.reqs.map(r => `<span class="tag">${esc(r)}</span>`).join("")}</div>
+          </div>
+          <div class="hero"><span class="big num" data-f="hero"></span><span class="sub">profit per hour</span></div>
+        </div>
+        <div class="mbody">
+          <div class="ledger"><table>
+            <thead><tr><th>Item</th><th class="r">${m.ledger === "hour" ? "Per hour" : "Per " + esc(m.action)}</th><th class="r">Price</th><th class="r">GE tax</th><th class="r">Total</th><th class="r">Traded / hr</th><th class="r">Buy limit</th></tr></thead>
+            <tbody data-f="ledger"></tbody>
+          </table></div>
+          <div class="side">
+            <div class="field">
+              <label for="aph-${m.key}">${esc(m.actionLabel || "Casts per hour")}</label>
+              <input id="aph-${m.key}" type="number" min="0" step="10" inputmode="numeric">
+              <div class="presets">${m.presets.map(([l, v]) => `<button type="button" data-v="${v}">${esc(l)} · ${nf.format(v)}</button>`).join("")}</div>
+            </div>
+            <dl class="kv" data-f="kv"></dl>
+            <div class="notes" data-f="notes"></div>
+          </div>
+        </div>`;
+      host.appendChild(el);
+      const input = el.querySelector(`#aph-${m.key}`);
+      input.value = aph[m.key] ?? m.actionsPerHour;
+      input.addEventListener("input", () => { aph[m.key] = Number(input.value) || 0; store.set("aph", aph); render(); });
+      el.querySelectorAll(".presets button").forEach(b => b.addEventListener("click", () => {
+        input.value = b.dataset.v; aph[m.key] = Number(b.dataset.v); store.set("aph", aph); render();
+      }));
+      el.addEventListener("change", e => {
+        const t = e.target; if (!t.classList.contains("pin")) return;
+        const v = Number(String(t.value).replace(/[^\d.]/g, ""));
+        if (v > 0) own[t.dataset.k] = v; else delete own[t.dataset.k];
+        store.set("own", own); render();
+      });
+      el.addEventListener("click", e => {
+        const t = e.target; if (!t.classList.contains("reset")) return;
+        delete own[t.dataset.k]; store.set("own", own); render();
+      });
+    } else host.appendChild(el);
+
+    const hero = el.querySelector('[data-f="hero"]');
+    hero.textContent = c.profitHr == null ? "–" : (c.profitHr > 0 ? "+" : "") + short(c.profitHr);
+    hero.className = "big num " + cls(c.profitHr);
+    hero.title = gp(c.profitHr) + " gp";
+
+    const ledger = el.querySelector('[data-f="ledger"]');
+    const focused = ledger.contains(document.activeElement) ? document.activeElement.dataset.k : null;
+    const mult = m.ledger === "hour" ? c.perHour : 1;
+    const qfmt = q => nf.format(q >= 10 ? Math.round(q) : Math.round(q * 100) / 100);
+    const line = (r, isOut) => {
+      const k = r.id + ":" + (isOut ? "sell" : "buy");
+      const val = r.price == null ? "" : Math.round(r.price);
+      const tot = r.total == null ? null : r.total * mult;
+      return `<tr>
+        <td><a href="https://prices.runescape.wiki/osrs/item/${r.id}" target="_blank" rel="noopener">${esc(r.it.name)}</a></td>
+        <td class="r num">${qfmt(r.qty * mult)}</td>
+        <td class="r"><input class="pin num${r.own ? " own" : ""}" data-k="${k}" value="${val}" inputmode="numeric" aria-label="Price ${esc(r.it.name)}">
+          <div class="sub2">${r.own ? `<button type="button" class="reset" data-k="${k}">your price · reset</button>` : (isOut ? "sell" : "buy")}</div></td>
+        <td class="r num">${isOut ? (r.tax ? "-" + gp(r.tax) : "0") : ""}</td>
+        <td class="r num ${isOut ? "pos" : "neg"}">${tot == null ? "–" : (isOut ? "+" : "-") + gp(tot)}</td>
+        <td class="r num">${r.it.vol ? gp(r.it.vol) : "–"}</td>
+        <td class="r num">${r.it.limit ? gp(r.it.limit) : "–"}</td>
+      </tr>`;
+    };
+    const totalProfit = c.profit == null ? null : c.profit * mult;
+    ledger.innerHTML =
+      (c.ins.length ? `<tr class="sect"><td colspan="7">You buy</td></tr>` + c.ins.map(r => line(r, false)).join("") : "") +
+      `<tr class="sect"><td colspan="7">You sell</td></tr>` + c.outs.map(r => line(r, true)).join("") +
+      `<tr class="total"><td colspan="4">Profit per ${m.ledger === "hour" ? "hour" : esc(m.action)}</td><td class="r num ${cls(totalProfit)}">${gp(totalProfit)}</td><td colspan="2"></td></tr>`;
+    if (focused){ const f = ledger.querySelector(`[data-k="${focused}"]`); if (f) f.focus(); }
+
+    el.querySelector('[data-f="kv"]').innerHTML = [
+      ["Profit / hr", `<span class="num ${cls(c.profitHr)}">${gp(c.profitHr)}</span>`],
+      ["Supplies / hr", `<span class="num">${gp(c.cost * c.perHour)}</span>`],
+      ["GE tax / hr", `<span class="num">${gp(c.taxEach * c.perHour)}</span>`],
+      ...Object.entries(c.xpHr).map(([k, v]) => [`${k} XP / hr`, `<span class="num">${gp(v)}</span>`])
+    ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+
+    const notes = [];
+    const p = pace(c);
+    if (c.limitItem && isFinite(c.limitActions)){
+      const r = c.limitItem;
+      if (p.minutes < 240){
+        const capped = c.profit == null ? null : Math.min(c.perHour, c.limitActions / 4) * c.profit;
+        notes.push(`<div class="note warn"><b>${esc(r.it.name)}</b> buy limit is ${gp(r.it.limit)} per 4 h. At your pace you use ${gp(r.qty * c.perHour)} per hour, so one account hits the limit after about ${Math.round(p.minutes)} min. Averaged over 4 h that is about <b class="num">${short(capped)}</b> gp/hr per account.</div>`);
+      } else {
+        notes.push(`<div class="note">The ${esc(r.it.name)} buy limit (${gp(r.it.limit)} per 4 h) keeps up with this pace.</div>`);
+      }
+    }
+    const v = c.ins.concat(c.outs).find(r => r.it.vol && r.qty * c.perHour > r.it.vol);
+    if (v) notes.push(`<div class="note warn">You need ${gp(v.qty * c.perHour)} <b>${esc(v.it.name)}</b> per hour, but only ${gp(v.it.vol)} traded in the last hour. Expect slower fills.</div>`);
+    if (m.note) notes.push(`<div class="note">${esc(m.note)}</div>`);
+    el.querySelector('[data-f="notes"]').innerHTML = notes.join("");
+  }
+}
+
+document.querySelectorAll("#modeSeg button").forEach(b => b.addEventListener("click", () => {
+  mode = b.dataset.mode; store.set("mode", mode); renderMode(); render();
+}));
+renderMode();
+
+const API = "https://prices.runescape.wiki/api/v1/osrs";
+const IDS = [...new Set(METHODS.flatMap(m => [...m.inputs, ...m.outputs].map(x => String(x.id))))];
+let mappingById = null;
+async function getJSON(path){
+  const r = await fetch(API + path, { cache: "no-store" });
+  if (!r.ok) throw new Error(`${path} returned HTTP ${r.status}`);
+  return r.json();
+}
+async function refresh(){
+  const banner = document.getElementById("banner");
+  try{
+    if (!mappingById){
+      const list = await getJSON("/mapping");
+      mappingById = {};
+      for (const it of list) mappingById[it.id] = it;
+    }
+    const [latest, hour] = await Promise.all([getJSON("/latest"), getJSON("/1h")]);
+    const items = {};
+    for (const id of IDS){
+      const m = mappingById[id] || {}, l = (latest.data || {})[id] || {}, h = (hour.data || {})[id] || {};
+      items[id] = {
+        name: m.name || ("Item " + id),
+        limit: m.limit || null,
+        high: h.avgHighPrice ?? l.high ?? null,
+        low:  h.avgLowPrice  ?? l.low  ?? null,
+        vol: (h.highPriceVolume || 0) + (h.lowPriceVolume || 0)
+      };
+    }
+    snap = { fetchedAt: new Date().toISOString(), items };
+    banner.hidden = true;
+    render();
+  }catch(e){
+    banner.hidden = false;
+    banner.textContent = `Couldn't load prices from prices.runescape.wiki (${e.message}). Retrying in a minute.`;
+    document.getElementById("dot").className = "dot old";
+  }
+}
+refresh();
+setInterval(refresh, 60_000);
+</script>
+
+</body>
+</html>
