@@ -4,10 +4,11 @@ import * as group from "./core/players.js";
 import * as money from "./views/money.js";
 import * as training from "./views/training.js";
 import * as groupView from "./views/group.js";
+import * as requests from "./views/requests.js";
 
 // To add a page: create src/views/<name>.js exporting mount(root, params) and title,
 // add it here, and add a link with href="#/<name>" to the nav in index.html.
-const ROUTES = { money, training, group: groupView };
+const ROUTES = { money, training, group: groupView, requests };
 
 const view = document.getElementById("view");
 let cleanup = null;

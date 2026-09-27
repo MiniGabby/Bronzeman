@@ -1,0 +1,48 @@
+name: Guide request
+description: Ask for a money maker or training method to be added to the site.
+title: "[Guide] "
+labels: ["guide-request"]
+body:
+  - type: markdown
+    attributes:
+      value: Tell us which method you'd like on the site. A link to the OSRS Wiki guide helps most.
+  - type: input
+    id: method
+    attributes:
+      label: Method
+      description: What the method is called.
+      placeholder: Cleaning grimy ranarr weed
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Wiki link
+      description: Link to the OSRS Wiki money making guide or item page, if there is one.
+      placeholder: https://oldschool.runescape.wiki/w/Money_making_guide/...
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - Money maker
+        - Skill training
+        - Both
+    validations:
+      required: true
+  - type: input
+    id: skills
+    attributes:
+      label: Skills
+      description: Which skills it trains, if any.
+      placeholder: Herblore
+  - type: input
+    id: requested_by
+    attributes:
+      label: Requested by
+      description: Your RuneScape name.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Anything else, like the level you'd do it at or why you want it.

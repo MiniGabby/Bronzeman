@@ -1,0 +1,42 @@
+# Copies every guide request (issues labelled "guide-request") into docs/data/requests.json,
+# so the website can list them and anyone with the repository can read them offline.
+name: Sync guide requests
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled, deleted]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: sync-requests
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build requests.json from issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const build = require('./.github/scripts/build-requests.js');
+            await build({ github, context });
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- docs/data/requests.json; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/requests.json
+          git commit -m "Update guide requests"
+          git pull --rebase
+          git push

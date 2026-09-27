@@ -7,6 +7,7 @@ Website for our Old School RuneScape bronzeman group: money makers and skill-tra
 | Folder | What's in it | On GitHub? |
 |---|---|---|
 | `docs/` | The website. GitHub Pages serves this folder. | Yes |
+| `.github/` | Guide request form (issue template) and the Action that syncs requests to `docs/data/requests.json` | Yes |
 | `workspace/` | Handoff notes, research, test tools, old versions | No: `.gitignore` keeps it local |
 
 - `docs/README.md` explains how the website code is organised and how to add methods, players and pages.

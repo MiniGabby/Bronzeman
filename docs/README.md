@@ -5,6 +5,7 @@ A small website for our Old School RuneScape bronzeman group. It shows money mak
 - **Money makers:** methods ranked by profit per hour, with an item-by-item breakdown, GE tax, buy-limit warnings and who in the group can do them.
 - **Skill training:** pick a skill, enter your level (or pick a player) and a target level, and compare every method that trains it: gp per XP, XP per hour, and time and cost to reach the target.
 - **Group:** an Update stats button that refreshes everyone's levels on Wise Old Man, XP gained today, this week or this month, and everyone's levels side by side.
+- **Requests:** a form to ask for a new guide. It opens a pre-filled GitHub issue; the list of requests on the page comes from `data/requests.json`, which a GitHub Action keeps in sync with the issues.
 
 Prices come from the [OSRS Wiki real-time prices API](https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices) and refresh every minute. Levels come from [Wise Old Man](https://wiseoldman.net).
 
@@ -17,6 +18,8 @@ index.html               Page shell: header, tabs, footer
 assets/style.css         All styling (colors, light and dark theme)
 data/
   players.js             Group members' RuneScape names
+  site.js                Site settings (the GitHub repository name)
+  requests.json          Guide requests, written by the GitHub Action (don't edit by hand)
   methods/
     index.js             List of all methods (one import line each)
     _template.js         Copy this to add a method; explains every field
@@ -37,6 +40,7 @@ src/
     money.js             Money makers page
     training.js          Skill training pages
     group.js             Group page
+    requests.js          Guide requests page
 ```
 
 ## Adding a method
@@ -51,6 +55,12 @@ Tips:
 - **Training-only methods:** for methods like "Burning maple logs" that you do for XP, not money, use `tags: ["training"]`. They show only on the skill training page, and their cost per XP shows as a negative gp/XP.
 - **Different levels:** when a method changes a lot with level (more XP per action, a better fish), add a separate method per level band, e.g. `aerial-fishing-43` and `aerial-fishing-56`, each with its own `reqs.skills` level.
 - **Rare drops:** use fractional quantities (`qty: 1/130`) and `ledger: "hour"` to show the item table per hour.
+
+## Guide requests
+
+1. The Requests page opens `github.com/<repo>/issues/new` with the form in `.github/ISSUE_TEMPLATE/guide-request.yml`, filled in from the page. Posting needs a free GitHub account.
+2. `.github/workflows/sync-requests.yml` runs whenever an issue changes and writes all `guide-request` issues to `docs/data/requests.json` (script: `.github/scripts/build-requests.js`).
+3. Close an issue as **completed** when the guide is added (shows as "Added"), or as **not planned** to decline it.
 
 ## Adding a group member
 
