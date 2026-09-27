@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bronzeman Money Makers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">Old School RuneScape · Grand Exchange</span>
+      <h1><span class="coin" aria-hidden="true"></span>Bronzeman Money Makers</h1>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Price mode" id="modeSeg">
+        <button type="button" data-mode="instant">Instant</button>
+        <button type="button" data-mode="offers">Offers</button>
+        <button type="button" data-mode="mid">Mid</button>
+      </div>
+      <span class="status"><span class="dot" id="dot"></span><span id="statusText">Loading prices…</span></span>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Pages">
+    <a href="#/money">Money makers</a>
+    <a href="#/training">Skill training</a>
+    <a href="#/group">Group</a>
+  </nav>
+
+  <p class="modehelp" id="modeHelp"></p>
+  <div class="banner" id="banner" hidden></div>
+
+  <main id="view" tabindex="-1"></main>
+
+  <footer>
+    <span>Prices: average trades over the last hour from the <a href="https://prices.runescape.wiki/osrs/" target="_blank" rel="noopener">OSRS Wiki real-time prices</a> (the latest trade if an item didn't trade that hour). Refreshes every minute. Click a price to enter the price you see on the GE; your browser remembers it.</span>
+    <span>GE tax: 2% of the sell price per item, rounded down, capped at 5M per item. Items sold under 50 gp are tax-free.</span>
+  </footer>
+</div>
+<noscript>This site needs JavaScript to load live prices.</noscript>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
