@@ -1,4 +1,20 @@
 {
-  "updatedAt": null,
-  "requests": []
+  "updatedAt": "2026-09-27T16:14:34.440Z",
+  "requests": [
+    {
+      "number": 1,
+      "url": "https://github.com/MiniGabby/Bronzeman/issues/1",
+      "title": "Cleaning ranarr seeds",
+      "state": "open",
+      "method": "Cleaning ranarr seeds",
+      "link": "",
+      "type": "Money maker",
+      "skills": "",
+      "requestedBy": "Mini Gabby",
+      "notes": "",
+      "author": "MiniGabby",
+      "createdAt": "2026-09-27T16:06:08Z",
+      "closedAt": null
+    }
+  ]
 }
