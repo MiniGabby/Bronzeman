@@ -8,6 +8,10 @@ import aerialFishing from "./aerial-fishing.js";
 import masterFarmers from "./master-farmers.js";
 import motherlodeMine from "./motherlode-mine.js";
 import birdHousesRegular from "./bird-houses-regular.js";
+import smithBronzeDartTips from "./smith-bronze-dart-tips.js";
+import smithIronDartTips from "./smith-iron-dart-tips.js";
+import smithSteelDartTips from "./smith-steel-dart-tips.js";
+import smithMithrilDartTips from "./smith-mithril-dart-tips.js";
 
 export default [
   sapphireRings,
@@ -18,5 +22,9 @@ export default [
   aerialFishing,
   masterFarmers,
   motherlodeMine,
-  birdHousesRegular
+  birdHousesRegular,
+  smithBronzeDartTips,
+  smithIronDartTips,
+  smithSteelDartTips,
+  smithMithrilDartTips
 ];
