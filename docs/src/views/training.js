@@ -147,7 +147,7 @@ function mountSkill(root, skill) {
             <td class="wrapcell"><span class="sub2">With the fastest unlocked method where the recommended one is locked: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
         </tbody>
       </table></div>
-      ${needTips.size ? `<div class="unlocktips"><h3 class="reqgroup">How to unlock what the route needs</h3><ul>${
+      ${needTips.size ? `<div class="unlocktips"><h3 class="reqgroup">How to unlock what the route needs</h3><p class="fine">You only need one of each: once anyone in the group has obtained an item, everyone can buy more on the GE.</p><ul>${
         [...needTips].map(([n, t]) => `<li><b>${esc(n)}</b>: ${esc(t)}</li>`).join("")}</ul></div>` : ""}`;
   }
 
