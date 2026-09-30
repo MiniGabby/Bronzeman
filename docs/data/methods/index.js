@@ -13,6 +13,7 @@ import smithIronDartTips from "./smith-iron-dart-tips.js";
 import smithSteelDartTips from "./smith-steel-dart-tips.js";
 import smithMithrilDartTips from "./smith-mithril-dart-tips.js";
 import herblorePotions from "./herblore-potions.js";
+import craftingJewellery from "./crafting-jewellery.js";
 
 export default [
   sapphireRings,
@@ -28,5 +29,6 @@ export default [
   smithIronDartTips,
   smithSteelDartTips,
   smithMithrilDartTips,
-  ...herblorePotions   // one file with all Herblore potions
+  ...herblorePotions,   // one file with all Herblore potions
+  ...craftingJewellery  // one file with all jewellery crafting
 ];
