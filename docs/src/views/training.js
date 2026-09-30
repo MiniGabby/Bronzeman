@@ -9,6 +9,8 @@ import { SKILLS, skillByKey, xpForLevel, levelForXp } from "../core/osrs.js";
 import { store } from "../core/store.js";
 import { esc, gp, short, signed, cls, duration, nf } from "../core/format.js";
 import { createMethodCard } from "../components/methodCard.js";
+import GUIDES from "../../data/skill-guides.js";
+import { tipFor } from "../core/unlockTips.js";
 
 export const title = "Skill training";
 
@@ -61,8 +63,10 @@ function mountSkill(root, skill) {
         </select></div>
       <div class="goal" data-f="goal"></div>
     </form>
+    <section class="section" data-f="route" hidden></section>
+    <h2 class="pagetitle small">All ${esc(skill.name)} methods</h2>
     <section class="board"><table>
-      <thead><tr><th>Method</th><th class="r">Level</th><th class="r">${esc(skill.name)} XP / hr</th><th class="r">GP / XP</th><th class="r">Profit / hr</th><th class="r">Time to target</th><th class="r">Cost to target</th></tr></thead>
+      <thead><tr><th>Method</th><th class="r">Level</th><th class="r">${esc(skill.name)} XP / hr</th><th class="r">GP / XP</th><th class="r">Profit / hr</th><th class="r">Time to target</th><th class="r">Cost to target</th><th>Inputs unlocked</th></tr></thead>
       <tbody data-f="rows"></tbody>
     </table></section>
     <p class="fine">GP / XP counts all profit or cost of a method against ${esc(skill.name)} XP, even when the method also trains other skills. Time and cost assume you stay on one method the whole way.</p>
@@ -86,6 +90,67 @@ function mountSkill(root, skill) {
     return xpForLevel(goal.current);
   }
 
+  const guide = GUIDES[skill.key];
+  const fmtGpXp = v => v == null ? "–" : (v > 0 ? "+" : "") + v.toFixed(1);
+
+  function lockCell(m) {
+    if (!(m.inputs || []).length) return `<span class="muted">No inputs</span>`;
+    const locked = unlocks.lockedInputs(m);
+    if (locked == null) return "…";
+    return locked.length
+      ? `<span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>`
+      : `<span class="pill good">All unlocked</span>`;
+  }
+
+  // The route: recommended method per level range, with live numbers and unlock status.
+  function renderRoute(rows, lvlNow) {
+    const host = $('[data-f="route"]');
+    if (!guide) { host.hidden = true; return; }
+    host.hidden = false;
+    const byId = Object.fromEntries(rows.map(r => [r.m.id, r]));
+    const usable = (r, level) => r.req <= level && unlocks.lockedInputs(r.m)?.length === 0 && r.gpXp != null;
+    const needTips = new Map();
+    let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true;
+
+    const steps = guide.route.map(st => {
+      const rec = byId[st.method];
+      const xp = Math.max(0, xpForLevel(st.to) - xpForLevel(st.from));
+      const locked = rec ? unlocks.lockedInputs(rec.m) : null;
+      locked?.forEach(x => { if (tipFor(x.name)) needTips.set(x.name, tipFor(x.name)); });
+      // Fastest method that works right now for this range: level ok and everything unlocked.
+      const alt = rows.filter(r => usable(r, st.from)).sort((a, b) => (b.xpHr - a.xpHr) || (b.gpXp - a.gpXp))[0];
+      const cost = r => r && r.xpHr ? { h: xp / r.xpHr, gp: (xp / r.xpHr) * (r.c.profitHr ?? 0) } : null;
+      const cr = cost(rec), ca = cost(locked?.length ? alt : rec);
+      if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
+      if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
+      const here = lvlNow >= st.from && lvlNow < st.to;
+      return `<tr class="${here ? "here" : ""}">
+        <td class="num">${st.from}–${st.to}${here ? ` <span class="pill good">You</span>` : ""}</td>
+        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
+        <td class="r num">${rec ? short(rec.xpHr) : "–"}</td>
+        <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
+        <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? duration(cr.h) : ""}</div></td>
+        <td class="wrapcell">${locked == null ? "…" : !locked.length ? `<span class="pill good">All unlocked</span>` :
+          `<span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>${alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${short(alt.xpHr)} XP/hr, ${fmtGpXp(alt.gpXp)} gp/XP)</div>` : ""}`}</td>
+      </tr>`;
+    }).join("");
+
+    const first = guide.route[0].from, last = guide.route[guide.route.length - 1].to;
+    host.innerHTML = `
+      <h2 class="pagetitle small">Training route</h2>
+      ${guide.intro ? `<p class="lead">${esc(guide.intro)}</p>` : ""}
+      <div class="board"><table>
+        <thead><tr><th>Levels</th><th>Recommended</th><th class="r">XP / hr</th><th class="r">GP / XP</th><th class="r">Cost for these levels</th><th>Unlocks</th></tr></thead>
+        <tbody data-f="route-rows">${steps}
+          <tr class="total"><td>${first}–${last}</td><td>Whole route${recComplete ? "" : " (some prices missing)"}</td><td></td><td></td>
+            <td class="r num ${cls(totalRec)}">${signed(totalRec)}<div class="sub2">${duration(totalRecH)}</div></td>
+            <td class="wrapcell"><span class="sub2">With the fastest unlocked method where the recommended one is locked: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
+        </tbody>
+      </table></div>
+      ${needTips.size ? `<div class="unlocktips"><h3 class="reqgroup">How to unlock what the route needs</h3><ul>${
+        [...needTips].map(([n, t]) => `<li><b>${esc(n)}</b>: ${esc(t)}</li>`).join("")}</ul></div>` : ""}`;
+  }
+
   function render() {
     fillPlayers();
     const xpNow = currentXp();
@@ -101,11 +166,11 @@ function mountSkill(root, skill) {
       : `Already level ${goal.target} or higher`;
 
     if (!methods.length) {
-      $('[data-f="rows"]').innerHTML = `<tr><td colspan="7" class="muted">No ${esc(skill.name)} methods yet. Add one in data/methods (see the README).</td></tr>`;
+      $('[data-f="rows"]').innerHTML = `<tr><td colspan="8" class="muted">No ${esc(skill.name)} methods yet. Add one in data/methods (see the README).</td></tr>`;
       return;
     }
     if (!prices.ready()) {
-      $('[data-f="rows"]').innerHTML = `<tr><td colspan="7" class="muted">Loading prices…</td></tr>`;
+      $('[data-f="rows"]').innerHTML = `<tr><td colspan="8" class="muted">Loading prices…</td></tr>`;
       return;
     }
 
@@ -132,7 +197,10 @@ function mountSkill(root, skill) {
       <td class="r num ${cls(r.c.profitHr)}">${signed(r.c.profitHr)}</td>
       <td class="r num">${need ? duration(r.hrs) : "–"}</td>
       <td class="r num ${cls(r.total)}">${need ? signed(r.total) : "–"}</td>
+      <td class="wrapcell">${lockCell(r.m)}</td>
     </tr>`).join("");
+
+    renderRoute(rows, lvlNow);
 
     const host = $('[data-f="cards"]');
     for (const r of rows) {
@@ -148,6 +216,12 @@ function mountSkill(root, skill) {
   cur.addEventListener("input", () => { goal.current = Math.min(98, Math.max(1, Number(cur.value) || 1)); save(); render(); });
   tgt.addEventListener("input", () => { goal.target = Math.min(99, Math.max(2, Number(tgt.value) || 2)); save(); render(); });
   sortSel.addEventListener("change", () => { goal.sort = sortSel.value; save(); render(); });
+  $('[data-f="route"]').addEventListener("click", e => {
+    const a = e.target.closest("[data-jump]");
+    if (!a || !a.dataset.jump) return;
+    e.preventDefault();
+    document.getElementById(a.dataset.jump)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
   $('[data-f="rows"]').addEventListener("click", e => {
     const a = e.target.closest("[data-jump]");
     if (!a) return;

@@ -17,12 +17,18 @@ export function setRate(m, value) {
 
 export function compute(m) {
   const perHour = getRate(m);
+  // Items can be given by id or by exact name ({ name: "Guam potion (unf)" }).
+  const lookup = x => {
+    const id = prices.resolve(x);
+    const it = id == null ? { id: null, name: x.name || "Unknown item", limit: null, vol: 0 } : prices.item(id);
+    return { id, it };
+  };
   const ins = (m.inputs || []).map(x => {
-    const it = prices.item(x.id), { p, own } = prices.price(x.id, "buy");
-    return { ...x, it, price: p, own, total: p == null ? null : p * x.qty };
+    const { id, it } = lookup(x), { p, own } = id == null ? { p: null, own: false } : prices.price(id, "buy");
+    return { ...x, id, it, price: p, own, total: p == null ? null : p * x.qty };
   });
   const outs = (m.outputs || []).map(x => {
-    const it = prices.item(x.id), { p, own } = prices.price(x.id, "sell");
+    const { id, it } = lookup(x), { p, own } = id == null ? { p: null, own: false } : prices.price(id, "sell");
     const tax = p == null ? null : geTax(Math.floor(p));
     return { ...x, it, price: p, own, tax, total: p == null ? null : (p - tax) * x.qty };
   });

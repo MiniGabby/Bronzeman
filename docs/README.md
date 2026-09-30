@@ -22,6 +22,8 @@ data/
   players.js             Group members' RuneScape names
   site.js                Site settings (the GitHub repository name)
   alch-unlocks.js        Easy-to-unlock alch items and how to unlock them
+  unlock-tips.js         How to unlock specific items (shown when a method needs a locked item)
+  skill-guides.js        Training routes per skill (recommended method per level range)
   requests.json          Guide requests, written by the GitHub Action (don't edit by hand)
   unlocks.json           Unlocked items, built from the plugin exports (don't edit by hand)
   methods/
@@ -36,6 +38,7 @@ src/
     calc.js              Profit, XP, GE tax and buy-limit maths for a method
     players.js           Group stats from Wise Old Man: levels, updates, XP gains, requirement checks
     unlocks.js           Unlocked items, and which method inputs are still locked
+    unlockTips.js        Finds the unlock tip for an item (automatic tip for unfinished potions)
     osrs.js              Skill list and XP table
     format.js            Number formatting helpers
     store.js             Remembers settings in your browser
@@ -58,6 +61,9 @@ src/
 The method then appears on the money makers page (if tagged `"money"`) and on the training page of every skill it gives XP in. Group requirement checks work automatically from `reqs.skills`.
 
 Tips:
+- **Items by name:** inputs and outputs can use `{ name: "Guam potion (unf)", qty: 1 }` instead of an id. The name must match the in-game item name exactly; the site looks up the id in the live price list. `data/methods/herblore-potions.js` does this, and also shows how one file can hold several methods.
+- **Unlock tips:** when a method needs an item nobody has unlocked, the card shows the tip for it from `data/unlock-tips.js`. Add a line there for any item that's easy to unlock.
+- **Training routes:** add a skill to `data/skill-guides.js` with the recommended method per level range. The skill's training page then shows a route with live XP/hr, GP/XP and cost per range, flags locked ingredients, and suggests the fastest unlocked method until they're unlocked.
 - **Item IDs:** find them in the wiki item infobox ("Item ID"), or in the URL of the item on prices.runescape.wiki.
 - **Training-only methods:** for methods like "Burning maple logs" that you do for XP, not money, use `tags: ["training"]`. They show only on the skill training page, and their cost per XP shows as a negative gp/XP.
 - **Different levels:** when a method changes a lot with level (more XP per action, a better fish), add a separate method per level band, e.g. `aerial-fishing-43` and `aerial-fishing-56`, each with its own `reqs.skills` level.

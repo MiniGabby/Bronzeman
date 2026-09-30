@@ -32,7 +32,7 @@ export function mount(root) {
     const locked = unlocks.lockedInputs(m);
     if (locked == null) return "…";
     if (!locked.length) return `<span class="pill good">All unlocked</span>`;
-    const names = locked.map(x => c.ins.find(r => r.id === x.id)?.it.name || `Item ${x.id}`);
+    const names = locked.map(x => x.name);
     return `<span class="pill bad" title="Not unlocked: ${esc(names.join(", "))}">Missing ${esc(names.join(", "))}</span>`;
   }
 

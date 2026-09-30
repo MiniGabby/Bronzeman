@@ -6,7 +6,8 @@ const API = "https://prices.runescape.wiki/api/v1/osrs";
 const REFRESH_MS = 60_000;
 
 const state = {
-  mapping: null,   // id -> { name, limit }
+  mapping: null,   // id -> { name, limit, highalch }
+  byName: null,    // lower-case name -> id
   latest: {},      // id -> { high, low, highTime, lowTime }
   hour: {},        // id -> { avgHighPrice, avgLowPrice, highPriceVolume, lowPriceVolume }
   fetchedAt: null,
@@ -40,6 +41,7 @@ export async function refresh() {
     if (!state.mapping) {
       const list = await getJSON("/mapping");
       state.mapping = Object.fromEntries(list.map(it => [it.id, { name: it.name, limit: it.limit ?? null, highalch: it.highalch ?? null, members: !!it.members }]));
+      state.byName = Object.fromEntries(list.map(it => [it.name.toLowerCase(), it.id]));
     }
     const [latest, hour] = await Promise.all([getJSON("/latest"), getJSON("/1h")]);
     state.latest = latest.data || {};
@@ -56,6 +58,12 @@ export function start() {
   refresh();
   setInterval(refresh, REFRESH_MS);
 }
+
+/** Item id for an exact in-game item name (case-insensitive), or null until the item list has loaded. */
+export const idOf = name => (name && state.byName ? state.byName[String(name).toLowerCase()] ?? null : null);
+
+/** Item id for a method's input/output entry: { id } or { name }. */
+export const resolve = x => x.id ?? idOf(x.name);
 
 /** Every item id the price API knows. */
 export const allIds = () => Object.keys(state.mapping || {}).map(Number);
