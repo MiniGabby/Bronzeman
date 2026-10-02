@@ -29,5 +29,12 @@ export default {
   "Potato cactus": "Pick one up in the Kalphite Lair: 3 spawn in the south-west room on the first level (with the Kalphite Soldiers). No requirements, but bring antipoison.",
   "Jangerberries": "Pick them on the island north of Gu'Tanoth (Agility 10 and a rope; same route as the jangerberries money maker), or grow them from Farming 48.",
   "Amylase crystal": "Buy one amylase pack (100 crystals) from Grace in the Rogues' Den for 10 marks of grace. Marks of grace drop on rooftop agility courses, so this is a one-time 10 marks.",
-  "Super energy(4)": "Make one super energy yourself (Avantoe potion (unf) + Mort myre fungus, Herblore 52) and combine doses into a 4-dose, or drink a dose off a 4-dose you get another way."
+  "Super energy(4)": "Make one super energy yourself (Avantoe potion (unf) + Mort myre fungus, Herblore 52) and combine doses into a 4-dose, or drink a dose off a 4-dose you get another way.",
+
+  // Smithing: bars and ores
+  "Mithril bar": "Smelt one yourself: mithril ore (already unlocked) and 4 coal at any furnace, Smithing 50. Or 2 coal at the Blast Furnace.",
+  "Adamantite ore": "Mine one: Mining 70. The Motherlode Mine pay-dirt also gives adamantite ore from Mining 70.",
+  "Adamantite bar": "Smelt one: adamantite ore and 6 coal at any furnace, Smithing 70. If the ore isn't unlocked yet, mine one first (Mining 70).",
+  "Runite ore": "Mine one: Mining 85. The Motherlode Mine pay-dirt also gives runite ore from Mining 85.",
+  "Runite bar": "Smelt one: runite ore and 8 coal at any furnace, Smithing 85."
 };

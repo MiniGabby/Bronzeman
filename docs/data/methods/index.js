@@ -14,6 +14,7 @@ import smithSteelDartTips from "./smith-steel-dart-tips.js";
 import smithMithrilDartTips from "./smith-mithril-dart-tips.js";
 import herblorePotions from "./herblore-potions.js";
 import craftingJewellery from "./crafting-jewellery.js";
+import smithing from "./smithing.js";
 
 export default [
   sapphireRings,
@@ -30,5 +31,6 @@ export default [
   smithSteelDartTips,
   smithMithrilDartTips,
   ...herblorePotions,   // one file with all Herblore potions
-  ...craftingJewellery  // one file with all jewellery crafting
+  ...craftingJewellery, // one file with all jewellery crafting
+  ...smithing           // anvil and Blast Furnace methods for the Smithing routes
 ];

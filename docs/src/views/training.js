@@ -103,29 +103,45 @@ function mountSkill(root, skill) {
   }
 
   // The route: recommended method per level range, with live numbers and unlock status.
+  // A skill can have several routes (fastest, cheapest...), shown as tabs.
+  const routes = guide ? (guide.routes || [{ key: "main", route: guide.route }]) : [];
+  const routeKey = () => {
+    const k = store.get("route:" + skill.key, routes[0]?.key);
+    return routes.some(r => r.key === k) ? k : routes[0]?.key;
+  };
+
   function renderRoute(rows, lvlNow) {
     const host = $('[data-f="route"]');
     if (!guide) { host.hidden = true; return; }
     host.hidden = false;
+    const active = routes.find(r => r.key === routeKey());
     const byId = Object.fromEntries(rows.map(r => [r.m.id, r]));
-    const usable = (r, level) => r.req <= level && unlocks.lockedInputs(r.m)?.length === 0 && r.gpXp != null;
+    const usable = (r, level) => r.m.routeAlt !== false && r.req <= level && unlocks.lockedInputs(r.m)?.length === 0 && r.gpXp != null;
     const needTips = new Map();
     let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true;
 
-    const steps = guide.route.map(st => {
+    const steps = active.route.map(st => {
+      const here = lvlNow >= st.from && lvlNow < st.to;
+      const lv = `<td class="num">${st.from}–${st.to}${here ? ` <span class="pill good">You</span>` : ""}</td>`;
+      if (st.quest) {
+        return `<tr class="${here ? "here" : ""}">${lv}
+          <td class="wrapcell"><a href="${esc(st.url || "#")}" target="_blank" rel="noopener">Quest: ${esc(st.quest)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
+          <td class="r muted">Quest</td><td class="r muted">–</td><td class="r muted">Free</td><td class="wrapcell"><span class="muted">–</span></td></tr>`;
+      }
       const rec = byId[st.method];
       const xp = Math.max(0, xpForLevel(st.to) - xpForLevel(st.from));
       const locked = rec ? unlocks.lockedInputs(rec.m) : null;
       locked?.forEach(x => { if (tipFor(x.name)) needTips.set(x.name, tipFor(x.name)); });
-      // Fastest method that works right now for this range: level ok and everything unlocked.
-      const alt = rows.filter(r => usable(r, st.from)).sort((a, b) => (b.xpHr - a.xpHr) || (b.gpXp - a.gpXp))[0];
+      // Best method that works right now for this range (level ok, everything unlocked): the fastest.
+      // On a route with prefer: "cheap", the fastest one that doesn't cost money (if there is one).
+      const fastest = list => list.sort((a, b) => (b.xpHr - a.xpHr) || (b.gpXp - a.gpXp))[0];
+      const open = rows.filter(r => usable(r, st.from));
+      const alt = (active.prefer === "cheap" && fastest(open.filter(r => r.gpXp >= 0))) || fastest(open);
       const cost = r => r && r.xpHr ? { h: xp / r.xpHr, gp: (xp / r.xpHr) * (r.c.profitHr ?? 0) } : null;
       const cr = cost(rec), ca = cost(locked?.length ? alt : rec);
       if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
       if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
-      const here = lvlNow >= st.from && lvlNow < st.to;
-      return `<tr class="${here ? "here" : ""}">
-        <td class="num">${st.from}–${st.to}${here ? ` <span class="pill good">You</span>` : ""}</td>
+      return `<tr class="${here ? "here" : ""}">${lv}
         <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
         <td class="r num">${rec ? short(rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
@@ -135,16 +151,19 @@ function mountSkill(root, skill) {
       </tr>`;
     }).join("");
 
-    const first = guide.route[0].from, last = guide.route[guide.route.length - 1].to;
+    const first = active.route[0].from, last = active.route[active.route.length - 1].to;
+    const tabs = routes.length > 1 ? `<div class="seg routetabs" role="group" aria-label="Route">${routes.map(r =>
+      `<button type="button" data-route="${esc(r.key)}" aria-pressed="${r.key === active.key}">${esc(r.name)}</button>`).join("")}</div>` : "";
     host.innerHTML = `
-      <h2 class="pagetitle small">Training route</h2>
+      <div class="sechead"><h2 class="pagetitle small">Training route${routes.length > 1 ? "s" : ""}</h2>${tabs}</div>
       ${guide.intro ? `<p class="lead">${esc(guide.intro)}</p>` : ""}
+      ${active.intro ? `<p class="lead">${esc(active.intro)}</p>` : ""}
       <div class="board"><table>
         <thead><tr><th>Levels</th><th>Recommended</th><th class="r">XP / hr</th><th class="r">GP / XP</th><th class="r">Cost for these levels</th><th>Unlocks</th></tr></thead>
         <tbody data-f="route-rows">${steps}
           <tr class="total"><td>${first}–${last}</td><td>Whole route${recComplete ? "" : " (some prices missing)"}</td><td></td><td></td>
             <td class="r num ${cls(totalRec)}">${signed(totalRec)}<div class="sub2">${duration(totalRecH)}</div></td>
-            <td class="wrapcell"><span class="sub2">With the fastest unlocked method where the recommended one is locked: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
+            <td class="wrapcell"><span class="sub2">With the ${active.prefer === "cheap" ? "cheapest" : "fastest"} unlocked method where the recommended one is locked: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
         </tbody>
       </table></div>
       ${needTips.size ? `<div class="unlocktips"><h3 class="reqgroup">How to unlock what the route needs</h3><p class="fine">You only need one of each: once anyone in the group has obtained an item, everyone can buy more on the GE.</p><ul>${
@@ -217,6 +236,8 @@ function mountSkill(root, skill) {
   tgt.addEventListener("input", () => { goal.target = Math.min(99, Math.max(2, Number(tgt.value) || 2)); save(); render(); });
   sortSel.addEventListener("change", () => { goal.sort = sortSel.value; save(); render(); });
   $('[data-f="route"]').addEventListener("click", e => {
+    const tab = e.target.closest("[data-route]");
+    if (tab) { store.set("route:" + skill.key, tab.dataset.route); render(); return; }
     const a = e.target.closest("[data-jump]");
     if (!a || !a.dataset.jump) return;
     e.preventDefault();

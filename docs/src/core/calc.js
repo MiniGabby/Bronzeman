@@ -32,8 +32,10 @@ export function compute(m) {
     const tax = p == null ? null : geTax(Math.floor(p));
     return { ...x, it, price: p, own, tax, total: p == null ? null : (p - tax) * x.qty };
   });
+  // Fixed costs per hour (e.g. the Blast Furnace coffer), spread over each action.
+  const fees = (m.fees || []).map(f => ({ ...f, each: perHour > 0 ? f.perHour / perHour : 0 }));
   const missing = [...ins, ...outs].some(r => r.total == null);
-  const cost = ins.reduce((a, r) => a + (r.total || 0), 0);
+  const cost = ins.reduce((a, r) => a + (r.total || 0), 0) + fees.reduce((a, f) => a + f.each, 0);
   const revenue = outs.reduce((a, r) => a + (r.total || 0), 0);
   const taxEach = outs.reduce((a, r) => a + (r.tax || 0) * r.qty, 0);
   const profit = missing ? null : revenue - cost;
@@ -49,7 +51,7 @@ export function compute(m) {
 
   const xpHr = Object.fromEntries(Object.entries(m.xp || {}).map(([s, v]) => [s, v * perHour]));
   return {
-    perHour, ins, outs, cost, revenue, taxEach, profit,
+    perHour, ins, outs, fees, cost, revenue, taxEach, profit,
     profitHr: profit == null ? null : profit * perHour,
     limitActions, limitItem, xpHr,
     xpTotalHr: Object.values(xpHr).reduce((a, b) => a + b, 0)

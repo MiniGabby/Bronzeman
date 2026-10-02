@@ -102,6 +102,9 @@ export function createMethodCard(m) {
     const totalProfit = c.profit == null ? null : c.profit * mult;
     ledger.innerHTML =
       (c.ins.length ? `<tr class="sect"><td colspan="7">You buy</td></tr>` + c.ins.map(r => row(r, false)).join("") : "") +
+      (c.fees.length ? `<tr class="sect"><td colspan="7">You pay</td></tr>` + c.fees.map(f => `<tr>
+        <td>${esc(f.label)}</td><td class="r num"></td><td class="r num">${gp(f.perHour)}<div class="sub2">per hour</div></td><td></td>
+        <td class="r num neg">-${gp(f.each * mult)}</td><td colspan="2"></td></tr>`).join("") : "") +
       (c.outs.length ? `<tr class="sect"><td colspan="7">You sell</td></tr>` + c.outs.map(r => row(r, true)).join("") : "") +
       `<tr class="total"><td colspan="4">Profit per ${perHourTable ? "hour" : esc(m.action)}</td><td class="r num ${cls(totalProfit)}">${gp(totalProfit)}</td><td colspan="2"></td></tr>`;
     if (focused) {
@@ -111,7 +114,7 @@ export function createMethodCard(m) {
 
     el.querySelector('[data-f="kv"]').innerHTML = [
       ["Profit / hr", `<span class="num ${cls(c.profitHr)}">${gp(c.profitHr)}</span>`],
-      ["Supplies / hr", `<span class="num">${gp(c.cost * c.perHour)}</span>`],
+      [c.fees.length ? "Supplies + fees / hr" : "Supplies / hr", `<span class="num">${gp(c.cost * c.perHour)}</span>`],
       ["GE tax / hr", `<span class="num">${gp(c.taxEach * c.perHour)}</span>`],
       ...Object.entries(c.xpHr).map(([s, v]) => [`${s} XP / hr`, `<span class="num">${gp(v)}</span>`])
     ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
