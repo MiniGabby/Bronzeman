@@ -5,6 +5,7 @@ import * as unlocks from "../core/unlocks.js";
 import * as history from "../core/history.js";
 import { store } from "../core/store.js";
 import { esc, gp, short, signed, cls, nf, geTax } from "../core/format.js";
+import { detailHTML, bindCharts } from "../components/priceDetail.js";
 
 export const title = "Merching";
 
@@ -131,18 +132,46 @@ export function mount(root) {
       <div class="board"><table>
         <thead><tr><th>Item</th><th>Buy offer</th><th>Sell offer</th><th class="r">Profit / item</th><th class="r">Per buy limit</th><th class="r">Traded / hr</th></tr></thead>
         <tbody>${good.map(p => `<tr>
-          <td><a href="https://prices.runescape.wiki/osrs/item/${p.it.id}" target="_blank" rel="noopener">${esc(p.it.name)}</a></td>
+          <td><button type="button" class="itembtn" data-detail="${p.it.id}" aria-expanded="${open.has(p.it.id)}">${esc(p.it.name)} <span class="caret">${open.has(p.it.id) ? "▾" : "▸"}</span></button></td>
           <td class="timing wrapcell">${cell(p.t.buyHour, p.buy, p.t.low, "Below the day's average", p.t.buyHit, "buy offer price", "", p.t.buyHitDays, p.t.buyDays)}</td>
           <td class="timing wrapcell">${cell(p.t.sellHour, p.sell, p.t.high, "Above the day's average", p.t.sellHit, "sell offer price", p.nextDay ? ` <span class="sub2">+1 day</span>` : "", p.t.sellHitDays, p.t.sellDays)}</td>
           <td class="r num ${cls(p.each)}">${signed(p.each, gp)}<div class="sub2" title="Spread in the last hour, without waiting for a better time">now ${signed(p.nowMargin, gp)}</div></td>
           <td class="r num ${cls(p.total)}">${signed(p.total)}<div class="sub2">${nf.format(p.qty)} of ${nf.format(p.it.limit)}</div></td>
           <td class="r num">${gp(p.it.vol)}${p.qty > p.it.vol ? `<div><span class="pill warn" title="You'd buy more than trades in an hour">Slow</span></div>` : ""}</td>
-        </tr>`).join("")}</tbody>
+        </tr>${open.has(p.it.id) ? `<tr class="detailrow"><td colspan="6">${detail(p)}</td></tr>` : ""}`).join("")}</tbody>
       </table></div>
-      <p class="fine">Profit per item is after tax. "Now" under it is the spread in the last hour (sell-offer price minus tax minus buy-offer price), without waiting for a better hour. "Per buy limit" is the profit on the amount your cash and the buy limit allow per 4 hours (shown under it, out of the limit).</p>`;
+      <p class="fine">Profit per item is after tax. "Now" under it is the spread in the last hour (sell-offer price minus tax minus buy-offer price), without waiting for a better hour. "Per buy limit" is the profit on the amount your cash and the buy limit allow per 4 hours (shown under it, out of the limit). Click an item for its prices over the last weeks and through a typical day.</p>`;
+    bindCharts(root);
+    root.querySelectorAll("details[data-tbl]").forEach(d => {
+      if (tablesOpen.has(d.dataset.tbl)) d.open = true;
+      d.addEventListener("toggle", () => { d.open ? tablesOpen.add(d.dataset.tbl) : tablesOpen.delete(d.dataset.tbl); });
+    });
   }
 
-  const offs = [prices.onChange(render), unlocks.onChange(render), history.onChange(render)];
+  // Item details (click a name): open items, and their hourly rows once loaded.
+  const open = new Set(), tablesOpen = new Set();
+  function detail(p) {
+    const rows = history.seriesLoaded(p.it.id);
+    if (!rows) {
+      history.series(p.it.id).then(render, () => {});
+      return `<p class="muted">Loading price history…</p>`;
+    }
+    return rows.length ? detailHTML(p.it, p.t, p, rows) : `<p class="muted">No price history for this item.</p>`;
+  }
+  $('[data-f="list"]').addEventListener("click", e => {
+    const b = e.target.closest("[data-detail]");
+    if (!b) return;
+    const id = Number(b.dataset.detail);
+    open.has(id) ? open.delete(id) : open.add(id);
+    render();
+  });
+  // Keep the panels steady while the mouse is over a chart: skip background redraws then.
+  let hovering = false;
+  $('[data-f="list"]').addEventListener("pointerover", e => { hovering = !!e.target.closest(".pdetail"); });
+  $('[data-f="list"]').addEventListener("pointerleave", () => { hovering = false; });
+  const redraw = () => { if (!hovering) render(); };
+
+  const offs = [prices.onChange(redraw), unlocks.onChange(redraw), history.onChange(redraw)];
   render();
   return () => offs.forEach(off => off());
 }

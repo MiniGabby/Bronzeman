@@ -8,10 +8,11 @@ import { store } from "./store.js";
 const API = "https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=1h&id=";
 const TTL = 60 * 60_000;
 const CACHE_KEY = "ts";
-const VERSION = 2;   // bump to throw away cached analyses after changing analyse()
+const VERSION = 3;   // bump to throw away cached analyses after changing analyse()
 
 const cache = store.get(CACHE_KEY, {});
 const pending = new Map();
+const raw = new Map();      // id -> hourly rows (memory only; too big for localStorage)
 const queue = [];
 let running = 0;
 const listeners = new Set();
@@ -35,6 +36,17 @@ export function get(id) {
 
 export const loading = id => pending.has(id);
 
+/** The hourly rows behind an item's analysis (for charts). Fetches them if this page hasn't yet. */
+export async function series(id) {
+  if (raw.has(id)) return raw.get(id);
+  const r = await fetch(API + id, { cache: "no-store" });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const rows = (await r.json()).data || [];
+  raw.set(id, rows);
+  return rows;
+}
+export const seriesLoaded = id => raw.get(id) || null;
+
 /** Ask for the analysis of these items. Already-cached items are skipped. */
 export function want(ids) {
   for (const id of ids) {
@@ -51,7 +63,7 @@ function pump() {
     running++;
     fetch(API + id, { cache: "no-store" })
       .then(r => (r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status))))
-      .then(j => { cache[id] = { v: VERSION, at: Date.now(), r: analyse(j.data || []) }; save(); })
+      .then(j => { raw.set(id, j.data || []); cache[id] = { v: VERSION, at: Date.now(), r: analyse(j.data || []) }; save(); })
       .catch(() => { cache[id] = { v: VERSION, at: Date.now() - TTL + 5 * 60_000, r: null }; })   // retry in 5 min
       .finally(() => { pending.delete(id); running--; emit(); setTimeout(pump, 150); });
   }
@@ -97,6 +109,18 @@ function pattern(pts) {
   };
 }
 
+function hourVol(rows, h, key) {
+  const v = rows.filter(r => new Date(r.timestamp * 1000).getHours() === h).map(r => r[key] || 0);
+  return v.length ? median(v) : 0;
+}
+
+/** Hide trades that are far from the usual price (one-off dumps or overpays), for charts. */
+export function usualRange(rows, key) {
+  const v = rows.map(r => r[key]).filter(x => x > 0).sort((a, b) => a - b);
+  if (!v.length) return null;
+  return [v[Math.floor(v.length * 0.02)], v[Math.ceil(v.length * 0.98) - 1]];
+}
+
 function analyse(rows) {
   rows = rows.filter(r => r.timestamp);
   const L = sidePoints(rows, "avgLowPrice", "lowPriceVolume"), H = sidePoints(rows, "avgHighPrice", "highPriceVolume");
@@ -121,6 +145,12 @@ function analyse(rows) {
     lowAvg: recent(L.pts),                  // typical buy-offer price, last 24 hours
     highAvg: recent(H.pts),                 // typical sell-offer price, last 24 hours
     lowVol: L.vol, highVol: H.vol,          // usual trades per hour on each side
+    // Per hour of the day, for the detail view: days with enough trades, days below/above the average,
+    // and the usual trades per hour on each side.
+    hours: Array.from({ length: 24 }, (_, h) => ({
+      lowDays: lo.days[h], lowBelow: lo.below[h], highDays: hi.days[h], highAbove: hi.above[h],
+      lowVol: hourVol(rows, h, "lowPriceVolume"), highVol: hourVol(rows, h, "highPriceVolume")
+    })),
     spread: lowMed ? highMed / lowMed : null  // usual sell/buy price ratio over the whole period
   };
 }
