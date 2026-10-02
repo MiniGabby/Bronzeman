@@ -9,10 +9,11 @@ import * as requests from "./views/requests.js";
 import * as unlocked from "./views/unlocks.js";
 import * as alchemy from "./views/alchemy.js";
 import * as merch from "./views/merch.js";
+import * as updates from "./views/updates.js";
 
 // To add a page: create src/views/<name>.js exporting mount(root, params) and title,
 // add it here, and add a link with href="#/<name>" to the nav in index.html.
-const ROUTES = { money, training, alchemy, merch, group: groupView, unlocked, requests };
+const ROUTES = { money, training, alchemy, merch, group: groupView, unlocked, requests, updates };
 
 const view = document.getElementById("view");
 let cleanup = null;
