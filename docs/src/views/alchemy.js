@@ -5,6 +5,7 @@ import EASY from "../../data/alch-unlocks.js";
 import * as prices from "../core/prices.js";
 import * as unlocks from "../core/unlocks.js";
 import * as group from "../core/players.js";
+import * as history from "../core/history.js";
 import { store } from "../core/store.js";
 import { esc, gp, short, signed, cls, nf } from "../core/format.js";
 
@@ -47,6 +48,7 @@ export function mount(root) {
       <p class="fine">Items that aren't unlocked yet but only take one shop purchase. After that anyone in the group can buy them on the GE.</p>
       <div data-f="easy"></div>
     </section>
+    <p class="fine"><b>Best time to buy</b>: the hour of the day (your time) when buy offers are usually cheapest, from the last 3 weeks of hourly prices. The bars show each hour's price compared with that day's average; the highlighted bar is the cheapest hour. "Reliable" means that hour was below the day's average on at least 3 out of 4 days. Place a buy offer around that time at about the price shown. The percentage is how much cheaper that hour usually is than the day's average.</p>
     <p class="fine">Profit per cast = high alch value − GE buy price − nature rune. With a staff of fire the 5 fire runes are free. Buy limits are per account and reset 4 hours after your first purchase, so each group member can buy their own set.</p>`;
 
   const $ = s => root.querySelector(s);
@@ -96,7 +98,7 @@ export function mount(root) {
   function table(rows, withHow) {
     if (!rows.length) return `<p class="muted">${withHow ? "Nothing here right now." : "No unlocked item is profitable to alch right now."}</p>`;
     return `<div class="board"><table>
-      <thead><tr><th>Item</th>${withHow ? "<th>How to unlock</th>" : ""}<th class="r">GE price</th><th class="r">High alch</th><th class="r">Profit / cast</th><th class="r">Buy limit</th><th class="r">Profit per limit</th><th class="r">Traded / hr</th></tr></thead>
+      <thead><tr><th>Item</th>${withHow ? "<th>How to unlock</th>" : ""}<th class="r">GE price</th><th class="r">High alch</th><th class="r">Profit / cast</th><th class="r">Buy limit</th><th class="r">Per limit</th><th class="r">Traded / hr</th><th>Best time to buy</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
         <td><a href="https://prices.runescape.wiki/osrs/item/${r.id}" target="_blank" rel="noopener">${esc(r.it.name)}</a>${inPlan.has(r.id) ? ` <span class="pill good">In plan</span>` : ""}</td>
         ${withHow ? `<td class="how">${esc(r.how)}</td>` : ""}
@@ -106,8 +108,20 @@ export function mount(root) {
         <td class="r num">${r.limit ? gp(r.limit) : "–"}</td>
         <td class="r num ${cls(r.profit)}">${r.limit ? signed(r.limit * r.profit) : "–"}</td>
         <td class="r num">${r.it.vol ? gp(r.it.vol) : "–"}</td>
+        <td class="timing">${timingCell(r.id)}</td>
       </tr>`).join("")}</tbody>
     </table></div>`;
+  }
+
+  function timingCell(id) {
+    const t = history.get(id);
+    if (t === undefined) return `<span class="muted">${history.loading(id) ? "Loading…" : "–"}</span>`;
+    if (t === null) return `<span class="muted">Not enough trades</span>`;
+    const rel = history.reliability(t.buyHit);
+    const price = t.lowAvg ? t.lowAvg * t.low[t.buyHour] : null;
+    return `<div class="timingrow">${history.sparkline(t.low, t.buyHour, "buy offer price")}
+      <div><b class="num">${history.hourLabel(t.buyHour)}</b> <span class="num">${gp(price)}</span>
+      <div class="sub2"><span class="pill ${rel.pill}" title="Below the day's average on ${Math.round(t.buyHit * 100)}% of days">${rel.label}</span> <span class="num">${(t.buyDip * 100).toFixed(1)}%</span></div></div></div>`;
   }
 
   function planBox(label, p) {
@@ -156,11 +170,13 @@ export function mount(root) {
     </div>`;
 
     const shown = unlockedRows.filter(r => opts.showAll || r.profit > 0).sort((a, b) => b.profit - a.profit);
+    // Price history for what's on screen: profitable items first, at most 40 requests.
+    history.want([...now.picks, ...shown.slice(0, 30), ...easyRows].map(r => r.id).slice(0, 40));
     $('[data-f="unlocked"]').innerHTML = table(opts.showAll ? shown.slice(0, 200) : shown, false);
     $('[data-f="easy"]').innerHTML = table(easyRows, true);
   }
 
-  const offs = [prices.onChange(render), unlocks.onChange(render), group.onChange(render)];
+  const offs = [prices.onChange(render), unlocks.onChange(render), group.onChange(render), history.onChange(render)];
   render();
   return () => offs.forEach(off => off());
 }
