@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-02", title: "46 new unlocks (606 in total)", link: "#/unlocked",
+    items: [
+      "Unlocked since 30 Sep include crushed nest (for Herblore), molten glass, dragonstone, diamond jewellery, and sapphire, emerald and ruby bracelets and amulets.",
+      "Also new: iron and bronze dart tips, ring of wealth, necklace of passage, Ham clothing and a few tree seeds. Most unlocks this time by Lil Fool (18) and Mini Gabby (10)."
+    ]
+  },
+  {
     date: "2026-10-02", title: "Merching: buy now, item details and safer suggestions", link: "#/merch",
     items: [
       "New When filter: \"Cheap to buy right now\" shows only items that are in the cheapest part of their day. Those rows also get a \"Buy now until …\" label.",
