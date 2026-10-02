@@ -8,7 +8,7 @@ import { store } from "./store.js";
 const API = "https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=1h&id=";
 const TTL = 60 * 60_000;
 const CACHE_KEY = "ts";
-const VERSION = 1;
+const VERSION = 2;   // bump to throw away cached analyses after changing analyse()
 
 const cache = store.get(CACHE_KEY, {});
 const pending = new Map();
@@ -65,8 +65,22 @@ const median = a => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1;
  * offers fill at): per hour of the day in the viewer's time zone, the typical price relative to that
  * day's average (1.02 = 2% above), and how often that hour was below / above the day's average.
  */
-function pattern(rows, key) {
-  const pts = rows.map(r => ({ t: r.timestamp * 1000, p: r[key] })).filter(x => x.p > 0);
+// Hours with only a handful of trades (someone dumping 1 item for 1 gp) say nothing about the market,
+// so a price only counts when that hour traded at least a quarter of the item's usual hourly volume.
+function sidePoints(rows, key, volKey) {
+  const all = rows.filter(r => r[key] > 0 && r[volKey] > 0);
+  if (!all.length) return { pts: [], vol: 0 };
+  const vol = median(all.map(r => r[volKey]));
+  const pts = all.filter(r => r[volKey] >= Math.max(5, vol * 0.25)).map(r => ({ t: r.timestamp * 1000, p: r[key] }));
+  return { pts, vol };
+}
+
+/**
+ * For one side (low = instant-sell price, which buy offers fill at; high = instant-buy price, which sell
+ * offers fill at): per hour of the day in the viewer's time zone, the typical price relative to that
+ * day's average (1.02 = 2% above), and on how many days that hour was below / above the day's average.
+ */
+function pattern(pts) {
   if (pts.length < 24 * 5) return null;
   const byHour = Array.from({ length: 24 }, () => []);
   for (let i = 0; i < pts.length; i++) {
@@ -77,32 +91,37 @@ function pattern(rows, key) {
   if (byHour.some(h => h.length < 4)) return null;
   return {
     ratio: byHour.map(median),
-    below: byHour.map(h => h.filter(x => x < 1).length / h.length),
-    above: byHour.map(h => h.filter(x => x > 1).length / h.length)
+    days: byHour.map(h => h.length),
+    below: byHour.map(h => h.filter(x => x < 1).length),
+    above: byHour.map(h => h.filter(x => x > 1).length)
   };
 }
 
 function analyse(rows) {
   rows = rows.filter(r => r.timestamp);
-  const lo = pattern(rows, "avgLowPrice"), hi = pattern(rows, "avgHighPrice");
+  const L = sidePoints(rows, "avgLowPrice", "lowPriceVolume"), H = sidePoints(rows, "avgHighPrice", "highPriceVolume");
+  const lo = pattern(L.pts), hi = pattern(H.pts);
   if (!lo || !hi) return null;
-  const last = rows.slice(-24);
-  const avg = k => { const v = last.map(r => r[k]).filter(x => x > 0); return v.length ? mean(v) : null; };
+  // Current level: median of the last 24 hours (robust against a single odd trade).
+  const since = (rows.at(-1).timestamp - 24 * 3600) * 1000;
+  const recent = pts => { const v = pts.filter(x => x.t > since).map(x => x.p); return v.length >= 6 ? median(v) : null; };
   const buyHour = lo.ratio.indexOf(Math.min(...lo.ratio));
   const sellHour = hi.ratio.indexOf(Math.max(...hi.ratio));
-  const volByHour = Array.from({ length: 24 }, () => []);
-  for (const r of rows) volByHour[new Date(r.timestamp * 1000).getHours()].push((r.highPriceVolume || 0) + (r.lowPriceVolume || 0));
+  const lowMed = median(L.pts.map(x => x.p)), highMed = median(H.pts.map(x => x.p));
   return {
     days: Math.round(rows.length / 24),
     low: lo.ratio, high: hi.ratio,
     buyHour, sellHour,
     buyDip: lo.ratio[buyHour] - 1,          // e.g. -0.03 = 3% below the day's average
     sellPeak: hi.ratio[sellHour] - 1,
-    buyHit: lo.below[buyHour],              // share of days that hour was below average
-    sellHit: hi.above[sellHour],
-    lowAvg: avg("avgLowPrice"),             // average of the last 24 hours
-    highAvg: avg("avgHighPrice"),
-    vol: volByHour.map(v => (v.length ? median(v) : 0))
+    buyDays: lo.days[buyHour], sellDays: hi.days[sellHour],              // days with enough trades at that hour
+    buyHitDays: lo.below[buyHour], sellHitDays: hi.above[sellHour],     // days the pattern held
+    buyHit: lo.below[buyHour] / lo.days[buyHour],                        // share of those days
+    sellHit: hi.above[sellHour] / hi.days[sellHour],
+    lowAvg: recent(L.pts),                  // typical buy-offer price, last 24 hours
+    highAvg: recent(H.pts),                 // typical sell-offer price, last 24 hours
+    lowVol: L.vol, highVol: H.vol,          // usual trades per hour on each side
+    spread: lowMed ? highMed / lowMed : null  // usual sell/buy price ratio over the whole period
   };
 }
 

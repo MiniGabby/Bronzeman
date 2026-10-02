@@ -47,10 +47,10 @@ export function mount(root) {
         <li><b>Sell around the "Sell" time</b> with a sell offer at the "Sell at" price. "+1 day" means the sell time comes after the next midnight.</li>
         <li><b>Mind the buy limit.</b> It counts per account and resets 4 hours after your first purchase. Every group member has their own limit, so the same item can be flipped on each account.</li>
         <li><b>Tax is already counted:</b> 2% of the sell price for items of 50 gp and up, at most 5M per item.</li>
-        <li><b>Spread your cash</b> over a few items instead of one. The patterns are averages: a game update (usually on Wednesdays), news or a big player can break them. "Reliable" means the pattern held on at least 3 out of 4 days, "Usually" on at least 6 out of 10; anything less is "Weak". A flip counts as only as reliable as its weaker side (buy or sell), and the Pattern filter uses that.</li>
+        <li><b>Spread your cash</b> over a few items instead of one. The patterns are averages: a game update (usually on Wednesdays), news or a big player can break them. "Reliable" means the pattern held on at least 3 out of 4 days, "Usually" on at least 6 out of 10; anything less is "Weak". "17/21 days" means it held on 17 of the 21 days that had enough trades at that hour. A flip counts as only as reliable as its weaker side (buy or sell), and the Pattern filter uses that.</li>
         <li><b>Watch "Traded / hr".</b> If you want to buy more than trades in an hour, expect slow fills or a moving price.</li>
       </ol>
-      <p class="fine">How the numbers work: for each item, every hourly price is compared with that day's average, and the typical value per hour of the day gives the pattern. "Buy at" is the last 24 hours' average buy-offer price times the cheapest hour's factor; "Sell at" is the average sell-offer price times the most expensive hour's factor. Candidates are the unlocked items with the best current spread for your cash; only the ${CANDIDATES} best are checked against their history.</p>
+      <p class="fine">How the numbers work: for each item, every hourly price is compared with that day's average, and the typical value per hour of the day gives the pattern. "Buy at" is the last 24 hours' average buy-offer price times the cheapest hour's factor; "Sell at" is the average sell-offer price times the most expensive hour's factor. Candidates are the unlocked items with the best current spread for your cash; only the ${CANDIDATES} best are checked against their history. Hours with very few trades are ignored, and items whose buy and sell prices are usually more than 30% apart are skipped: that gap comes from a handful of odd trades, not a market you can flip in bulk.</p>
     </section>`;
 
   const $ = s => root.querySelector(s);
@@ -67,7 +67,7 @@ export function mount(root) {
   // Unlocked items with a usable spread right now, best first.
   function candidates() {
     return (unlocks.data().items || []).map(u => prices.item(u.id))
-      .filter(it => it.limit && it.high > 0 && it.low > 0 && it.vol >= opts.minVol && it.low <= opts.cash)
+      .filter(it => it.limit && it.high > 0 && it.low > 0 && it.vol >= opts.minVol && it.low <= opts.cash && it.high <= it.low * 1.3)
       .map(it => {
         const qty = Math.min(it.limit, Math.floor(opts.cash / it.low));
         const margin = it.high - geTax(it.high) - it.low;
@@ -81,6 +81,9 @@ export function mount(root) {
   function plan(it) {
     const t = history.get(it.id);
     if (!t || !t.lowAvg || !t.highAvg) return { it, t };
+    // Not a real market: hardly any trades on one side, or buy and sell prices usually far apart
+    // (a few people dumping for 1 gp and a few paying 200 doesn't mean you can do the same in bulk).
+    if (t.lowVol < 10 || t.highVol < 10 || !t.spread || t.spread > 1.3) return { it, t, thin: true };
     const buy = Math.floor(t.lowAvg * t.low[t.buyHour]);
     const sell = Math.ceil(t.highAvg * t.high[t.sellHour]);
     const each = sell - geTax(sell) - buy;
@@ -89,11 +92,11 @@ export function mount(root) {
   }
 
   // Price on top (what to type in the GE), time and reliability underneath.
-  function cell(hour, price, ratios, rel, hit, what, extra = "") {
+  function cell(hour, price, ratios, rel, hit, what, extra = "", hitDays, days) {
     const r = history.reliability(hit);
     return `<div class="timingrow">${history.sparkline(ratios, hour, what)}
       <div><span class="tprice num">${gp(price)} <small>gp</small></span>
-      <div class="sub2">around <b class="num">${history.hourLabel(hour)}</b>${extra}<br><span class="pill ${r.pill}" title="${rel} on ${Math.round(hit * 100)}% of days">${r.label}</span></div></div></div>`;
+      <div class="sub2">around <b class="num">${history.hourLabel(hour)}</b>${extra}<br><span class="pill ${r.pill}" title="${rel} on ${hitDays} of ${days} days">${r.label}</span> <span class="num">${hitDays}/${days} days</span></div></div></div>`;
   }
 
   function render() {
@@ -106,13 +109,14 @@ export function mount(root) {
     const plans = cands.map(plan);
     const done = plans.filter(p => p.t !== undefined).length;
     const minHit = REL_MIN[opts.minRel] ?? 0;
-    const profitable = plans.filter(p => p.each > 0);
+    const profitable = plans.filter(p => !p.thin && p.each > 0);
+    const thin = plans.filter(p => p.thin).length;
     const good = profitable.filter(p => Math.min(p.t.buyHit, p.t.sellHit) >= minHit)
       .sort((a, b) => b.total - a.total).slice(0, SHOWN);
     const weakHidden = profitable.length - profitable.filter(p => Math.min(p.t.buyHit, p.t.sellHit) >= minHit).length;
     $('[data-f="status"]').innerHTML = done < plans.length
       ? `Checking price history: ${done} of ${plans.length} items…`
-      : `${good.length} profitable flips out of ${plans.length} items checked${weakHidden ? ` · ${weakHidden} hidden by the pattern filter` : ""}`;
+      : `${good.length} profitable flips out of ${plans.length} items checked${weakHidden ? ` · ${weakHidden} hidden by the pattern filter` : ""}${thin ? ` · ${thin} skipped: too few trades` : ""}`;
 
     if (!good.length) {
       $('[data-f="list"]').innerHTML = `<p class="muted">${done < plans.length ? "Loading…" : "No profitable flips with these settings. Try more cash, a lower minimum volume or a looser pattern filter."}</p>`;
@@ -128,8 +132,8 @@ export function mount(root) {
         <thead><tr><th>Item</th><th>Buy offer</th><th>Sell offer</th><th class="r">Profit / item</th><th class="r">Per buy limit</th><th class="r">Traded / hr</th></tr></thead>
         <tbody>${good.map(p => `<tr>
           <td><a href="https://prices.runescape.wiki/osrs/item/${p.it.id}" target="_blank" rel="noopener">${esc(p.it.name)}</a></td>
-          <td class="timing wrapcell">${cell(p.t.buyHour, p.buy, p.t.low, "Below the day's average", p.t.buyHit, "buy offer price")}</td>
-          <td class="timing wrapcell">${cell(p.t.sellHour, p.sell, p.t.high, "Above the day's average", p.t.sellHit, "sell offer price", p.nextDay ? ` <span class="sub2">+1 day</span>` : "")}</td>
+          <td class="timing wrapcell">${cell(p.t.buyHour, p.buy, p.t.low, "Below the day's average", p.t.buyHit, "buy offer price", "", p.t.buyHitDays, p.t.buyDays)}</td>
+          <td class="timing wrapcell">${cell(p.t.sellHour, p.sell, p.t.high, "Above the day's average", p.t.sellHit, "sell offer price", p.nextDay ? ` <span class="sub2">+1 day</span>` : "", p.t.sellHitDays, p.t.sellDays)}</td>
           <td class="r num ${cls(p.each)}">${signed(p.each, gp)}<div class="sub2" title="Spread in the last hour, without waiting for a better time">now ${signed(p.nowMargin, gp)}</div></td>
           <td class="r num ${cls(p.total)}">${signed(p.total)}<div class="sub2">${nf.format(p.qty)} of ${nf.format(p.it.limit)}</div></td>
           <td class="r num">${gp(p.it.vol)}${p.qty > p.it.vol ? `<div><span class="pill warn" title="You'd buy more than trades in an hour">Slow</span></div>` : ""}</td>

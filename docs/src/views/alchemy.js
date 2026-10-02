@@ -121,7 +121,7 @@ export function mount(root) {
     const price = t.lowAvg ? t.lowAvg * t.low[t.buyHour] : null;
     return `<div class="timingrow">${history.sparkline(t.low, t.buyHour, "buy offer price")}
       <div><span class="tprice num">${gp(price)} <small>gp</small></span>
-      <div class="sub2">around <b class="num">${history.hourLabel(t.buyHour)}</b> · <span class="num">${(t.buyDip * 100).toFixed(1)}%</span><br><span class="pill ${rel.pill}" title="Below the day's average on ${Math.round(t.buyHit * 100)}% of days">${rel.label}</span></div></div></div>`;
+      <div class="sub2">around <b class="num">${history.hourLabel(t.buyHour)}</b> · <span class="num">${(t.buyDip * 100).toFixed(1)}%</span><br><span class="pill ${rel.pill}" title="Below the day's average on ${t.buyHitDays} of ${t.buyDays} days">${rel.label}</span> <span class="num">${t.buyHitDays}/${t.buyDays} days</span></div></div></div>`;
   }
 
   function planBox(label, p) {
