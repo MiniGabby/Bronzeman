@@ -13,7 +13,7 @@ const CANDIDATES = 40;   // items whose price history we fetch
 const SHOWN = 25;
 
 export function mount(root) {
-  const opts = Object.assign({ cash: 1_000_000, minVol: 100, minRel: "all" }, store.get("merch", {}));
+  const opts = Object.assign({ cash: 1_000_000, minVol: 100, minRel: "all", when: "any" }, store.get("merch", {}));
   // Minimum share of days a pattern held: Reliable ≥ 75%, Usually ≥ 60% (see history.reliability).
   const REL_MIN = { all: 0, usually: 0.6, reliable: 0.75 };
   const save = () => store.set("merch", opts);
@@ -25,6 +25,11 @@ export function mount(root) {
         <input id="m-cash" type="number" min="10000" step="100000" inputmode="numeric"></div>
       <div class="field"><label for="m-vol">Min. traded per hour</label>
         <input id="m-vol" type="number" min="0" step="50" inputmode="numeric"></div>
+      <div class="field"><label for="m-when">When</label>
+        <select id="m-when">
+          <option value="any">Any time</option>
+          <option value="now">Cheap to buy right now</option>
+        </select></div>
       <div class="field"><label for="m-rel">Pattern</label>
         <select id="m-rel">
           <option value="all">All (incl. weak)</option>
@@ -44,6 +49,7 @@ export function mount(root) {
       <h2 class="pagetitle small">How to merch with this list</h2>
       <ol>
         <li><b>Check the margin first.</b> Buy 1 of the item at a high price (it buys instantly) and sell it at a low price (it sells instantly). What you actually paid and got is the real margin right now. If it's much smaller than the list says, skip the item.</li>
+        <li><b>"Buy now"</b> means the item is in the cheapest part of its day right now (the cheapest quarter of its daily price range); set <i>When</i> to "Cheap to buy right now" to see only those.</li>
         <li><b>Buy around the "Buy" time</b> with a buy offer at the "Buy at" price. Offers at a low price only fill when someone sells into them, so give it up to an hour or two. Don't raise the price to chase it.</li>
         <li><b>Sell around the "Sell" time</b> with a sell offer at the "Sell at" price. "+1 day" means the sell time comes after the next midnight.</li>
         <li><b>Mind the buy limit.</b> It counts per account and resets 4 hours after your first purchase. Every group member has their own limit, so the same item can be flipped on each account.</li>
@@ -59,6 +65,13 @@ export function mount(root) {
   const relSel = $("#m-rel");
   cashIn.value = opts.cash; volIn.value = opts.minVol; relSel.value = opts.minRel in REL_MIN ? opts.minRel : "all";
   relSel.addEventListener("change", () => { opts.minRel = relSel.value; save(); render(); });
+  const whenSel = $("#m-when");
+  whenSel.value = opts.when === "now" ? "now" : "any";
+  whenSel.addEventListener("change", () => { opts.when = whenSel.value; save(); render(); });
+  // The cheap window moves with the clock: redraw at the start of every hour.
+  let hourTimer = null;
+  const scheduleHour = () => { const n = new Date(); hourTimer = setTimeout(() => { render(); scheduleHour(); }, (60 - n.getMinutes()) * 60_000 - n.getSeconds() * 1000 + 1000); };
+  scheduleHour();
   cashIn.addEventListener("input", () => { opts.cash = Math.max(0, Number(cashIn.value) || 0); save(); render(); });
   volIn.addEventListener("input", () => { opts.minVol = Math.max(0, Number(volIn.value) || 0); save(); render(); });
   root.querySelectorAll("[data-cash]").forEach(b => b.addEventListener("click", () => {
@@ -112,15 +125,19 @@ export function mount(root) {
     const minHit = REL_MIN[opts.minRel] ?? 0;
     const profitable = plans.filter(p => !p.thin && p.each > 0);
     const thin = plans.filter(p => p.thin).length;
-    const good = profitable.filter(p => Math.min(p.t.buyHit, p.t.sellHit) >= minHit)
+    const now = new Date();
+    for (const p of profitable) p.until = history.cheapNow(p.t, now);   // hour the cheap window ends, or null
+    const reliableEnough = profitable.filter(p => Math.min(p.t.buyHit, p.t.sellHit) >= minHit);
+    const good = reliableEnough.filter(p => opts.when !== "now" || p.until != null)
       .sort((a, b) => b.total - a.total).slice(0, SHOWN);
-    const weakHidden = profitable.length - profitable.filter(p => Math.min(p.t.buyHit, p.t.sellHit) >= minHit).length;
+    const weakHidden = profitable.length - reliableEnough.length;
+    const notNow = opts.when === "now" ? reliableEnough.length - reliableEnough.filter(p => p.until != null).length : 0;
     $('[data-f="status"]').innerHTML = done < plans.length
       ? `Checking price history: ${done} of ${plans.length} items…`
-      : `${good.length} profitable flips out of ${plans.length} items checked${weakHidden ? ` · ${weakHidden} hidden by the pattern filter` : ""}${thin ? ` · ${thin} skipped: too few trades` : ""}`;
+      : `${good.length} profitable flips out of ${plans.length} items checked${weakHidden ? ` · ${weakHidden} hidden by the pattern filter` : ""}${notNow ? ` · ${notNow} not cheap right now (${history.hourLabel(now.getHours())})` : ""}${thin ? ` · ${thin} skipped: too few trades` : ""}`;
 
     if (!good.length) {
-      $('[data-f="list"]').innerHTML = `<p class="muted">${done < plans.length ? "Loading…" : "No profitable flips with these settings. Try more cash, a lower minimum volume or a looser pattern filter."}</p>`;
+      $('[data-f="list"]').innerHTML = `<p class="muted">${done < plans.length ? "Loading…" : opts.when === "now" ? `No item is in its cheap part of the day right now (${history.hourLabel(new Date().getHours())}). Try again later, or set When to "Any time".` : "No profitable flips with these settings. Try more cash, a lower minimum volume or a looser pattern filter."}</p>`;
       return;
     }
     const totalTop = good.slice(0, 4).reduce((a, p) => a + p.total, 0);
@@ -133,7 +150,7 @@ export function mount(root) {
         <thead><tr><th>Item</th><th>Buy offer</th><th>Sell offer</th><th class="r">Profit / item</th><th class="r">Per buy limit</th><th class="r">Traded / hr</th></tr></thead>
         <tbody>${good.map(p => `<tr>
           <td><button type="button" class="itembtn" data-detail="${p.it.id}" aria-expanded="${open.has(p.it.id)}">${esc(p.it.name)} <span class="caret">${open.has(p.it.id) ? "▾" : "▸"}</span></button></td>
-          <td class="timing wrapcell">${cell(p.t.buyHour, p.buy, p.t.low, "Below the day's average", p.t.buyHit, "buy offer price", "", p.t.buyHitDays, p.t.buyDays)}</td>
+          <td class="timing wrapcell">${cell(p.t.buyHour, p.buy, p.t.low, "Below the day's average", p.t.buyHit, "buy offer price", "", p.t.buyHitDays, p.t.buyDays)}${p.until != null ? `<div class="sub2"><span class="pill good" title="The usual buy-offer price is in the cheapest quarter of the day right now">Buy now</span> until ${history.hourLabel(p.until)}</div>` : ""}</td>
           <td class="timing wrapcell">${cell(p.t.sellHour, p.sell, p.t.high, "Above the day's average", p.t.sellHit, "sell offer price", p.nextDay ? ` <span class="sub2">+1 day</span>` : "", p.t.sellHitDays, p.t.sellDays)}</td>
           <td class="r num ${cls(p.each)}">${signed(p.each, gp)}<div class="sub2" title="Spread in the last hour, without waiting for a better time">now ${signed(p.nowMargin, gp)}</div></td>
           <td class="r num ${cls(p.total)}">${signed(p.total)}<div class="sub2">${nf.format(p.qty)} of ${nf.format(p.it.limit)}</div></td>
@@ -173,5 +190,5 @@ export function mount(root) {
 
   const offs = [prices.onChange(redraw), unlocks.onChange(redraw), history.onChange(redraw)];
   render();
-  return () => offs.forEach(off => off());
+  return () => { offs.forEach(off => off()); clearTimeout(hourTimer); };
 }

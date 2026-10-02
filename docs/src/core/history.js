@@ -158,6 +158,24 @@ function analyse(rows) {
 /** "04:00" for an hour of the day. */
 export const hourLabel = h => String(h).padStart(2, "0") + ":00";
 
+/**
+ * The cheap part of the day for buying: hours whose typical buy-offer price is in the lowest quarter
+ * of the day's range (always includes the cheapest hour). Returns a Set of hours 0–23.
+ */
+export function buyWindow(t) {
+  const min = Math.min(...t.low), max = Math.max(...t.low), cut = min + (max - min) * 0.25;
+  return new Set(t.low.map((r, h) => (r <= cut ? h : -1)).filter(h => h >= 0));
+}
+
+/** If `date` falls in the item's cheap window: the hour the window ends (e.g. 18 = "until 18:00"), else null. */
+export function cheapNow(t, date = new Date()) {
+  const win = buyWindow(t);
+  let h = date.getHours();
+  if (!win.has(h)) return null;
+  for (let i = 0; i < 24 && win.has(h); i++) h = (h + 1) % 24;
+  return h;
+}
+
 /** How reliable a pattern is, from the share of days it held. */
 export function reliability(hit) {
   if (hit >= 0.75) return { label: "Reliable", pill: "good" };
