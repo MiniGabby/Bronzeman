@@ -108,7 +108,7 @@ export function mount(root) {
         <td class="r num">${r.limit ? gp(r.limit) : "–"}</td>
         <td class="r num ${cls(r.profit)}">${r.limit ? signed(r.limit * r.profit) : "–"}</td>
         <td class="r num">${r.it.vol ? gp(r.it.vol) : "–"}</td>
-        <td class="timing">${timingCell(r.id)}</td>
+        <td class="timing wrapcell">${timingCell(r.id)}</td>
       </tr>`).join("")}</tbody>
     </table></div>`;
   }
@@ -120,8 +120,8 @@ export function mount(root) {
     const rel = history.reliability(t.buyHit);
     const price = t.lowAvg ? t.lowAvg * t.low[t.buyHour] : null;
     return `<div class="timingrow">${history.sparkline(t.low, t.buyHour, "buy offer price")}
-      <div><b class="num">${history.hourLabel(t.buyHour)}</b> <span class="num">${gp(price)}</span>
-      <div class="sub2"><span class="pill ${rel.pill}" title="Below the day's average on ${Math.round(t.buyHit * 100)}% of days">${rel.label}</span> <span class="num">${(t.buyDip * 100).toFixed(1)}%</span></div></div></div>`;
+      <div><span class="tprice num">${gp(price)} <small>gp</small></span>
+      <div class="sub2">around <b class="num">${history.hourLabel(t.buyHour)}</b> · <span class="num">${(t.buyDip * 100).toFixed(1)}%</span><br><span class="pill ${rel.pill}" title="Below the day's average on ${Math.round(t.buyHit * 100)}% of days">${rel.label}</span></div></div></div>`;
   }
 
   function planBox(label, p) {

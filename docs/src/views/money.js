@@ -5,13 +5,29 @@ import * as calc from "../core/calc.js";
 import * as group from "../core/players.js";
 import * as unlocks from "../core/unlocks.js";
 import { esc, gp, short, cls } from "../core/format.js";
+import { store } from "../core/store.js";
 import { createMethodCard } from "../components/methodCard.js";
 
 export const title = "Money makers";
 
 export function mount(root) {
   const methods = METHODS.filter(m => (m.tags || ["money"]).includes("money"));
+  const filter = Object.assign({ player: "", within: 5 }, store.get("moneyFilter", {}));
+  const save = () => store.set("moneyFilter", filter);
   root.innerHTML = `
+    <form class="toolbar" data-f="filter">
+      <div class="field"><label for="f-player">Show methods for</label>
+        <select id="f-player"><option value="">Anyone in the group</option></select></div>
+      <div class="field"><label for="f-within">Skill levels</label>
+        <select id="f-within">
+          <option value="0">Can do it now</option>
+          <option value="3">Within 3 levels</option>
+          <option value="5">Within 5 levels</option>
+          <option value="10">Within 10 levels</option>
+          <option value="99">Show everything</option>
+        </select></div>
+      <div class="goal" data-f="hidden"></div>
+    </form>
     <section class="board" aria-label="Methods ranked by profit per hour">
       <table>
         <thead><tr>
@@ -26,6 +42,15 @@ export function mount(root) {
   const host = root.querySelector('[data-f="cards"]');
   const cards = new Map();
 
+  const filterNear = m => (group.loaded() ? closest(m) : null);
+  // "3 levels to go" for the chosen player or the closest group member, when they can't do it yet.
+  function nearNote(m, near) {
+    if (!near || near.gap === 0) return "";
+    const need = Object.entries(m.reqs?.skills || {}).filter(([s, lvl]) => group.level(near.p, s) < lvl)
+      .map(([s, lvl]) => `${s} ${group.level(near.p, s)}/${lvl}`).join(", ");
+    return `<div class="sub2">${filter.player ? "" : esc(near.p.name) + ": "}${near.gap} level${near.gap > 1 ? "s" : ""} to go (${esc(need)})</div>`;
+  }
+
   // Bronzeman: inputs you have to buy must be unlocked by someone in the group first.
   function unlockCell(m, c) {
     if (!(m.inputs || []).length) return `<span class="muted">No inputs</span>`;
@@ -36,10 +61,47 @@ export function mount(root) {
     return `<span class="pill bad" title="Not unlocked: ${esc(names.join(", "))}">Missing ${esc(names.join(", "))}</span>`;
   }
 
+  const playerSel = root.querySelector("#f-player"), withinSel = root.querySelector("#f-within");
+  withinSel.value = String(filter.within);
+  playerSel.addEventListener("change", () => { filter.player = playerSel.value; save(); render(); });
+  withinSel.addEventListener("change", () => { filter.within = Number(withinSel.value); save(); render(); });
+  root.querySelector('[data-f="filter"]').addEventListener("submit", e => e.preventDefault());
+  root.querySelector('[data-f="hidden"]').addEventListener("click", e => {
+    if (!e.target.closest("[data-showall]")) return;
+    filter.within = 99; withinSel.value = "99"; save(); render();
+  });
+
+  // How many levels a player still needs for a method: the biggest gap over its skill requirements.
+  const gapFor = (p, m) => p.skills
+    ? Math.max(0, ...Object.entries(m.reqs?.skills || {}).map(([s, lvl]) => lvl - group.level(p, s)))
+    : null;
+
+  // Who to check: the chosen player, or everyone with stats. Returns the closest one and their gap.
+  function closest(m) {
+    const ps = group.all().filter(p => p.skills && (!filter.player || p.name === filter.player));
+    let best = null;
+    for (const p of ps) { const g = gapFor(p, m); if (best == null || g < best.gap) best = { p, gap: g }; }
+    return best;
+  }
+
+  function fillPlayers() {
+    const names = group.all().filter(p => p.skills).map(p => p.name);
+    playerSel.innerHTML = `<option value="">Anyone in the group</option>${names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join("")}`;
+    playerSel.value = names.includes(filter.player) ? filter.player : "";
+  }
+
   function render() {
+    if (group.loaded()) fillPlayers();
     if (!prices.ready()) return;
-    const rows = methods.map(m => ({ m, c: calc.compute(m) }))
+    const filtering = group.loaded() && filter.within < 99;
+    const all = methods.map(m => ({ m, c: calc.compute(m), near: group.loaded() ? closest(m) : null }));
+    const rows = all.filter(r => !filtering || (r.near && r.near.gap <= filter.within))
       .sort((a, b) => (b.c.profitHr ?? -Infinity) - (a.c.profitHr ?? -Infinity));
+    const hidden = all.length - rows.length;
+    const who = filter.player || "anyone in the group";
+    root.querySelector('[data-f="hidden"]').innerHTML = hidden
+      ? `${hidden} method${hidden > 1 ? "s" : ""} hidden: ${filter.within ? `more than ${filter.within} levels away for ${esc(who)}` : `${esc(who)} can't do ${hidden > 1 ? "them" : "it"} yet`}. <button type="button" class="linkbtn" data-showall>Show all</button>`
+      : "";
 
     board.innerHTML = rows.map(({ m, c }, i) => {
       const pace = calc.limitPace(c);
@@ -52,9 +114,13 @@ export function mount(root) {
         <td class="r num">${gp(c.perHour)}</td>
         <td class="wrapcell"><span class="pill ${pace.pill}">${pace.text}</span></td>
         <td class="wrapcell">${unlockCell(m, c)}</td>
-        <td class="wrapcell">${able == null ? "…" : able.length ? esc(able.map(p => p.name).join(", ")) : `<span class="muted">Nobody yet</span>`}</td>
+        <td class="wrapcell">${able == null ? "…" : able.length ? esc(able.map(p => p.name).join(", ")) : `<span class="muted">Nobody yet</span>`}${nearNote(m, filterNear(m))}</td>
       </tr>`;
-    }).join("");
+    }).join("") || `<tr><td colspan="8" class="muted">No methods within ${filter.within} levels for ${esc(who)}. Pick a bigger range above.</td></tr>`;
+
+    // Cards follow the same filter: remove cards of hidden methods.
+    const shownIds = new Set(rows.map(r => r.m.id));
+    for (const [id, card] of cards) if (!shownIds.has(id)) card.el.remove();
 
     for (const { m, c } of rows) {
       if (!cards.has(m.id)) cards.set(m.id, createMethodCard(m));

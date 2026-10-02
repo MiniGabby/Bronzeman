@@ -210,6 +210,10 @@ tr.total td{font-weight:600}
 .spark rect{fill:var(--ink-3);opacity:.35}
 .spark rect.on{fill:var(--gold);opacity:1}
 .guide ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:80ch}
-.timingrow{display:flex;gap:10px;align-items:center;white-space:nowrap}
-td.timing{min-width:170px}
+.timingrow{display:flex;gap:10px;align-items:center}
+.timingrow .sub2{line-height:1.7}
+td.timing{min-width:180px}
 .timingrow{gap:8px}
+.linkbtn{font:inherit;color:var(--gold);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
+.tprice{font-size:15px;font-weight:600}
+.tprice small{font:500 12px var(--sans);color:var(--ink-3)}
