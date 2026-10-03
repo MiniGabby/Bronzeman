@@ -20,9 +20,11 @@ export function groupChips(m) {
   return group.all().map(p => {
     const miss = group.missing(p, m);
     if (miss == null) return `<span class="chip" title="${esc(p.error || "No stats")}">${esc(p.name)} ?</span>`;
-    return miss.length
-      ? `<span class="chip no" title="Needs ${esc(miss.join(", "))}">${esc(p.name)}</span>`
-      : `<span class="chip yes" title="Meets the skill requirements">${esc(p.name)}</span>`;
+    if (miss.length) return `<span class="chip no" title="Needs ${esc(miss.join(", "))}">${esc(p.name)}</span>`;
+    const unk = group.unknownQuests(p, m);
+    return unk.length
+      ? `<span class="chip maybe" title="Levels OK. Not known yet if ${esc(p.name)} has done ${esc(unk.join(", "))} (see Quests on the Group page)">${esc(p.name)} ?</span>`
+      : `<span class="chip yes" title="Meets the requirements">${esc(p.name)}</span>`;
   }).join("");
 }
 

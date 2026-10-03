@@ -62,5 +62,21 @@ export default {
         ]
       }
     ]
+  },
+  crafting: {
+    intro: "A jewellery route: make jewellery from gold bars and cut gems at a furnace (Edgeville has a furnace next to a bank), so it often pays for itself or earns a bit. Below level 7, make gold rings (level 5). The fastest Crafting XP comes from glassblowing, battlestaves and dragonhide, which aren't on the site yet. Check \"Traded / hr\" on each method before you make hundreds: some pieces sell slowly.",
+    route: [
+      { from: 7, to: 23, method: "craft-gold-bracelets" },
+      { from: 23, to: 31, method: "craft-sapphire-bracelets", note: "Emerald bracelets (30) are an option for the last level." },
+      { from: 31, to: 42, method: "craft-emerald-amulets" },
+      { from: 42, to: 50, method: "craft-ruby-bracelets" },
+      { from: 50, to: 56, method: "craft-ruby-amulets" },
+      { from: 56, to: 58, method: "craft-diamond-necklaces" },
+      { from: 58, to: 70, method: "craft-diamond-bracelets" },
+      { from: 70, to: 72, method: "craft-diamond-amulets" },
+      { from: 72, to: 74, method: "craft-dragon-necklaces" },
+      { from: 74, to: 80, method: "craft-dragonstone-bracelets" },
+      { from: 80, to: 99, method: "craft-dragonstone-amulets", note: "150 XP each: by far the best jewellery XP." }
+    ]
   }
 };

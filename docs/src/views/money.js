@@ -114,7 +114,7 @@ export function mount(root) {
         <td class="r num">${gp(c.perHour)}</td>
         <td class="wrapcell"><span class="pill ${pace.pill}">${pace.text}</span></td>
         <td class="wrapcell">${unlockCell(m, c)}</td>
-        <td class="wrapcell">${able == null ? "…" : able.length ? esc(able.map(p => p.name).join(", ")) : `<span class="muted">Nobody yet</span>`}${nearNote(m, filterNear(m))}</td>
+        <td class="wrapcell">${able == null ? "…" : able.length ? able.map(p => { const unk = group.unknownQuests(p, m); return unk.length ? `<span title="Not known yet if ${esc(p.name)} has done ${esc(unk.join(", "))}">${esc(p.name)}?</span>` : esc(p.name); }).join(", ") : `<span class="muted">Nobody yet</span>`}${nearNote(m, filterNear(m))}</td>
       </tr>`;
     }).join("") || `<tr><td colspan="8" class="muted">No methods within ${filter.within} levels for ${esc(who)}. Pick a bigger range above.</td></tr>`;
 

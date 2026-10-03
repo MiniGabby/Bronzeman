@@ -4,6 +4,7 @@
 // remembered in the browser (localStorage) and reused for CACHE_MS: a page refresh shows the
 // remembered stats instantly and only asks Wise Old Man again once they are older than that.
 import PLAYERS from "../../data/players.js";
+import QUESTS, { INFERRED } from "../../data/quests.js";
 import { skillByName } from "./osrs.js";
 import { store } from "./store.js";
 
@@ -113,13 +114,29 @@ const skillData = (p, skillName) => p.skills?.[skillByName(skillName)?.key];
 export const level = (p, skillName) => Math.max(1, skillData(p, skillName)?.level ?? 1);
 export const xp = (p, skillName) => Math.max(0, skillData(p, skillName)?.experience ?? 0);
 
-/** Skill requirements the player doesn't meet yet (quests can't be checked). */
+// Quest list per player, keyed case-insensitively by RuneScape name.
+const questsByPlayer = Object.fromEntries(Object.entries(QUESTS).map(([n, q]) => [idOf(n), q]));
+
+/** Has the player done this quest? true / false, or null when nobody has filled it in (data/quests.js). */
+export function questDone(p, quest) {
+  const v = questsByPlayer[p.id]?.[quest];
+  if (v === true || v === false) return v;
+  const inf = INFERRED[quest];
+  if (inf && p.skills && level(p, inf.skill) >= inf.level) return true;
+  return null;
+}
+
+/** Requirements the player doesn't meet yet: skill levels, plus quests known not to be done. */
 export function missing(p, method) {
   if (!p.skills) return null;
-  return Object.entries(method.reqs?.skills || {})
-    .filter(([s, lvl]) => level(p, s) < lvl)
-    .map(([s, lvl]) => `${s} ${lvl}`);
+  return [
+    ...Object.entries(method.reqs?.skills || {}).filter(([s, lvl]) => level(p, s) < lvl).map(([s, lvl]) => `${s} ${lvl}`),
+    ...(method.reqs?.quests || []).filter(q => questDone(p, q) === false)
+  ];
 }
+
+/** Quests a method needs that we don't know about for this player yet. */
+export const unknownQuests = (p, method) => (method.reqs?.quests || []).filter(q => questDone(p, q) === null);
 
 // ---- XP gained per period ("day", "week", "month") ----
 export const gains = period => state.gains[period] || null;

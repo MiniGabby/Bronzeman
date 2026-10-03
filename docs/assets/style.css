@@ -127,6 +127,7 @@ footer{font-size:12px;color:var(--ink-3);display:flex;flex-direction:column;gap:
 .chip{font:500 12px var(--sans);padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line)}
 .chip.yes{background:var(--good-soft);color:var(--good);border-color:transparent}
 .chip.no{text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.chip.maybe{background:var(--warn-soft);color:var(--warn);border-color:transparent}
 
 .skillgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
 .skill{display:flex;flex-direction:column;gap:2px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:8px;color:var(--ink);text-decoration:none}
@@ -261,3 +262,23 @@ tr.detailrow > td{background:var(--surface-2);white-space:normal;padding:16px 18
 .upitem h3 a{color:var(--ink);text-decoration:none}
 .upitem h3 a:hover{color:var(--gold)}
 .upitem ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;color:var(--ink-2)}
+
+/* Goals (Group page and player page) */
+.goals{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.goal-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.goal-head{font-size:15px}
+.goal-foot{display:flex;gap:10px;align-items:center;font-size:13px;flex-wrap:wrap}
+.bar{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+.bar span{display:block;height:100%;background:var(--good);border-radius:999px}
+
+/* Merching: track a flip */
+.trackform{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.trackform > b{flex-basis:100%;font-size:14px}
+.trackform .field input{width:120px}
+
+/* Player page */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:8px 28px;align-items:start}
+.psec{margin-bottom:14px}
+.plist{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.plist li{line-height:1.45}
+@media (max-width:520px){.pgrid{grid-template-columns:1fr}}

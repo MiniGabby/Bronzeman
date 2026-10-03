@@ -1,9 +1,12 @@
 // Group page: update everyone's stats, XP gained per day/week/month, and levels side by side.
 // All data comes from Wise Old Man (https://wiseoldman.net).
 import * as group from "../core/players.js";
-import { SKILLS } from "../core/osrs.js";
+import { SKILLS, skillByName, xpForLevel } from "../core/osrs.js";
+import GOALS from "../../data/goals.js";
+import QUESTS, { TRACKED } from "../../data/quests.js";
+import METHODS from "../../data/methods/index.js";
 import { store } from "../core/store.js";
-import { esc, ago, nf, short } from "../core/format.js";
+import { esc, ago, nf, short, gp } from "../core/format.js";
 
 export const title = "Group";
 
@@ -11,6 +14,32 @@ const PERIODS = { day: "Today", week: "This week", month: "This month" };
 // One update per hour is plenty: hiscores only change when people play, and Wise Old Man
 // asks not to update more often than every 1–6 hours.
 const COOLDOWN_MS = 60 * 60_000;
+
+/**
+ * One goal with a progress bar. Progress runs from the player's XP at the start of this week
+ * (current XP minus this week's gains from Wise Old Man) to the XP for the target level.
+ */
+export function goalCard(g, weekGain) {
+  const p = group.all().find(x => x.name.toLowerCase() === g.player.toLowerCase());
+  const skill = skillByName(g.skill);
+  if (!p || !skill) return `<div class="goal-card"><b>${esc(g.player)}: ${esc(g.skill)} ${g.level}</b><div class="muted">Unknown player or skill</div></div>`;
+  if (!p.skills) return `<div class="goal-card"><b>${esc(p.name)}: ${esc(skill.name)} ${g.level}</b><div class="muted">No stats yet</div></div>`;
+  const cur = group.xp(p, skill.name), lvl = group.level(p, skill.name), target = xpForLevel(g.level);
+  const start = Math.max(0, cur - (weekGain?.xp || 0));
+  const done = cur >= target;
+  const pct = done ? 100 : Math.max(0, Math.min(100, ((cur - start) / Math.max(1, target - start)) * 100));
+  const end = new Date(g.by + "T23:59:59");
+  const daysLeft = Math.ceil((end - Date.now()) / 86_400_000);
+  const left = Math.max(0, target - cur);
+  const status = done ? `<span class="pill good">Done</span>`
+    : daysLeft < 0 ? `<span class="pill bad">Missed</span>`
+    : `<span class="muted">${gp(left)} XP to go · ${daysLeft === 0 ? "last day" : `${daysLeft} day${daysLeft > 1 ? "s" : ""} left`} · ${gp(left / Math.max(1, daysLeft || 1))} XP/day</span>`;
+  return `<div class="goal-card">
+    <div class="goal-head"><b>${esc(p.name)}</b>: ${esc(skill.name)} ${lvl} → ${g.level} <span class="muted">by ${esc(new Date(g.by + "T12:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }))}</span></div>
+    <div class="bar" role="progressbar" aria-valuenow="${Math.round(pct)}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(p.name)} ${esc(skill.name)} goal"><span style="width:${pct.toFixed(1)}%"></span></div>
+    <div class="goal-foot"><span class="num">${Math.round(pct)}%</span> ${status}</div>
+  </div>`;
+}
 
 export function mount(root) {
   let period = store.get("gainsPeriod", "week");
@@ -25,6 +54,11 @@ export function mount(root) {
     </div>
 
     <section class="section">
+      <h2 class="pagetitle small">Goals</h2>
+      <div data-f="goals"></div>
+    </section>
+
+    <section class="section">
       <h2 class="pagetitle small">Levels</h2>
       <div data-f="levels"></div>
     </section>
@@ -37,6 +71,12 @@ export function mount(root) {
         </div>
       </div>
       <div data-f="gains"></div>
+    </section>
+
+    <section class="section">
+      <h2 class="pagetitle small">Quests</h2>
+      <p class="fine">Quests that methods or routes on this site need. Wise Old Man doesn't track quests, so ✓ and ✗ are filled in by hand: tell Claude in the Bronzeman project (for example "Mini Gabby finished The Tourist Trap"). ? means nobody has filled it in yet. Druidic Ritual counts as done for anyone with Herblore 3 or higher.</p>
+      <div data-f="quests"></div>
     </section>`;
 
   const $ = s => root.querySelector(s);
@@ -130,7 +170,7 @@ export function mount(root) {
         `<td class="r num${v != null && v === max && max > 1 ? " top" : ""}">${v == null ? "–" : nf.format(v)}</td>`).join("")}</tr>`;
     };
     host.innerHTML = `<div class="board"><table>
-      <thead><tr><th>Skill</th>${ps.map(p => `<th class="r"><a href="${group.profileUrl(p)}" target="_blank" rel="noopener">${esc(p.name)}</a></th>`).join("")}</tr></thead>
+      <thead><tr><th>Skill</th>${ps.map(p => `<th class="r"><a href="#/player/${encodeURIComponent(p.name)}" title="What ${esc(p.name)} can do now">${esc(p.name)}</a></th>`).join("")}</tr></thead>
       <tbody>
         ${row("Total level", ps.map(total))}
         ${SKILLS.map(s => row(s.name, ps.map(p => p.skills ? group.level(p, s.name) : null), `#/training/${s.key}`)).join("")}
@@ -140,7 +180,33 @@ export function mount(root) {
     <p class="fine">The highest level in each skill is highlighted. Click a skill to see its training methods.</p>`;
   }
 
+  function renderGoals() {
+    const host = $('[data-f="goals"]');
+    if (!GOALS.length) {
+      host.innerHTML = `<p class="muted">No goals yet. Set one by telling Claude in the Bronzeman project, for example "Mini Gabby: Herblore 45 by Sunday". Goals show here and on each player's page.</p>`;
+      return;
+    }
+    if (!group.loaded()) { host.innerHTML = `<p class="muted">Loading stats…</p>`; return; }
+    host.innerHTML = `<div class="goals">${GOALS.map(g => goalCard(g, group.gained("week", group.all().find(p => p.name.toLowerCase() === g.player.toLowerCase()) || {}, g.skill))).join("")}</div>`;
+  }
+
+  function renderQuests() {
+    const host = $('[data-f="quests"]');
+    const needed = new Set(METHODS.flatMap(m => m.reqs?.quests || []));
+    const list = [...new Set([...TRACKED, ...needed])];
+    const ps = group.all();
+    const uses = q => METHODS.filter(m => (m.reqs?.quests || []).includes(q)).length;
+    host.innerHTML = `<div class="board"><table>
+      <thead><tr><th>Quest</th><th class="r">Methods</th>${ps.map(p => `<th class="r">${esc(p.name)}</th>`).join("")}</tr></thead>
+      <tbody>${list.map(q => `<tr><td><a href="https://oldschool.runescape.wiki/w/${encodeURIComponent(q.replace(/ \(started\)$/, "").replace(/ /g, "_"))}" target="_blank" rel="noopener">${esc(q)}</a></td>
+        <td class="r num">${uses(q) || "–"}</td>
+        ${ps.map(p => { const d = group.questDone(p, q); return `<td class="r">${d === true ? `<span class="pos" title="Done">✓</span>` : d === false ? `<span class="neg" title="Not done">✗</span>` : `<span class="muted" title="Unknown">?</span>`}</td>`; }).join("")}</tr>`).join("")}</tbody>
+    </table></div>`;
+  }
+
   function render() {
+    renderGoals();
+    renderQuests();
     renderButton();
     renderGains();
     renderLevels();
@@ -149,6 +215,7 @@ export function mount(root) {
   const off = group.onChange(render);
   const tick = setInterval(renderButton, 30_000);
   group.loadGains(period);
+  if (GOALS.length && period !== "week") group.loadGains("week");   // goals measure progress from the start of the week
   render();
   return () => { off(); clearInterval(tick); };
 }

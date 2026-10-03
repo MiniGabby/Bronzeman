@@ -1,6 +1,8 @@
 // Unlocked items page: everything the group has unlocked, with who, when and the GE price.
 import * as unlocks from "../core/unlocks.js";
 import * as prices from "../core/prices.js";
+import * as group from "../core/players.js";
+import { goals as unlockGoals } from "../core/unlockGoals.js";
 import { store } from "../core/store.js";
 import { esc, gp, ago, nf } from "../core/format.js";
 
@@ -16,6 +18,12 @@ export function mount(root) {
 
   root.innerHTML = `
     <div data-f="summary"></div>
+    <section class="section">
+      <h2 class="pagetitle small">Unlock goals</h2>
+      <p class="fine">Items nobody has unlocked yet that methods or routes on this site need, the most useful first. You only need one: after that everyone can buy them on the GE.</p>
+      <div data-f="goals"></div>
+    </section>
+    <h2 class="pagetitle small">Unlocked items</h2>
     <form class="toolbar" data-f="form">
       <div class="field grow"><label for="u-q">Search</label>
         <input id="u-q" type="search" placeholder="Item name" autocomplete="off"></div>
@@ -97,8 +105,35 @@ export function mount(root) {
     }).join("") : `<tr><td colspan="4" class="muted">No unlocked items match.</td></tr>`;
   }
 
-  function render() { renderSummary(); renderRows(); }
-  const offs = [unlocks.onChange(render), prices.onChange(renderRows)];
+  function renderGoals() {
+    const host = $('[data-f="goals"]');
+    const list = unlockGoals();
+    if (!list) { host.innerHTML = `<p class="muted">Loading…</p>`; return; }
+    if (!list.length) { host.innerHTML = `<p class="muted">Everything the site's methods need is unlocked.</p>`; return; }
+    host.innerHTML = `<div class="board"><table>
+      <thead><tr><th>Item</th><th>Holds back</th><th>How to get one</th><th>Who can get it</th></tr></thead>
+      <tbody>${list.map(g => `<tr>
+        <td>${g.id != null ? `<a href="https://prices.runescape.wiki/osrs/item/${g.id}" target="_blank" rel="noopener">${esc(g.name)}</a>` : esc(g.name)}</td>
+        <td class="wrapcell"><b class="num">${g.methods.length}</b> method${g.methods.length > 1 ? "s" : ""}${g.steps ? ` · ${g.steps} route step${g.steps > 1 ? "s" : ""}` : ""}<div class="sub2">${esc(g.methods.map(m => m.name).join(", "))}</div></td>
+        <td class="how">${g.tip ? esc(g.tip) : `<span class="muted">No tip yet</span>`}</td>
+        <td class="wrapcell">${whoCell(g)}</td>
+      </tr>`).join("")}</tbody>
+    </table></div>`;
+  }
+
+  // Who meets the skill levels to get one now, or who's closest.
+  function whoCell(g) {
+    if (!g.reqs) return `<span class="muted">Requirements not on the site yet</span>`;
+    if (!Object.keys(g.reqs).length) return `<span class="pill good">Anyone</span>`;
+    if (!g.who.length) return `<span class="muted">Loading stats…</span>`;
+    const now = g.who.filter(w => w.gap === 0);
+    if (now.length) return `<span class="pill good">Can do it now</span> ${esc(now.map(w => w.p.name).join(", "))}`;
+    const c = g.who[0];
+    return `Closest: <b>${esc(c.p.name)}</b><div class="sub2">${esc(c.need.map(n => `${n.s} ${n.have}/${n.l}`).join(", "))}</div>`;
+  }
+
+  function render() { renderSummary(); renderGoals(); renderRows(); }
+  const offs = [unlocks.onChange(render), prices.onChange(() => { renderGoals(); renderRows(); }), group.onChange(renderGoals)];
   render();
   return () => offs.forEach(off => off());
 }

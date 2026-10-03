@@ -38,3 +38,25 @@ export default {
   "Runite ore": "Mine one: Mining 85. The Motherlode Mine pay-dirt also gives runite ore from Mining 85.",
   "Runite bar": "Smelt one: runite ore and 8 coal at any furnace, Smithing 85."
 };
+
+// Skill levels needed to get ONE of an item yourself, used for "who can get it" in Unlock goals.
+// {} = anyone can do it. Items not listed here: requirements unknown, the site doesn't guess.
+// Unfinished potions use their herb's entry (see src/core/unlockGoals.js).
+const DRUID_HERB = {};
+const SEED = farming => ({ Thieving: 38, Farming: farming });
+export const REQS = {
+  "Marrentill": DRUID_HERB, "Avantoe": DRUID_HERB, "Kwuarm": DRUID_HERB, "Cadantine": DRUID_HERB,
+  "Lantadyme": DRUID_HERB, "Dwarf weed": DRUID_HERB,
+  "Toadflax": SEED(38), "Snapdragon": SEED(62), "Torstol": SEED(85),
+  "Unicorn horn dust": {}, "Unicorn horn": {}, "Dragon scale dust": {}, "Crushed nest": {}, "Potato cactus": {},
+  "Wine of zamorak": { Magic: 33 },
+  "White berries": { Slayer: 10 },
+  "Jangerberries": { Agility: 10 },
+  "Amylase crystal": { Agility: 10 },
+  "Super energy(4)": { Herblore: 52 },
+  "Mithril bar": { Smithing: 50 },
+  "Adamantite ore": { Mining: 70 },
+  "Adamantite bar": { Mining: 70, Smithing: 70 },
+  "Runite ore": { Mining: 85 },
+  "Runite bar": { Mining: 85, Smithing: 85 }
+};

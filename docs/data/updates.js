@@ -3,6 +3,17 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Player pages, unlock goals, quests, goals and more", link: "#/player",
+    items: [
+      "New Player tab: pick your name and see what to do now: money makers you can do (and almost can), your next step on each training route, flips that are cheap to buy right now, your goals and unlocks you can get. Click a name on the Group page to get there too.",
+      "Unlock goals on the Unlocked tab: the items we still need, ranked by how many methods they open up, with how to get one and who can get it now (or who's closest).",
+      "Quests on the Group page: which quests each of us has done. Methods that need a quest now show who has done it; ? means nobody filled it in yet. Tell Nick (or Claude) which quests you've done.",
+      "Goals on the Group page: e.g. \"Herblore 45 by Sunday\" with a progress bar from Wise Old Man.",
+      "Merching: track what you bought under My flips. It shows your profit and turns green (and can send a notification) when your sell price is reached.",
+      "Crafting route to 99 with jewellery, now with sapphire, diamond and dragonstone pieces. Emerald bracelets give 65 XP (was 60 on the site)."
+    ]
+  },
+  {
     date: "2026-10-02", title: "46 new unlocks (606 in total)", link: "#/unlocked",
     items: [
       "Unlocked since 30 Sep include crushed nest (for Herblore), molten glass, dragonstone, diamond jewellery, and sapphire, emerald and ruby bracelets and amulets.",

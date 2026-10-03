@@ -6,10 +6,10 @@ import * as history from "../core/history.js";
 import { store } from "../core/store.js";
 import { esc, gp, short, signed, cls, nf, geTax } from "../core/format.js";
 import { detailHTML, bindCharts } from "../components/priceDetail.js";
+import { CANDIDATES, plans as flipPlans } from "../core/flips.js";
 
 export const title = "Merching";
 
-const CANDIDATES = 40;   // items whose price history we fetch
 const SHOWN = 25;
 
 export function mount(root) {
@@ -44,6 +44,7 @@ export function mount(root) {
       </div>
       <div class="goal" data-f="status"></div>
     </div>
+    <div data-f="mine"></div>
     <div data-f="list"></div>
     <section class="section guide">
       <h2 class="pagetitle small">How to merch with this list</h2>
@@ -52,6 +53,7 @@ export function mount(root) {
         <li><b>"Buy now"</b> means the item is in the cheapest part of its day right now (the cheapest quarter of its daily price range); set <i>When</i> to "Cheap to buy right now" to see only those.</li>
         <li><b>Buy around the "Buy" time</b> with a buy offer at the "Buy at" price. Offers at a low price only fill when someone sells into them, so give it up to an hour or two. Don't raise the price to chase it.</li>
         <li><b>Sell around the "Sell" time</b> with a sell offer at the "Sell at" price. "+1 day" means the sell time comes after the next midnight.</li>
+        <li><b>Track what you bought.</b> Open an item and fill in "Bought some?": it shows up under My flips with your profit, and turns green (and can send a notification) when your sell price is reached.</li>
         <li><b>Mind the buy limit.</b> It counts per account and resets 4 hours after your first purchase. Every group member has their own limit, so the same item can be flipped on each account.</li>
         <li><b>Tax is already counted:</b> 2% of the sell price for items of 50 gp and up, at most 5M per item.</li>
         <li><b>Spread your cash</b> over a few items instead of one. The patterns are averages: a game update (usually on Wednesdays), news or a big player can break them. "Reliable" means the pattern held on at least 3 out of 4 days, "Usually" on at least 6 out of 10; anything less is "Weak". "17/21 days" means it held on 17 of the 21 days that had enough trades at that hour. A flip counts as only as reliable as its weaker side (buy or sell), and the Pattern filter uses that.</li>
@@ -78,33 +80,6 @@ export function mount(root) {
     cashIn.value = b.dataset.cash; opts.cash = Number(b.dataset.cash); save(); render();
   }));
 
-  // Unlocked items with a usable spread right now, best first.
-  function candidates() {
-    return (unlocks.data().items || []).map(u => prices.item(u.id))
-      .filter(it => it.limit && it.high > 0 && it.low > 0 && it.vol >= opts.minVol && it.low <= opts.cash && it.high <= it.low * 1.3)
-      .map(it => {
-        const qty = Math.min(it.limit, Math.floor(opts.cash / it.low));
-        const margin = it.high - geTax(it.high) - it.low;
-        return { it, score: qty * Math.max(margin, it.low * 0.005) };
-      })
-      .sort((a, b) => b.score - a.score)
-      .slice(0, CANDIDATES)
-      .map(c => c.it);
-  }
-
-  function plan(it) {
-    const t = history.get(it.id);
-    if (!t || !t.lowAvg || !t.highAvg) return { it, t };
-    // Not a real market: hardly any trades on one side, or buy and sell prices usually far apart
-    // (a few people dumping for 1 gp and a few paying 200 doesn't mean you can do the same in bulk).
-    if (t.lowVol < 10 || t.highVol < 10 || !t.spread || t.spread > 1.3) return { it, t, thin: true };
-    const buy = Math.floor(t.lowAvg * t.low[t.buyHour]);
-    const sell = Math.ceil(t.highAvg * t.high[t.sellHour]);
-    const each = sell - geTax(sell) - buy;
-    const qty = Math.min(it.limit, Math.floor(opts.cash / buy));
-    return { it, t, buy, sell, each, qty, total: each * qty, nextDay: t.sellHour <= t.buyHour, nowMargin: it.high - geTax(it.high) - it.low };
-  }
-
   // Price on top (what to type in the GE), time and reliability underneath.
   function cell(hour, price, ratios, rel, hit, what, extra = "", hitDays, days) {
     const r = history.reliability(hit);
@@ -114,13 +89,12 @@ export function mount(root) {
   }
 
   function render() {
+    if (prices.ready()) renderMine();
     if (!prices.ready() || !unlocks.loaded()) {
       $('[data-f="list"]').innerHTML = `<p class="muted">Loading prices and unlocked items…</p>`;
       return;
     }
-    const cands = candidates();
-    history.want(cands.map(it => it.id));
-    const plans = cands.map(plan);
+    const plans = flipPlans(opts);
     const done = plans.filter(p => p.t !== undefined).length;
     const minHit = REL_MIN[opts.minRel] ?? 0;
     const profitable = plans.filter(p => !p.thin && p.each > 0);
@@ -173,8 +147,77 @@ export function mount(root) {
       history.series(p.it.id).then(render, () => {});
       return `<p class="muted">Loading price history…</p>`;
     }
-    return rows.length ? detailHTML(p.it, p.t, p, rows) : `<p class="muted">No price history for this item.</p>`;
+    return (rows.length ? detailHTML(p.it, p.t, p, rows) : `<p class="muted">No price history for this item.</p>`) + trackForm(p);
   }
+
+  // ---- My flips: items you bought, with a target sell price. Kept in this browser only. ----
+  const flips = store.get("flips", []);
+  const saveFlips = () => store.set("flips", flips);
+  const notifyOn = () => typeof Notification !== "undefined" && Notification.permission === "granted";
+
+  function trackForm(p) {
+    const has = flips.some(f => f.id === p.it.id);
+    return `<form class="trackform" data-track="${p.it.id}">
+      <b>${has ? "You're tracking this item (see My flips above)." : "Bought some? Track it and the site tells you when your sell price is reached."}</b>
+      <div class="field"><label>Amount</label><input name="qty" type="number" min="1" value="${p.qty}" inputmode="numeric"></div>
+      <div class="field"><label>Paid each</label><input name="paid" type="number" min="1" value="${p.buy}" inputmode="numeric"></div>
+      <div class="field"><label>Sell at</label><input name="target" type="number" min="1" value="${p.sell}" inputmode="numeric"></div>
+      <button type="submit" class="btn primary">${has ? "Update" : "Track"}</button>
+    </form>`;
+  }
+
+  // What a sell offer fills at right now: the instant-buy price (what buyers pay).
+  const sellNow = id => prices.item(id).high;
+
+  function renderMine() {
+    const host = $('[data-f="mine"]');
+    if (!flips.length) { host.innerHTML = ""; return; }
+    let alerted = false;
+    const rows = flips.map(f => {
+      const now = sellNow(f.id);
+      const reached = now != null && now >= f.target;
+      if (reached && !f.notified) {
+        f.notified = true; alerted = true;
+        if (notifyOn()) new Notification(`${f.name}: sell price reached`, { body: `Selling at about ${gp(now)} gp now (your target ${gp(f.target)}).` });
+      }
+      if (!reached && f.notified && now != null && now < f.target) f.notified = false;   // fell back: alert again next time
+      const profit = (price) => (price - geTax(price) - f.paid) * f.qty;
+      return `<tr class="${reached ? "here" : ""}">
+        <td>${esc(f.name)}</td>
+        <td class="r num">${nf.format(f.qty)} × ${gp(f.paid)}</td>
+        <td class="r num">${gp(f.target)}<div class="sub2">${signed(profit(f.target))} after tax</div></td>
+        <td class="r num">${gp(now)}<div class="sub2">${now == null ? "" : `${signed(profit(now))} if sold now`}</div></td>
+        <td>${now == null ? "–" : reached ? `<span class="pill good">Sell now</span>` : `<span class="muted">${(((f.target - now) / now) * 100).toFixed(1)}% to go</span>`}</td>
+        <td class="r"><button type="button" class="linkbtn" data-untrack="${f.id}">Remove</button></td>
+      </tr>`;
+    }).join("");
+    if (alerted) saveFlips();
+    host.innerHTML = `<section class="section mine">
+      <div class="sechead"><h2 class="pagetitle small">My flips</h2>
+        ${typeof Notification === "undefined" ? "" : notifyOn() ? `<span class="muted">Notifications on</span>` : `<button type="button" class="btn" data-notify>Notify me when a target is reached</button>`}</div>
+      <div class="board"><table>
+        <thead><tr><th>Item</th><th class="r">Bought</th><th class="r">Sell at</th><th class="r">Sell offer now</th><th>Status</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+      <p class="fine">Saved in this browser only. "Sell offer now" is the latest instant-buy price: roughly what a sell offer fills at. Notifications only work while the Merching tab is open.</p>
+    </section>`;
+  }
+
+  root.addEventListener("submit", e => {
+    const f = e.target.closest("[data-track]");
+    if (!f) return;
+    e.preventDefault();
+    const id = Number(f.dataset.track), v = k => Math.max(1, Math.round(Number(f.elements[k].value) || 0));
+    const entry = { id, name: prices.item(id).name, qty: v("qty"), paid: v("paid"), target: v("target"), at: Date.now(), notified: false };
+    const i = flips.findIndex(x => x.id === id);
+    i >= 0 ? (flips[i] = entry) : flips.unshift(entry);
+    saveFlips(); render();
+  });
+  root.addEventListener("click", e => {
+    const u = e.target.closest("[data-untrack]");
+    if (u) { const i = flips.findIndex(x => x.id === Number(u.dataset.untrack)); if (i >= 0) flips.splice(i, 1); saveFlips(); render(); return; }
+    if (e.target.closest("[data-notify]")) Notification.requestPermission().then(render);
+  });
   $('[data-f="list"]').addEventListener("click", e => {
     const b = e.target.closest("[data-detail]");
     if (!b) return;
