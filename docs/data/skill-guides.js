@@ -77,5 +77,92 @@ export default {
       { from: 74, to: 80, method: "craft-dragonstone-bracelets" },
       { from: 80, to: 99, method: "craft-dragonstone-amulets", note: "150 XP each: by far the best jewellery XP." }
     ]
+  },
+  fletching: {
+    intro: "Fletching has two styles. Arrows and darts are made in sets with nothing to bank, so they're fast and you can do them anywhere, but you have to keep clicking and the higher tiers cost money. Cutting bows from logs is slow and relaxed, often cheap or even profitable. Darts need The Tourist Trap. Pick a route below: the numbers update with live GE prices.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Darts from level 10: each click makes 10 darts, so the faster you click, the faster you level. Rune darts give well over 500K XP per hour, but adamant and rune dart tips are expensive. Iron and steel arrows (15 and 30) are a good bridge if The Tourist Trap isn't done yet.",
+        route: [
+          { from: 1, to: 10, method: "fletch-bronze-arrows", note: "Headless arrows are cheaper if bronze arrowtips cost too much." },
+          { from: 10, to: 22, method: "fletch-bronze-darts" },
+          { from: 22, to: 37, method: "fletch-iron-darts" },
+          { from: 37, to: 52, method: "fletch-steel-darts" },
+          { from: 52, to: 67, method: "fletch-mithril-darts" },
+          { from: 67, to: 81, method: "fletch-adamant-darts" },
+          { from: 81, to: 99, method: "fletch-rune-darts" }
+        ]
+      },
+      {
+        key: "cheapest", name: "Cheapest", prefer: "cheap",
+        intro: "Cut unstrung bows from logs and sell them: about 1,700 per hour, and the bow is usually worth about as much as the logs. Longbows give more XP than shortbows from the same log. Slow but relaxed. Stringing the bows gives the same XP again; look at the stringing methods below if bows (u) don't sell.",
+        route: [
+          { from: 1, to: 5, method: "fletch-arrow-shafts" },
+          { from: 5, to: 10, method: "fletch-shortbows" },
+          { from: 10, to: 20, method: "fletch-longbows" },
+          { from: 20, to: 25, method: "fletch-oak-shortbows" },
+          { from: 25, to: 35, method: "fletch-oak-longbows" },
+          { from: 35, to: 40, method: "fletch-willow-shortbows" },
+          { from: 40, to: 50, method: "fletch-willow-longbows" },
+          { from: 50, to: 55, method: "fletch-maple-shortbows" },
+          { from: 55, to: 70, method: "fletch-maple-longbows" },
+          { from: 70, to: 85, method: "fletch-yew-longbows" },
+          { from: 85, to: 99, method: "fletch-magic-longbows" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
+        from: 1, to: 99,
+        candidates: [
+          "fletch-headless-arrows", "fletch-bronze-arrows", "fletch-iron-arrows", "fletch-steel-arrows", "fletch-mithril-arrows", "fletch-adamant-arrows", "fletch-rune-arrows",
+          "fletch-bronze-darts", "fletch-iron-darts", "fletch-steel-darts", "fletch-mithril-darts", "fletch-adamant-darts", "fletch-rune-darts",
+          "fletch-arrow-shafts", "fletch-shortbows", "fletch-longbows", "fletch-oak-shortbows", "fletch-oak-longbows", "fletch-willow-shortbows", "fletch-willow-longbows",
+          "fletch-maple-shortbows", "fletch-maple-longbows", "fletch-yew-shortbows", "fletch-yew-longbows", "fletch-magic-shortbows", "fletch-magic-longbows",
+          "fletch-string-oak-longbows", "fletch-string-willow-longbows", "fletch-string-maple-longbows", "fletch-string-yew-longbows", "fletch-string-magic-longbows"
+        ]
+      }
+    ]
+  },
+  cooking: {
+    intro: "Cooking is mostly cooking fish on a range next to a bank. Cooked fish usually sells for about what the raw fish costs, so it's cheap. Jugs of wine (from 35) are much faster. The numbers below don't count burnt food: expect to burn a fair share of each new fish until you're 10 to 20 levels above it.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Fish up to 35, then jugs of wine all the way: around 450K XP per hour, and no range needed. Grapes aren't unlocked yet; see the tip on how to get the first one. 1-tick karambwans are faster still, but hard and they need Tai Bwo Wannai Trio.",
+        route: [
+          { from: 1, to: 5, method: "cook-sardines" },
+          { from: 5, to: 15, method: "cook-herring" },
+          { from: 15, to: 25, method: "cook-trout" },
+          { from: 25, to: 30, method: "cook-salmon" },
+          { from: 30, to: 35, method: "cook-tuna" },
+          { from: 35, to: 99, method: "cook-jugs-of-wine" }
+        ]
+      },
+      {
+        key: "cheapest", name: "Cheapest", prefer: "cheap",
+        intro: "Cook fish and sell them. Often this costs almost nothing or earns a bit, at 50K to 280K XP per hour. Burnt fish aren't counted, so the real cost is higher at the start of every fish.",
+        route: [
+          { from: 1, to: 5, method: "cook-shrimps" },
+          { from: 5, to: 15, method: "cook-herring" },
+          { from: 15, to: 25, method: "cook-trout" },
+          { from: 25, to: 30, method: "cook-salmon" },
+          { from: 30, to: 40, method: "cook-tuna" },
+          { from: 40, to: 45, method: "cook-lobsters" },
+          { from: 45, to: 80, method: "cook-swordfish", note: "Monkfish (62) once raw monkfish is unlocked." },
+          { from: 80, to: 99, method: "cook-sharks" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
+        from: 1, to: 99,
+        candidates: [
+          "cook-shrimps", "cook-sardines", "cook-herring", "cook-trout", "cook-pike", "cook-salmon", "cook-tuna", "cook-lobsters", "cook-bass",
+          "cook-swordfish", "cook-monkfish", "cook-karambwans", "cook-sharks", "cook-anglerfish", "cook-jugs-of-wine"
+        ]
+      }
+    ]
   }
 };

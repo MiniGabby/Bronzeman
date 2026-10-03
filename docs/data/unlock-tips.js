@@ -36,7 +36,26 @@ export default {
   "Adamantite ore": "Mine one: Mining 70. The Motherlode Mine pay-dirt also gives adamantite ore from Mining 70.",
   "Adamantite bar": "Smelt one: adamantite ore and 6 coal at any furnace, Smithing 70. If the ore isn't unlocked yet, mine one first (Mining 70).",
   "Runite ore": "Mine one: Mining 85. The Motherlode Mine pay-dirt also gives runite ore from Mining 85.",
-  "Runite bar": "Smelt one: runite ore and 8 coal at any furnace, Smithing 85."
+  "Runite bar": "Smelt one: runite ore and 8 coal at any furnace, Smithing 85.",
+
+  // Fletching
+  "Maple logs": "Chop one maple tree: Woodcutting 45. There are maples north of the Seers' Village bank.",
+  "Yew logs": "Chop one yew tree: Woodcutting 60. There are yews behind Edgeville bank and around Varrock Palace.",
+  "Magic logs": "Chop one magic tree: Woodcutting 75. There are some south-west of Seers' Village and in the Mage Training Arena area.",
+  "Oak longbow (u)": "Cut one yourself: use a knife on oak logs (already unlocked), Fletching 25.",
+  "Willow longbow (u)": "Cut one yourself: use a knife on willow logs (already unlocked), Fletching 40.",
+  "Maple longbow (u)": "Cut one yourself: a knife on maple logs, Fletching 55. If maple logs aren't unlocked yet, chop one first (Woodcutting 45).",
+  "Yew longbow (u)": "Cut one yourself: a knife on yew logs, Fletching 70. If yew logs aren't unlocked yet, chop one first (Woodcutting 60).",
+  "Magic longbow (u)": "Cut one yourself: a knife on magic logs, Fletching 85. If magic logs aren't unlocked yet, chop one first (Woodcutting 75).",
+  "Mithril dart tip": "Smith one bar into 10 dart tips: Smithing 54 and The Tourist Trap. If mithril bars aren't unlocked, smelt one first (mithril ore + 4 coal, Smithing 50).",
+  "Adamant dart tip": "Smith one bar into 10 dart tips: Smithing 74 and The Tourist Trap, with an adamantite bar (see its tip if it's locked).",
+  "Rune dart tip": "Smith one bar into 10 dart tips: Smithing 89 and The Tourist Trap, with a runite bar (see its tip if it's locked).",
+
+  // Cooking
+  "Grapes": "Pick up the grapes that spawn upstairs in the Cooks' Guild (Cooking 32, wear a chef's hat), or steal from a market stall (Thieving 22). From Farming 36 you can also grow them in the Hosidius vinery.",
+  "Raw monkfish": "Catch one in Piscatoris: start the Swan Song quest and have Fishing 62.",
+  "Raw karambwan": "Catch one at Karamja (Fishing 65): start Tai Bwo Wannai Trio to get a karambwan vessel, and bait it with raw karambwanji.",
+  "Raw anglerfish": "Catch one at Port Piscarilius with sandworms as bait: Fishing 82."
 };
 
 // Skill levels needed to get ONE of an item yourself, used for "who can get it" in Unlock goals.
@@ -58,5 +77,12 @@ export const REQS = {
   "Adamantite ore": { Mining: 70 },
   "Adamantite bar": { Mining: 70, Smithing: 70 },
   "Runite ore": { Mining: 85 },
-  "Runite bar": { Mining: 85, Smithing: 85 }
+  "Runite bar": { Mining: 85, Smithing: 85 },
+  "Maple logs": { Woodcutting: 45 }, "Yew logs": { Woodcutting: 60 }, "Magic logs": { Woodcutting: 75 },
+  "Oak longbow (u)": { Fletching: 25 }, "Willow longbow (u)": { Fletching: 40 },
+  "Maple longbow (u)": { Fletching: 55, Woodcutting: 45 }, "Yew longbow (u)": { Fletching: 70, Woodcutting: 60 },
+  "Magic longbow (u)": { Fletching: 85, Woodcutting: 75 },
+  "Mithril dart tip": { Smithing: 54 }, "Adamant dart tip": { Mining: 70, Smithing: 74 }, "Rune dart tip": { Mining: 85, Smithing: 89 },
+  "Grapes": { Cooking: 32 },   // Cooks' Guild spawn (or Thieving 22 for a market stall)
+  "Raw monkfish": { Fishing: 62 }, "Raw karambwan": { Fishing: 65 }, "Raw anglerfish": { Fishing: 82 }
 };

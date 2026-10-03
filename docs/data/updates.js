@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Fletching and Cooking guides to 99", link: "#/training/fletching",
+    items: [
+      "Fletching: three routes. Fastest uses darts from level 10 (needs The Tourist Trap), Cheapest cuts unstrung bows from logs, and Best of both picks per level range from arrows, darts, bows and stringing, using the time value you set.",
+      "Cooking: three routes too. Fastest is fish up to 35, then jugs of wine (around 450K XP per hour). Cheapest cooks fish and sells them, ending with swordfish and sharks. Best of both works it out live. Burnt food isn't counted, so expect a bit more cost at the start of every fish.",
+      "Locked items come with a tip on how to get the first one: grapes (Cooks' Guild spawn), maple, yew and magic logs, mithril, adamant and rune dart tips, raw monkfish, karambwan and anglerfish."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Skill training looks like the skills tab", link: "#/training",
     items: [
       "The Skill training page now shows the skills like in game: three columns in the same order, each with its icon, level and a bar showing progress to the next level, and the total level at the bottom.",

@@ -15,6 +15,8 @@ import smithMithrilDartTips from "./smith-mithril-dart-tips.js";
 import herblorePotions from "./herblore-potions.js";
 import craftingJewellery from "./crafting-jewellery.js";
 import smithing from "./smithing.js";
+import fletching from "./fletching.js";
+import cooking from "./cooking.js";
 
 export default [
   sapphireRings,
@@ -32,5 +34,7 @@ export default [
   smithMithrilDartTips,
   ...herblorePotions,   // one file with all Herblore potions
   ...craftingJewellery, // one file with all jewellery crafting
-  ...smithing           // anvil and Blast Furnace methods for the Smithing routes
+  ...smithing,          // anvil and Blast Furnace methods for the Smithing routes
+  ...fletching,         // arrows, darts and bows for the Fletching routes
+  ...cooking            // fish and wine for the Cooking routes
 ];
