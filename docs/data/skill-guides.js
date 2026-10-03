@@ -201,5 +201,47 @@ export default {
         ]
       }
     ]
+  },
+  firemaking: {
+    intro: "Firemaking is quick: you light logs one after another, or you fight Wintertodt from level 50. Line burning costs the price of the logs; Wintertodt costs nothing and its supply crates (not counted below) are full of things to sell and to unlock. Want it AFK? Throw the same logs on a Forester's campfire instead (about 665 an hour; use the button on the log methods). Quests: Enlightened Journey (4,000 XP), Enakhra's Lament (7,000) and The Giant Dwarf (1,500) help a little.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Line burning the best log for your level at the Grand Exchange, about 1,485 logs an hour: up to 300K XP per hour with yews and 450K with magic logs. It costs the logs. Several logs aren't unlocked yet; the tips say how to get the first one.",
+        route: [
+          { from: 1, to: 15, method: "fm-logs" },
+          { from: 15, to: 30, method: "fm-oak-logs" },
+          { from: 30, to: 35, method: "fm-willow-logs" },
+          { from: 35, to: 42, method: "fm-teak-logs" },
+          { from: 42, to: 45, method: "fm-arctic-pine-logs" },
+          { from: 45, to: 50, method: "fm-maple-logs" },
+          { from: 50, to: 60, method: "fm-mahogany-logs" },
+          { from: 60, to: 75, method: "fm-yew-logs" },
+          { from: 75, to: 90, method: "fm-magic-logs" },
+          { from: 90, to: 99, method: "fm-redwood-logs" }
+        ]
+      },
+      {
+        key: "cheapest", name: "Cheapest", prefer: "cheap",
+        intro: "Burn cheap logs up to 50, then Wintertodt all the way to 99: about 50 hours of low-effort play that earns money instead of costing it, plus a little Woodcutting XP. Bring food (you take damage from the cold), an axe, a knife, a hammer and a tinderbox.",
+        route: [
+          { from: 1, to: 15, method: "fm-logs" },
+          { from: 15, to: 30, method: "fm-oak-logs" },
+          { from: 30, to: 50, method: "fm-willow-logs", note: "Maple logs (45) are also cheap once they're unlocked." },
+          { from: 50, to: 70, method: "fm-wintertodt-50" },
+          { from: 70, to: 90, method: "fm-wintertodt-70" },
+          { from: 90, to: 99, method: "fm-wintertodt-90" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting the logs you buy and the time it takes, valued at what you say your time is worth below. Wintertodt counts as free here (its crates aren't counted), so with a low time value it picks Wintertodt from 50.",
+        from: 1, to: 99,
+        candidates: [
+          "fm-logs", "fm-oak-logs", "fm-willow-logs", "fm-teak-logs", "fm-arctic-pine-logs", "fm-maple-logs", "fm-mahogany-logs",
+          "fm-yew-logs", "fm-magic-logs", "fm-redwood-logs", "fm-wintertodt-50", "fm-wintertodt-70", "fm-wintertodt-90"
+        ]
+      }
+    ]
   }
 };

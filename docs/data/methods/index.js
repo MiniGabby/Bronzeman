@@ -18,6 +18,7 @@ import smithing from "./smithing.js";
 import fletching from "./fletching.js";
 import cooking from "./cooking.js";
 import thieving from "./thieving.js";
+import firemaking from "./firemaking.js";
 
 export default [
   sapphireRings,
@@ -38,5 +39,6 @@ export default [
   ...smithing,          // anvil and Blast Furnace methods for the Smithing routes
   ...fletching,         // arrows, darts and bows for the Fletching routes
   ...cooking,           // fish and wine for the Cooking routes
-  ...thieving           // pickpocketing, stalls and artefacts for the Thieving routes
+  ...thieving,          // pickpocketing, stalls and artefacts for the Thieving routes
+  ...firemaking         // log burning and Wintertodt for the Firemaking routes
 ];

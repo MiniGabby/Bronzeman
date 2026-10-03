@@ -51,6 +51,12 @@ export default {
   "Adamant dart tip": "Smith one bar into 10 dart tips: Smithing 74 and The Tourist Trap, with an adamantite bar (see its tip if it's locked).",
   "Rune dart tip": "Smith one bar into 10 dart tips: Smithing 89 and The Tourist Trap, with a runite bar (see its tip if it's locked).",
 
+  // Firemaking
+  "Teak logs": "Chop one teak tree: Woodcutting 35. Teaks grow in the Hardwood Grove in Tai Bwo Wannai (100 trading sticks to get in) and on Fossil Island. Wintertodt supply crates can also give teak logs.",
+  "Mahogany logs": "Chop one mahogany tree: Woodcutting 50, in the same places as teaks (Hardwood Grove in Tai Bwo Wannai, Fossil Island). Wintertodt supply crates can also give mahogany logs.",
+  "Arctic pine logs": "Chop one arctic pine on Neitiznot: Woodcutting 54, and you need The Fremennik Trials to get to the island.",
+  "Redwood logs": "Chop one redwood in the Woodcutting Guild in Hosidius: Woodcutting 90 (the guild needs 60).",
+
   // Cooking
   "Grapes": "Pick up the grapes that spawn upstairs in the Cooks' Guild (Cooking 32, wear a chef's hat), or steal from a market stall (Thieving 22). From Farming 36 you can also grow them in the Hosidius vinery.",
   "Raw monkfish": "Catch one in Piscatoris: start the Swan Song quest and have Fishing 62.",
@@ -83,6 +89,7 @@ export const REQS = {
   "Maple longbow (u)": { Fletching: 55, Woodcutting: 45 }, "Yew longbow (u)": { Fletching: 70, Woodcutting: 60 },
   "Magic longbow (u)": { Fletching: 85, Woodcutting: 75 },
   "Mithril dart tip": { Smithing: 54 }, "Adamant dart tip": { Mining: 70, Smithing: 74 }, "Rune dart tip": { Mining: 85, Smithing: 89 },
+  "Teak logs": { Woodcutting: 35 }, "Mahogany logs": { Woodcutting: 50 }, "Arctic pine logs": { Woodcutting: 54 }, "Redwood logs": { Woodcutting: 90 },
   "Grapes": { Cooking: 32 },   // Cooks' Guild spawn (or Thieving 22 for a market stall)
   "Raw monkfish": { Fishing: 62 }, "Raw karambwan": { Fishing: 65 }, "Raw anglerfish": { Fishing: 82 }
 };

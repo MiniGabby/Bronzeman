@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Firemaking guide to 99", link: "#/training/firemaking",
+    items: [
+      "Three routes. Fastest: line burning the best log for your level at the Grand Exchange (up to 450K XP per hour with magic logs). Cheapest: cheap logs up to 50, then Wintertodt to 99, about 50 hours that earn money. Best of both picks per level range from your time value.",
+      "Logs we haven't unlocked yet (teak, arctic pine, maple, mahogany, yew, magic, redwood) come with a tip on how to get the first one. Wintertodt crates can give teak and mahogany logs too.",
+      "Prefer AFK? Each log method has a \"Forester's campfire\" button: the same XP per log at about 665 logs an hour."
+    ]
+  },
+  {
     date: "2026-10-03", title: "15 new unlocks (621 in total)", link: "#/unlocked",
     items: [
       "Mithril bars and mithril dart tips (Mini Gabby): mithril dart tips can now be bought, so smithing mithril dart tips and the mithril darts step of the Fletching route are open to everyone.",
