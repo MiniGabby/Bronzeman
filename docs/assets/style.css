@@ -282,3 +282,8 @@ tr.detailrow > td{background:var(--surface-2);white-space:normal;padding:16px 18
 .plist{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .plist li{line-height:1.45}
 @media (max-width:520px){.pgrid{grid-template-columns:1fr}}
+
+/* Quest tables (Group page) */
+.qtable td:first-child{white-space:normal;min-width:220px}
+.qstarted{font-size:12px;font-weight:600;color:var(--warn)}
+.pill:not(.good):not(.bad):not(.warn){background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line)}

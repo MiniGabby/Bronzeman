@@ -3,7 +3,7 @@
 import * as group from "../core/players.js";
 import { SKILLS, skillByName, xpForLevel } from "../core/osrs.js";
 import GOALS from "../../data/goals.js";
-import QUESTS, { TRACKED } from "../../data/quests.js";
+import { F2P, MINIQUESTS } from "../../data/quests.js";
 import METHODS from "../../data/methods/index.js";
 import { store } from "../core/store.js";
 import { esc, ago, nf, short, gp } from "../core/format.js";
@@ -75,7 +75,7 @@ export function mount(root) {
 
     <section class="section">
       <h2 class="pagetitle small">Quests</h2>
-      <p class="fine">Quests that methods or routes on this site need. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; the site checks for new data every 3 hours). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ? means unknown.</p>
+      <p class="fine">Every quest and miniquest, A to Z. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; the site checks for new data every 3 hours). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ✓ done, Started, ✗ not started, ? unknown. "Methods" is how many methods on this site need the quest.</p>
       <div data-f="quests"></div>
     </section>`;
 
@@ -198,20 +198,37 @@ export function mount(root) {
     return `<span class="sub2">…</span>`;
   };
 
+  // All quests A–Z in two tables: free-to-play and members (miniquests are members, marked "Mini").
   function renderQuests() {
     const host = $('[data-f="quests"]');
-    const needed = new Set(METHODS.flatMap(m => m.reqs?.quests || []));
-    const list = [...new Set([...TRACKED, ...needed])];
     const ps = group.all();
-    const uses = q => METHODS.filter(m => (m.reqs?.quests || []).includes(q)).length;
-    host.innerHTML = `<div class="board"><table>
-      <thead><tr><th>Quest</th><th class="r">Methods</th>${ps.map(p => `<th class="r">${esc(p.name)}</th>`).join("")}</tr>
-        <tr class="subhead"><td class="muted">Source</td><td></td>${ps.map(p => `<td class="r">${syncLabel(p)}</td>`).join("")}</tr></thead>
-      <tbody>${list.map(q => `<tr><td><a href="https://oldschool.runescape.wiki/w/${encodeURIComponent(q.replace(/ \(started\)$/, "").replace(/ /g, "_"))}" target="_blank" rel="noopener">${esc(q)}</a></td>
-        <td class="r num">${uses(q) || "–"}</td>
-        ${ps.map(p => { const d = group.questDone(p, q); return `<td class="r">${d === true ? `<span class="pos" title="Done">✓</span>` : d === false ? `<span class="neg" title="Not done">✗</span>` : `<span class="muted" title="Unknown">?</span>`}</td>`; }).join("")}</tr>`).join("")}</tbody>
-    </table></div>`;
+    // How many methods on the site need a quest ("X (started)" counts for X).
+    const uses = q => METHODS.filter(m => (m.reqs?.quests || []).some(r => r.replace(/ \(started\)$/, "") === q)).length;
+    const cell = (p, q) => {
+      const v = group.questState(p, q);
+      return v === 2 ? `<span class="pos" title="Done">✓</span>`
+        : v === 1 ? `<span class="qstarted" title="Started">Started</span>`
+        : v === 0 ? `<span class="neg" title="Not started">✗</span>`
+        : `<span class="muted" title="Unknown">?</span>`;
+    };
+    const wiki = q => `https://oldschool.runescape.wiki/w/${encodeURIComponent(q.replace(/ /g, "_"))}`;
+    const table = (title, list) => {
+      const done = p => list.filter(q => group.questState(p, q) === 2).length;
+      return `<h3 class="reqgroup">${title} <span class="muted">(${list.length})</span></h3>
+      <div class="board"><table class="qtable">
+        <thead><tr><th>Quest</th><th class="r">Methods</th>${ps.map(p => `<th class="r">${esc(p.name)}</th>`).join("")}</tr>
+          <tr class="subhead"><td class="muted">Source</td><td></td>${ps.map(p => `<td class="r">${syncLabel(p)}</td>`).join("")}</tr>
+          <tr class="subhead"><td class="muted">Done</td><td></td>${ps.map(p => `<td class="r num">${group.questSource(p) === "ok" ? `${done(p)}/${list.length}` : "–"}</td>`).join("")}</tr></thead>
+        <tbody>${list.map(q => `<tr><td><a href="${wiki(q)}" target="_blank" rel="noopener">${esc(q)}</a>${MINIQUESTS.has(q) ? ` <span class="pill">Mini</span>` : ""}</td>
+          <td class="r num">${uses(q) || ""}</td>
+          ${ps.map(p => `<td class="r">${cell(p, q)}</td>`).join("")}</tr>`).join("")}</tbody>
+      </table></div>`;
+    };
+    const all = group.allQuests();
+    host.innerHTML = table("Free-to-play quests", all.filter(q => F2P.has(q)))
+      + table("Members quests", all.filter(q => !F2P.has(q)));
   }
+
 
   function render() {
     renderGoals();

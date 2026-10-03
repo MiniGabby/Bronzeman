@@ -4,7 +4,7 @@
 // remembered in the browser (localStorage) and reused for CACHE_MS: a page refresh shows the
 // remembered stats instantly and only asks Wise Old Man again once they are older than that.
 import PLAYERS from "../../data/players.js";
-import QUESTS, { INFERRED } from "../../data/quests.js";
+import QUESTS, { INFERRED, ALL_QUESTS } from "../../data/quests.js";
 import { skillByName } from "./osrs.js";
 import { store } from "./store.js";
 
@@ -152,16 +152,31 @@ export const questSource = p => p.wikiStatus;
  * "X (started)" only needs the quest to be started.
  */
 export function questDone(p, quest) {
-  if (p.wikiQuests) {
-    const started = quest.match(/^(.+) \(started\)$/);
-    const v = p.wikiQuests[started ? started[1] : quest];
-    if (v != null) return started ? v >= 1 : v === 2;
-  }
+  const started = quest.match(/^(.+) \(started\)$/);
+  const v = questState(p, started ? started[1] : quest);
+  return v == null ? null : started ? v >= 1 : v === 2;
+}
+
+/**
+ * Progress on a quest: 2 = done, 1 = started, 0 = not started, null = unknown.
+ * WikiSync first, then the hand-kept list (true = done, false = not done) and what levels prove.
+ */
+export function questState(p, quest) {
+  const w = p.wikiQuests?.[quest];
+  if (w != null) return w;
   const v = questsByPlayer[p.id]?.[quest];
-  if (v === true || v === false) return v;
+  if (v === true) return 2;
+  if (v === false) return 0;
   const inf = INFERRED[quest];
-  if (inf && p.skills && level(p, inf.skill) >= inf.level) return true;
+  if (inf && p.skills && level(p, inf.skill) >= inf.level) return 2;
   return null;
+}
+
+/** Every quest name: the built-in list plus any new quest that shows up in WikiSync data. */
+export function allQuests() {
+  const set = new Set(ALL_QUESTS);
+  for (const p of state.players) for (const q of Object.keys(p.wikiQuests || {})) if (/\w/.test(q)) set.add(q);
+  return [...set].sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
 }
 
 /** Requirements the player doesn't meet yet: skill levels, plus quests known not to be done. */
