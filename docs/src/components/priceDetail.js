@@ -56,6 +56,77 @@ function lineChart(id, points, { yRange, xTicks, marks = [], note }) {
   </div>`;
 }
 
+/**
+ * One line per day over the hours of the day: sell offers red, buy offers blue.
+ * The most recent day is solid; older days fade out, so you can see whether the daily pattern repeats.
+ * rows = hourly series; days are calendar days in the viewer's time zone.
+ */
+function daysChart(id, rows, yRange, maxDays = 30) {
+  const byDay = new Map();
+  for (const r of rows) {
+    const d = new Date(r.timestamp * 1000);
+    const key = d.toDateString();
+    if (!byDay.has(key)) byDay.set(key, { date: d, hours: [] });
+    byDay.get(key).hours[d.getHours()] = r;
+  }
+  const days = [...byDay.values()].slice(-maxDays);
+  const [y0, y1] = yRange, ys = niceTicks(y0, y1);
+  const lo = Math.min(y0, ys[0] ?? y0), hi = Math.max(y1, ys.at(-1) ?? y1);
+  const X = h => PAD.l + (h / 23) * (W - PAD.l - PAD.r);
+  const Y = v => PAD.t + (1 - (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo || 1)) * (H - PAD.t - PAD.b);
+  const path = (day, key) => {
+    let d = "", pen = false;
+    for (let h = 0; h < 24; h++) {
+      const v = day.hours[h]?.[key];
+      if (!(v > 0)) { pen = false; continue; }
+      d += `${pen ? "L" : "M"}${X(h).toFixed(1)},${Y(v).toFixed(1)}`;
+      pen = true;
+    }
+    return d;
+  };
+  const n = days.length;
+  const opacity = i => (n < 2 ? 1 : 0.08 + 0.92 * (i / (n - 1)));   // oldest faint, newest solid
+  // Oldest first, so the newest lines are drawn on top.
+  const lines = days.map((day, i) => {
+    const o = opacity(i).toFixed(2), w = i === n - 1 ? 2.5 : 1.5;
+    return `<path class="ln sell" d="${path(day, "avgHighPrice")}" style="opacity:${o};stroke-width:${w}"/>`
+         + `<path class="ln buy" d="${path(day, "avgLowPrice")}" style="opacity:${o};stroke-width:${w}"/>`;
+  }).join("");
+  const last = days[n - 1];
+  const lastVal = key => { for (let h = 23; h >= 0; h--) { const v = last?.hours[h]?.[key]; if (v > 0) return { h, v }; } return null; };
+  const ls = lastVal("avgHighPrice"), lb = lastVal("avgLowPrice");
+  let ysl = ls ? Y(ls.v) : 0, yb = lb ? Y(lb.v) : 0;
+  if (ls && lb && Math.abs(yb - ysl) < 14) { const mid = (yb + ysl) / 2; ysl = mid - 7; yb = mid + 7; }
+
+  // Tooltip per hour: the most recent day's prices, and the lowest–highest over all days shown.
+  const fmtDay = d => d.date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+  const pts = Array.from({ length: 24 }, (_, h) => {
+    const vals = key => days.map(d => d.hours[h]?.[key]).filter(v => v > 0);
+    const s = vals("avgHighPrice"), b = vals("avgLowPrice");
+    const recent = key => { for (let i = n - 1; i >= 0; i--) { const v = days[i].hours[h]?.[key]; if (v > 0) return { v, day: days[i] }; } return null; };
+    return { x: h / 23, h, s, b, rs: recent("avgHighPrice"), rb: recent("avgLowPrice") };
+  });
+  const range = a => (a.length ? `${gp(Math.min(...a))}–${gp(Math.max(...a))}` : "–");
+  store.set(id, { pts, tip: q => `<b>${history.hourLabel(q.h)}</b>
+    <div><span class="sw sell"></span><b class="num">${q.rs ? gp(q.rs.v) : "–"}</b> sell offer${q.rs ? ` on ${esc(fmtDay(q.rs.day))}` : ""} · range ${range(q.s)}</div>
+    <div><span class="sw buy"></span><b class="num">${q.rb ? gp(q.rb.v) : "–"}</b> buy offer${q.rb ? ` on ${esc(fmtDay(q.rb.day))}` : ""} · range ${range(q.b)}</div>
+    <div class="sub2">Range = lowest–highest of the last ${n} days at this hour</div>` });
+
+  return `<div class="chartbox" data-chart="${id}">
+    <svg viewBox="0 0 ${W} ${H}" class="pchart" role="img" aria-label="Buy and sell offer prices per hour for each of the last ${n} days">
+      ${ys.map(v => `<line class="grid" x1="${PAD.l}" x2="${W - PAD.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${PAD.l - 8}" y="${Y(v) + 4}" text-anchor="end">${gp(v)}</text>`).join("")}
+      ${[0, 3, 6, 9, 12, 15, 18, 21].map(h => `<line class="grid v" x1="${X(h)}" x2="${X(h)}" y1="${PAD.t}" y2="${H - PAD.b}"/><text class="ax" x="${X(h)}" y="${H - PAD.b + 18}" text-anchor="middle">${history.hourLabel(h)}</text>`).join("")}
+      ${lines}
+      ${ls ? `<text class="dl sell" x="${W - PAD.r + 8}" y="${ysl + 4}">Sell offer</text>` : ""}
+      ${lb ? `<text class="dl buy" x="${W - PAD.r + 8}" y="${yb + 4}">Buy offer</text>` : ""}
+      <line class="xhair" x1="0" x2="0" y1="${PAD.t}" y2="${H - PAD.b}" visibility="hidden"/>
+      <rect class="hit" x="${PAD.l}" y="${PAD.t}" width="${W - PAD.l - PAD.r}" height="${H - PAD.t - PAD.b}"/>
+    </svg>
+    <div class="ptip" hidden></div>
+  </div>
+  <div class="dayscale" aria-hidden="true"><span>${n ? esc(fmtDay(days[0])) : ""}</span><span class="fade"></span><span>${n ? esc(fmtDay(last)) + (last.date.toDateString() === new Date().toDateString() ? " (today)" : "") : ""}</span></div>`;
+}
+
 const store = new Map();   // chart id -> points, for the tooltips
 
 /** HTML for the detail panel. rows = hourly series, t = analysis, p = the merch plan for this item. */
@@ -115,6 +186,9 @@ export function detailHTML(it, t, p, rows) {
       note: `Typical buy and sell offer prices of ${it.name} per hour of the day`
     })}
     <p class="fine">Typical price per hour = the median price of the last 24 hours × how that hour usually compares with its day's average over the last ${days} days.</p>
+    <h4>Every day of the last ${Math.min(30, new Set(rows.map(r => new Date(r.timestamp * 1000).toDateString())).size)} days (your time)</h4>
+    ${daysChart(`days-${it.id}`, rows, yRange)}
+    <p class="fine">One red line (sell offers) and one blue line (buy offers) per day: the most recent day is solid, older days fade out. If the dips and peaks line up day after day, the pattern is real. Hover for each hour's prices.</p>
     <details data-tbl="${it.id}"><summary>Hour-by-hour table</summary>
       <div class="board"><table>
         <thead><tr><th>Hour</th><th class="r">Buy offer</th><th class="r">Cheaper than average</th><th class="r">Sell offer</th><th class="r">Dearer than average</th><th class="r">Traded / hr (buy · sell side)</th></tr></thead>

@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Merching: every day in one chart", link: "#/merch",
+    items: [
+      "Click an item on the Merching tab for a new third chart: the buy and sell prices through the day, with one line for every day of the last weeks. The most recent day is solid, older days fade out, so you can see if the cheap and expensive hours really come back every day.",
+      "Sell offers are now red in all charts (they were orange); buy offers stay blue."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Pick your name at the top", link: "#/player",
     items: [
       "New \"You\" menu at the top of every page, next to Instant / Offers / Mid. Pick your own name once and the site shows your options by default: the Player tab opens on your page, Money makers and skill training use your levels, and your column is highlighted on the Group page.",
