@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Thieving guide to 99", link: "#/training/thieving",
+    items: [
+      "Three routes. Fastest: stalls, then blackjacking bandits and Menaphite thugs in Pollnivneach (up to 265K XP per hour, needs part of The Feud). Relaxed: stalls, master farmers, then Ardougne knights from 55. Best of both picks per level range from your time value.",
+      "Thieving costs nothing and pays coins straight into your inventory, so every method shows the coins you get per hour. Stealing artefacts in Port Piscarilius (49) is on the site too.",
+      "Tip: Thieving quests (Biohazard, Hazeel Cult, Fight Arena, The Giant Dwarf and more) give about 48,700 XP, enough for level 1 to about 38."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Skill training follows the You menu", link: "#/training",
     items: ["The \"Levels of\" menu on the Skill training page is gone: the skills now show the levels of whoever is picked in the \"You\" menu at the top (or the group's best when nobody is picked)."]
   },

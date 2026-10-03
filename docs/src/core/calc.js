@@ -36,7 +36,9 @@ export function compute(m) {
   const fees = (m.fees || []).map(f => ({ ...f, each: perHour > 0 ? f.perHour / perHour : 0 }));
   const missing = [...ins, ...outs].some(r => r.total == null);
   const cost = ins.reduce((a, r) => a + (r.total || 0), 0) + fees.reduce((a, f) => a + f.each, 0);
-  const revenue = outs.reduce((a, r) => a + (r.total || 0), 0);
+  // Coins you get straight away per action (e.g. pickpocketing), not traded so no GE tax.
+  const coins = Number(m.coins) || 0;
+  const revenue = outs.reduce((a, r) => a + (r.total || 0), 0) + coins;
   const taxEach = outs.reduce((a, r) => a + (r.tax || 0) * r.qty, 0);
   const profit = missing ? null : revenue - cost;
 
@@ -51,7 +53,7 @@ export function compute(m) {
 
   const xpHr = Object.fromEntries(Object.entries(m.xp || {}).map(([s, v]) => [s, v * perHour]));
   return {
-    perHour, ins, outs, fees, cost, revenue, taxEach, profit,
+    perHour, ins, outs, fees, coins, cost, revenue, taxEach, profit,
     profitHr: profit == null ? null : profit * perHour,
     limitActions, limitItem, xpHr,
     xpTotalHr: Object.values(xpHr).reduce((a, b) => a + b, 0)

@@ -164,5 +164,42 @@ export default {
         ]
       }
     ]
+  },
+  thieving: {
+    intro: "Thieving costs nothing and mostly pays out coins straight into your inventory, so there's nothing to buy or sell on the GE: a good bronzeman skill. Quests skip the slow start: Biohazard, Hazeel Cult, Fight Arena, Tribal Totem, The Giant Dwarf, Death to the Dorgeshuun, The Golem, Creature of Fenkenstrain and more together give about 48,700 Thieving XP (level 1 to about 38). Bring food for every pickpocketing method.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Stalls until 45, then blackjacking in Pollnivneach all the way: Menaphite thugs give 230K to 265K XP per hour from level 65. You need to be far enough in The Feud, and it's click-intensive: you knock out, pickpocket twice, and repeat.",
+        route: [
+          { from: 1, to: 5, method: "thieve-men" },
+          { from: 5, to: 25, method: "thieve-bakery-stall" },
+          { from: 25, to: 45, method: "thieve-fruit-stall" },
+          { from: 45, to: 55, method: "thieve-bearded-bandits" },
+          { from: 55, to: 65, method: "thieve-bandits" },
+          { from: 65, to: 99, method: "thieve-menaphite-thugs" }
+        ]
+      },
+      {
+        key: "relaxed", name: "Relaxed",
+        intro: "Less clicking: stalls, then master farmers (seeds for Farming), then Ardougne knights from 55 to 99. Slower than blackjacking, but simple, and the knights earn a lot of coins. The Medium Ardougne Diary (+10% success) makes the knights noticeably better.",
+        route: [
+          { from: 1, to: 5, method: "thieve-men" },
+          { from: 5, to: 25, method: "thieve-bakery-stall" },
+          { from: 25, to: 38, method: "thieve-fruit-stall" },
+          { from: 38, to: 55, method: "master-farmers", note: "Plant or sell the seeds; ranarr and snapdragon seeds are worth the most." },
+          { from: 55, to: 99, method: "thieve-ardougne-knights" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live: for every level range it picks the method with the lowest total cost, counting the coins you earn and the time it takes, valued at what you say your time is worth below. With a high value it picks the fastest XP, with a low value the most coins.",
+        from: 1, to: 99,
+        candidates: [
+          "thieve-men", "thieve-bakery-stall", "thieve-fruit-stall", "master-farmers", "thieve-artefacts",
+          "thieve-bearded-bandits", "thieve-bandits", "thieve-menaphite-thugs", "thieve-ardougne-knights"
+        ]
+      }
+    ]
   }
 };

@@ -108,6 +108,9 @@ export function createMethodCard(m) {
         <td>${esc(f.label)}</td><td class="r num"></td><td class="r num">${gp(f.perHour)}<div class="sub2">per hour</div></td><td></td>
         <td class="r num neg">-${gp(f.each * mult)}</td><td colspan="2"></td></tr>`).join("") : "") +
       (c.outs.length ? `<tr class="sect"><td colspan="7">You sell</td></tr>` + c.outs.map(r => row(r, true)).join("") : "") +
+      (c.coins ? `<tr class="sect"><td colspan="7">You get</td></tr><tr>
+        <td>Coins${m.coinsLabel ? ` <span class="muted">(${esc(m.coinsLabel)})</span>` : ""}</td><td class="r num">${qty(c.coins * mult)}</td><td></td><td class="r num">0</td>
+        <td class="r num pos">+${gp(c.coins * mult)}</td><td colspan="2"></td></tr>` : "") +
       `<tr class="total"><td colspan="4">Profit per ${perHourTable ? "hour" : esc(m.action)}</td><td class="r num ${cls(totalProfit)}">${gp(totalProfit)}</td><td colspan="2"></td></tr>`;
     if (focused) {
       const [id, side] = focused.split(":");

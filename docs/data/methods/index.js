@@ -17,6 +17,7 @@ import craftingJewellery from "./crafting-jewellery.js";
 import smithing from "./smithing.js";
 import fletching from "./fletching.js";
 import cooking from "./cooking.js";
+import thieving from "./thieving.js";
 
 export default [
   sapphireRings,
@@ -36,5 +37,6 @@ export default [
   ...craftingJewellery, // one file with all jewellery crafting
   ...smithing,          // anvil and Blast Furnace methods for the Smithing routes
   ...fletching,         // arrows, darts and bows for the Fletching routes
-  ...cooking            // fish and wine for the Cooking routes
+  ...cooking,           // fish and wine for the Cooking routes
+  ...thieving           // pickpocketing, stalls and artefacts for the Thieving routes
 ];
