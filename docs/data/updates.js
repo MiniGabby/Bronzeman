@@ -6,7 +6,7 @@ export default [
     date: "2026-10-03", title: "Quests load automatically with WikiSync", link: "#/group",
     items: [
       "If you use the WikiSync plugin in RuneLite, your quests now load on the site automatically (Group page, player pages and the \"who can do it\" checks). Mini Gabby's already work.",
-      "Not set up yet? In RuneLite, open the Plugin Hub, install or turn on WikiSync, and log in once. Until then your quests are filled in by hand."
+      "Not set up yet? In RuneLite, open the Plugin Hub, install or turn on WikiSync, and log in once. The site checks for new WikiSync data every 3 hours; until then your quests are filled in by hand."
     ]
   },
   {

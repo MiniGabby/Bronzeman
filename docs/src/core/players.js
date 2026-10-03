@@ -118,31 +118,28 @@ export const xp = (p, skillName) => Math.max(0, skillData(p, skillName)?.experie
 const questsByPlayer = Object.fromEntries(Object.entries(QUESTS).map(([n, q]) => [idOf(n), q]));
 
 // ---- Quests from the wiki's WikiSync (players with the WikiSync plugin in RuneLite) ----
-// GET https://sync.runescape.wiki/runelite/player/<name>/STANDARD → { timestamp, quests: { "Quest name": 0|1|2 } }
-// 0 = not started, 1 = started, 2 = done. Players without the plugin get { code: "NO_USER_DATA" }.
-const SYNC = "https://sync.runescape.wiki/runelite/player/";
-const SYNC_MS = 60 * 60_000;
-const syncCache = store.get("wikisync", {});
-for (const p of state.players) if (syncCache[p.id]) Object.assign(p, { wikiQuests: syncCache[p.id].quests, wikiAt: syncCache[p.id].at, wikiStatus: syncCache[p.id].status });
+// The wiki doesn't let other websites read WikiSync from the browser, so a GitHub Action
+// (.github/workflows/sync-wikisync.yml) fetches it every 3 hours into data/wikisync.json:
+// { generatedAt, players: { "<RuneScape name>": { status: "ok"|"none"|"error", timestamp, quests: { "Quest": 0|1|2 } } } }
+// 0 = not started, 1 = started, 2 = done; "none" = no WikiSync data (plugin not used).
+let syncGeneratedAt = null;
+export const questsSyncedAt = () => syncGeneratedAt;
 
-/** Loads quest progress from WikiSync for everyone (cached for an hour). */
-export async function loadQuests({ force = false } = {}) {
-  const todo = state.players.filter(p => force || !syncCache[p.id] || Date.now() - syncCache[p.id].fetchedAt > SYNC_MS);
-  if (!todo.length) return;
-  await Promise.all(todo.map(async p => {
-    let entry;
-    try {
-      const r = await fetch(SYNC + encodeURIComponent(p.name.replace(/ /g, "_")) + "/STANDARD");
-      const j = await r.json().catch(() => ({}));
-      entry = j.quests ? { status: "ok", quests: j.quests, at: j.timestamp }
-        : { status: j.code === "NO_USER_DATA" ? "none" : "error", quests: null, at: null };
-    } catch {
-      entry = { status: "error", quests: null, at: null };   // network or the site blocks cross-site requests
+/** Loads data/wikisync.json and attaches each player's quests. */
+export async function loadQuests() {
+  try {
+    const r = await fetch("data/wikisync.json", { cache: "no-cache" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    syncGeneratedAt = j.generatedAt || null;
+    const byId = Object.fromEntries(Object.entries(j.players || {}).map(([n, v]) => [idOf(n), v]));
+    for (const p of state.players) {
+      const v = byId[p.id];
+      Object.assign(p, { wikiQuests: v?.status === "ok" ? v.quests : null, wikiAt: v?.timestamp || null, wikiStatus: v ? v.status : "none" });
     }
-    syncCache[p.id] = { ...entry, fetchedAt: Date.now() };
-    Object.assign(p, { wikiQuests: entry.quests, wikiAt: entry.at, wikiStatus: entry.status });
-  }));
-  store.set("wikisync", syncCache);
+  } catch {
+    for (const p of state.players) p.wikiStatus = "error";
+  }
   emit();
 }
 

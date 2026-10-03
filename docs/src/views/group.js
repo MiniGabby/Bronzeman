@@ -75,7 +75,7 @@ export function mount(root) {
 
     <section class="section">
       <h2 class="pagetitle small">Quests</h2>
-      <p class="fine">Quests that methods or routes on this site need. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; it updates every time you log in). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ? means unknown.</p>
+      <p class="fine">Quests that methods or routes on this site need. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; the site checks for new data every 3 hours). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ? means unknown.</p>
       <div data-f="quests"></div>
     </section>`;
 
@@ -192,9 +192,9 @@ export function mount(root) {
 
   const syncLabel = p => {
     const s = group.questSource(p);
-    if (s === "ok") return `<span class="pill good" title="From WikiSync, ${esc(p.wikiAt ? new Date(p.wikiAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "")}">WikiSync ${esc(p.wikiAt ? ago(p.wikiAt) : "")}</span>`;
-    if (s === "none") return `<span class="sub2" title="No WikiSync data: turn on the WikiSync plugin in RuneLite and log in">By hand</span>`;
-    if (s === "error") return `<span class="sub2" title="Couldn't reach WikiSync">By hand</span>`;
+    if (s === "ok") return `<span class="pill good" title="From WikiSync: ${esc(p.wikiAt ? new Date(p.wikiAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "")}">WikiSync ${esc(p.wikiAt ? ago(p.wikiAt) : "")}</span>`;
+    if (s === "none") return `<span class="sub2" title="No WikiSync data: turn on the WikiSync plugin in RuneLite and log in. The site checks every 3 hours.">By hand</span>`;
+    if (s === "error") return `<span class="sub2" title="Couldn't load the WikiSync data">By hand</span>`;
     return `<span class="sub2">…</span>`;
   };
 
