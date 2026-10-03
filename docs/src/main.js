@@ -2,6 +2,8 @@
 import * as prices from "./core/prices.js";
 import * as group from "./core/players.js";
 import * as unlocks from "./core/unlocks.js";
+import * as me from "./core/me.js";
+import PLAYERS from "../data/players.js";
 import * as money from "./views/money.js";
 import * as training from "./views/training.js";
 import * as groupView from "./views/group.js";
@@ -57,6 +59,12 @@ function renderStatus() {
     text.textContent = `Live prices · updated ${fetchedAt.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
   }
 }
+
+// "Who are you?" picker in the header.
+const meSel = document.getElementById("meSel");
+meSel.innerHTML = `<option value="">Everyone</option>` + PLAYERS.map(n => `<option>${n.replace(/[&<>"]/g, "")}</option>`).join("");
+meSel.value = PLAYERS.includes(me.get()) ? me.get() : "";
+meSel.addEventListener("change", () => me.set(meSel.value));
 
 prices.onChange(() => { renderMode(); renderStatus(); });
 renderMode();

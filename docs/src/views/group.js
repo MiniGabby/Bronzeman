@@ -6,6 +6,7 @@ import GOALS from "../../data/goals.js";
 import { F2P, MINIQUESTS } from "../../data/quests.js";
 import METHODS from "../../data/methods/index.js";
 import { store } from "../core/store.js";
+import * as me from "../core/me.js";
 import { esc, ago, nf, short, gp } from "../core/format.js";
 
 export const title = "Group";
@@ -236,12 +237,13 @@ export function mount(root) {
     renderButton();
     renderGains();
     renderLevels();
+    me.markColumns(root);
   }
 
-  const off = group.onChange(render);
+  const off = group.onChange(render), offMe = me.onChange(render);
   const tick = setInterval(renderButton, 30_000);
   group.loadGains(period);
   if (GOALS.length && period !== "week") group.loadGains("week");   // goals measure progress from the start of the week
   render();
-  return () => { off(); clearInterval(tick); };
+  return () => { off(); offMe(); clearInterval(tick); };
 }

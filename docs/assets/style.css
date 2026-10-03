@@ -287,3 +287,9 @@ tr.detailrow > td{background:var(--surface-2);white-space:normal;padding:16px 18
 .qtable td:first-child{white-space:normal;min-width:220px}
 .qstarted{font-size:12px;font-weight:600;color:var(--warn)}
 .pill:not(.good):not(.bad):not(.warn){background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line)}
+
+/* "You" picker in the header, and the matching column highlight */
+.mepick{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px 4px 3px 10px}
+.mepick .label{font:600 12px var(--sans);color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em}
+.mepick select{font:600 13px var(--sans);border:0;background:transparent;color:var(--ink);padding:5px 4px;cursor:pointer}
+th.me,td.me{background:var(--gold-soft)}

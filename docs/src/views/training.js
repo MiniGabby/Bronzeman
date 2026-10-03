@@ -7,6 +7,7 @@ import * as group from "../core/players.js";
 import * as unlocks from "../core/unlocks.js";
 import { SKILLS, skillByKey, xpForLevel, levelForXp } from "../core/osrs.js";
 import { store } from "../core/store.js";
+import * as me from "../core/me.js";
 import { esc, gp, short, signed, cls, duration, nf } from "../core/format.js";
 import { createMethodCard } from "../components/methodCard.js";
 import GUIDES from "../../data/skill-guides.js";
@@ -43,6 +44,7 @@ function mountSkill(root, skill) {
   const methods = methodsFor(skill.name);
   const key = "train:" + skill.key;
   const goal = Object.assign({ player: "", current: 1, target: 50, sort: "cheap" }, store.get(key, {}));
+  if (me.get()) goal.player = me.get();
   const save = () => store.set(key, goal);
 
   root.innerHTML = `
@@ -80,8 +82,9 @@ function mountSkill(root, skill) {
     const opts = group.all().filter(p => p.skills)
       .map(p => `<option value="${esc(p.name)}">${esc(p.name)} (${group.level(p, skill.name)})</option>`).join("");
     playerSel.innerHTML = `<option value="">Custom level</option>${opts}`;
+    // Match case-insensitively: Wise Old Man may capitalise names differently from data/players.js.
+    goal.player = group.all().find(p => p.skills && p.name.toLowerCase() === (goal.player || "").toLowerCase())?.name || "";
     playerSel.value = goal.player;
-    if (playerSel.value !== goal.player) goal.player = "";
   }
 
   function currentXp() {
@@ -250,7 +253,8 @@ function mountSkill(root, skill) {
     document.getElementById(a.dataset.jump)?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render)];
+  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render),
+    me.onChange(() => { goal.player = me.get(); save(); render(); })];
   render();
   return () => offs.forEach(off => off());
 }

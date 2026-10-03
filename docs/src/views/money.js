@@ -6,6 +6,7 @@ import * as group from "../core/players.js";
 import * as unlocks from "../core/unlocks.js";
 import { esc, gp, short, cls } from "../core/format.js";
 import { store } from "../core/store.js";
+import * as me from "../core/me.js";
 import { createMethodCard } from "../components/methodCard.js";
 
 export const title = "Money makers";
@@ -13,6 +14,7 @@ export const title = "Money makers";
 export function mount(root) {
   const methods = METHODS.filter(m => (m.tags || ["money"]).includes("money"));
   const filter = Object.assign({ player: "", within: 5 }, store.get("moneyFilter", {}));
+  if (me.get()) filter.player = me.get();   // "You" in the header wins when the page opens
   const save = () => store.set("moneyFilter", filter);
   root.innerHTML = `
     <form class="toolbar" data-f="filter">
@@ -87,7 +89,9 @@ export function mount(root) {
   function fillPlayers() {
     const names = group.all().filter(p => p.skills).map(p => p.name);
     playerSel.innerHTML = `<option value="">Anyone in the group</option>${names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join("")}`;
-    playerSel.value = names.includes(filter.player) ? filter.player : "";
+    // Match case-insensitively: Wise Old Man may capitalise names differently from data/players.js.
+    filter.player = names.find(n => n.toLowerCase() === (filter.player || "").toLowerCase()) || "";
+    playerSel.value = filter.player;
   }
 
   function render() {
@@ -137,7 +141,8 @@ export function mount(root) {
     document.getElementById(a.dataset.jump)?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render)];
+  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render),
+    me.onChange(() => { filter.player = me.get(); save(); render(); })];
   render();
   return () => offs.forEach(off => off());
 }

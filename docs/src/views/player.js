@@ -15,6 +15,7 @@ import { goalCard } from "./group.js";
 import { tipFor } from "../core/unlockTips.js";
 import { skillByKey } from "../core/osrs.js";
 import { store } from "../core/store.js";
+import * as me from "../core/me.js";
 import { esc, gp, short, signed, cls } from "../core/format.js";
 
 export const title = "Player";
@@ -22,7 +23,8 @@ export const title = "Player";
 const NEAR = 5;   // "almost there" = within this many levels
 
 export function mount(root, [nameParam]) {
-  let chosen = nameParam ? decodeURIComponent(nameParam) : store.get("playerPage", "");
+  // A name in the link wins, then "You" in the header, then the last player viewed here.
+  let chosen = nameParam ? decodeURIComponent(nameParam) : me.get() || store.get("playerPage", "");
 
   root.innerHTML = `
     <form class="toolbar" data-f="pick">
@@ -140,7 +142,8 @@ export function mount(root, [nameParam]) {
   }
 
   if (GOALS.length) group.loadGains("week");
-  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render), history.onChange(render)];
+  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render), history.onChange(render),
+    me.onChange(() => { if (me.get()) { chosen = me.get(); render(); } })];
   render();
   return () => offs.forEach(off => off());
 }

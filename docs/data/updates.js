@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Pick your name at the top", link: "#/player",
+    items: [
+      "New \"You\" menu at the top of every page, next to Instant / Offers / Mid. Pick your own name once and the site shows your options by default: the Player tab opens on your page, Money makers and skill training use your levels, and your column is highlighted on the Group page.",
+      "It's saved in your own browser, so everyone picks their own name on their own device. You can still look at someone else's page with the menus on each page."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Quests load automatically with WikiSync", link: "#/group",
     items: [
       "The Group page now lists every quest and miniquest, A to Z, in two tables: free-to-play (24) and members (189). Each shows done, started or not started per player, and how many each of us has done.",
