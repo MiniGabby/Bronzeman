@@ -29,8 +29,8 @@ export function mount(root, [skillKey]) {
 const ICON = name => `https://oldschool.runescape.wiki/images/${encodeURIComponent(name)}_icon.png`;
 
 function mountGrid(root) {
-  let who = me.get() || "";   // player name, or "" = group best
   function render() {
+    const who = me.get() || "";   // the "You" menu at the top; none picked = group best
     const ps = group.all().filter(p => p.skills);
     const p = who && ps.find(x => x.name.toLowerCase() === who.toLowerCase());
     const bestOf = s => (ps.length ? Math.max(...ps.map(x => group.level(x, s.name))) : null);
@@ -39,11 +39,7 @@ function mountGrid(root) {
     const bestTotal = SKILLS.reduce((t, s) => t + (bestOf(s) || 0), 0);
     root.innerHTML = `
       <p class="lead">Pick a skill to compare every method that trains it: what it costs or earns per XP, how fast it is, and what it takes to reach your next goal.</p>
-      <form class="toolbar" data-f="who">
-        <div class="field"><label for="g-who">Levels of</label>
-          <select id="g-who"><option value="">Group best</option>${group.all().map(x => `<option>${esc(x.name)}</option>`).join("")}</select></div>
-        <p class="fine">${p ? `${esc(p.name)}'s level / the group's highest. ` : ""}Bar = progress to the next level${p ? "" : " (shown for a single player only)"}. "Route" = this skill has a training route.</p>
-      </form>
+      <p class="fine">${p ? `${esc(p.name)}'s level / the group's highest. Bar = progress to the next level.` : "The group's highest level per skill. Pick your name in the \"You\" menu at the top to see your own levels and progress."} "Route" = this skill has a training route.</p>
       <div class="rsgrid" role="list">${SKILLS.map(s => {
         const n = methodsFor(s.name).length, lvl = levelOf(s), best = bestOf(s);
         const top = best && ps.filter(x => group.level(x, s.name) === best).map(x => x.name).join(", ");
@@ -62,12 +58,8 @@ function mountGrid(root) {
       }).join("")}
         <div class="rstotal">Total level: ${group.loaded() ? nf.format(total) : "…"}${p ? `<span class="rsbest">/${nf.format(bestTotal)}</span> <span>(${esc(p.name)} / group best per skill)</span>` : " <span>(group best per skill)</span>"}</div>
       </div>`;
-    const sel = root.querySelector("#g-who");
-    sel.value = p ? p.name : "";
-    sel.addEventListener("change", () => { who = sel.value; render(); });
-    root.querySelector('[data-f="who"]').addEventListener("submit", e => e.preventDefault());
   }
-  const offs = [group.onChange(render), me.onChange(() => { who = me.get(); render(); })];
+  const offs = [group.onChange(render), me.onChange(render)];
   render();
   return () => offs.forEach(off => off());
 }

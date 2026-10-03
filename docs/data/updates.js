@@ -3,6 +3,10 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Skill training follows the You menu", link: "#/training",
+    items: ["The \"Levels of\" menu on the Skill training page is gone: the skills now show the levels of whoever is picked in the \"You\" menu at the top (or the group's best when nobody is picked)."]
+  },
+  {
     date: "2026-10-03", title: "Fletching and Cooking guides to 99", link: "#/training/fletching",
     items: [
       "Fletching: three routes. Fastest uses darts from level 10 (needs The Tourist Trap), Cheapest cuts unstrung bows from logs, and Best of both picks per level range from arrows, darts, bows and stringing, using the time value you set.",
