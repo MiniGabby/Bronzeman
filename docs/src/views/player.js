@@ -13,7 +13,7 @@ import { plans as flipPlans } from "../core/flips.js";
 import { goals as unlockGoals } from "../core/unlockGoals.js";
 import { goalCard } from "./group.js";
 import { tipFor } from "../core/unlockTips.js";
-import { stepsOf } from "../core/autoRoute.js";
+import { stepsOf, missingQuests, doableAlt } from "../core/autoRoute.js";
 import { skillByKey } from "../core/osrs.js";
 import { store } from "../core/store.js";
 import * as me from "../core/me.js";
@@ -80,7 +80,17 @@ export function mount(root, [nameParam]) {
       if (!m) return `<li>${head}: ${esc(st.method)}</li>`;
       const c = calc.compute(m), xpHr = c.xpHr[skill.name] || 0, gpXp = c.profitHr != null && xpHr ? c.profitHr / xpHr : null;
       const locked = unlocks.lockedInputs(m) || [];
-      return `<li>${head}: <b>${esc(m.name)}</b> until ${st.to} <span class="muted">· ${short(xpHr)} XP/hr · <span class="${cls(gpXp)}">${gpXp == null ? "–" : (gpXp > 0 ? "+" : "") + gpXp.toFixed(1)}</span> gp/XP</span>${locked.length ? ` <span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>` : ""}${(m.reqs?.quests || []).filter(q => group.questDone(p, q) !== true).map(q => ` <span class="pill warn">Needs ${esc(q)}${group.questDone(p, q) === null ? "?" : ""}</span>`).join("")}</li>`;
+      // Blocked by a lock or a missing quest: name the best method this player can do right now.
+      let altLine = "";
+      if (locked.length || missingQuests(m, p).length) {
+        const rows = METHODS.filter(x => (x.xp?.[skill.name] || 0) > 0).map(x => {
+          const cx = calc.compute(x), xh = cx.xpHr[skill.name] || 0;
+          return { m: x, xpHr: xh, req: x.reqs?.skills?.[skill.name] || 1, gpXp: cx.profitHr != null && xh ? cx.profitHr / xh : null };
+        });
+        const alt = doableAlt(rows, lvl, p, r.auto ? "auto" : r.prefer);
+        altLine = alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${short(alt.xpHr)} XP/hr)</div>` : "";
+      }
+      return `<li${missingQuests(m, p).length ? ` class="questneed"` : ""}>${head}: <b>${esc(m.name)}</b> until ${st.to} <span class="muted">· ${short(xpHr)} XP/hr · <span class="${cls(gpXp)}">${gpXp == null ? "–" : (gpXp > 0 ? "+" : "") + gpXp.toFixed(1)}</span> gp/XP</span>${locked.length ? ` <span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>` : ""}${(m.reqs?.quests || []).filter(q => group.questDone(p, q) !== true).map(q => ` <span class="pill warn">Needs ${esc(q)}${group.questDone(p, q) === null ? "?" : ""}</span>`).join("")}${altLine}</li>`;
     });
     return section("Training routes", `<ul class="plist">${items.join("")}</ul>`, { href: "#/training", text: "All skills" });
   }

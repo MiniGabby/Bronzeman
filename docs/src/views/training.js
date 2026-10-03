@@ -12,7 +12,7 @@ import { esc, gp, short, signed, cls, duration, nf } from "../core/format.js";
 import { createMethodCard } from "../components/methodCard.js";
 import GUIDES from "../../data/skill-guides.js";
 import { tipFor } from "../core/unlockTips.js";
-import { stepsOf, timeValue, setTimeValue } from "../core/autoRoute.js";
+import { stepsOf, timeValue, setTimeValue, missingQuests, doableAlt } from "../core/autoRoute.js";
 
 export const title = "Skill training";
 
@@ -123,7 +123,6 @@ function mountSkill(root, skill) {
     const active = routes.find(r => r.key === routeKey());
     const byId = Object.fromEntries(rows.map(r => [r.m.id, r]));
     const steps0 = stepsOf(active, skill.name, quester());
-    const usable = (r, level) => r.m.routeAlt !== false && r.req <= level && unlocks.lockedInputs(r.m)?.length === 0 && r.gpXp != null;
     const needTips = new Map();
     let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true;
 
@@ -139,22 +138,30 @@ function mountSkill(root, skill) {
       const xp = Math.max(0, xpForLevel(st.to) - xpForLevel(st.from));
       const locked = rec ? unlocks.lockedInputs(rec.m) : null;
       locked?.forEach(x => { if (tipFor(x.name)) needTips.set(x.name, tipFor(x.name)); });
-      // Best method that works right now for this range (level ok, everything unlocked): the fastest.
-      // On a route with prefer: "cheap", the fastest one that doesn't cost money (if there is one).
-      const fastest = list => list.sort((a, b) => (b.xpHr - a.xpHr) || (b.gpXp - a.gpXp))[0];
-      const open = rows.filter(r => usable(r, st.from));
-      const alt = (active.prefer === "cheap" && fastest(open.filter(r => r.gpXp >= 0))) || fastest(open);
+      // Quests the chosen player still needs for this method (known not done) or that we don't know about.
+      const p = quester();
+      const needQ = rec ? missingQuests(rec.m, p) : [];
+      const unkQ = rec && p ? (rec.m.reqs?.quests || []).filter(q => group.questDone(p, q) === null) : [];
+      const blocked = (locked?.length || 0) + needQ.length > 0;
+      // Best method that works right now for this range (level ok, everything unlocked, no missing quest),
+      // picked the same way as the route: by gold + time on auto routes, cheapest on prefer: "cheap", else fastest.
+      const alt = doableAlt(rows, st.from, p, active.auto ? "auto" : active.prefer);
       const cost = r => r && r.xpHr ? { h: xp / r.xpHr, gp: (xp / r.xpHr) * (r.c.profitHr ?? 0) } : null;
-      const cr = cost(rec), ca = cost(locked?.length ? alt : rec);
+      const cr = cost(rec), ca = cost(blocked ? alt : rec);
       if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
       if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
-      return `<tr class="${here ? "here" : ""}">${lv}
+      const status = [
+        locked == null ? "…" : locked.length ? `<span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>` : "",
+        ...needQ.map(q => `<span class="pill warn" title="${esc(p.name)} hasn't done this quest yet">Needs quest: ${esc(q)}</span>`),
+        ...unkQ.map(q => `<span class="sub2" title="Not known if ${esc(p.name)} has done it">Needs ${esc(q)} (done?)</span>`)
+      ].filter(Boolean);
+      return `<tr class="${[here ? "here" : "", needQ.length ? "questneed" : ""].join(" ").trim()}">${lv}
         <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
         <td class="r num">${rec ? short(rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
         <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? duration(cr.h) : ""}</div></td>
-        <td class="wrapcell">${locked == null ? "…" : !locked.length ? `<span class="pill good">All unlocked</span>` :
-          `<span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>${alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${short(alt.xpHr)} XP/hr, ${fmtGpXp(alt.gpXp)} gp/XP)</div>` : ""}`}</td>
+        <td class="wrapcell">${status.length ? status.join(" ") : `<span class="pill good">All unlocked</span>`}${blocked
+          ? (alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${short(alt.xpHr)} XP/hr, ${fmtGpXp(alt.gpXp)} gp/XP)</div>` : `<div class="sub2">Nothing else on the site fits this level yet.</div>`) : ""}</td>
       </tr>`;
     }).join("");
 
@@ -169,14 +176,14 @@ function mountSkill(root, skill) {
         <div class="field"><label for="t-timevalue">Your time is worth (gp per hour)</label>
           <input id="t-timevalue" type="number" min="0" step="100000" inputmode="numeric" value="${timeValue()}"></div>
         <div class="presets">${[0, 250_000, 500_000, 1_000_000, 2_000_000, 5_000_000].map(v => `<button type="button" data-tv="${v}">${v ? short(v) : "Only cost"}</button>`).join("")}</div>
-        <p class="fine">Higher = faster route, lower = cheaper route. A good value is what your best money maker earns per hour: an hour spent training is an hour you're not making money.${quester() ? ` Methods that need a quest ${esc(quester().name)} hasn't done are skipped.` : " Pick a player above to skip methods that need a quest they haven't done."}</p>
+        <p class="fine">Higher = faster route, lower = cheaper route. A good value is what your best money maker earns per hour: an hour spent training is an hour you're not making money.${quester() ? ` Methods that need a quest ${esc(quester().name)} hasn't done are shown in orange, with an alternative you can do now.` : " Pick a player above to see which methods need a quest they haven't done."}</p>
       </div>` : ""}
       <div class="board"><table>
-        <thead><tr><th>Levels</th><th>Recommended</th><th class="r">XP / hr</th><th class="r">GP / XP</th><th class="r">Cost for these levels</th><th>Unlocks</th></tr></thead>
+        <thead><tr><th>Levels</th><th>Recommended</th><th class="r">XP / hr</th><th class="r">GP / XP</th><th class="r">Cost for these levels</th><th>Unlocks &amp; quests</th></tr></thead>
         <tbody data-f="route-rows">${steps}
           <tr class="total"><td>${first}–${last}</td><td>Whole route${recComplete ? "" : " (some prices missing)"}</td><td></td><td></td>
             <td class="r num ${cls(totalRec)}">${signed(totalRec)}<div class="sub2">${duration(totalRecH)}</div></td>
-            <td class="wrapcell"><span class="sub2">With the ${active.prefer === "cheap" ? "cheapest" : "fastest"} unlocked method where the recommended one is locked: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
+            <td class="wrapcell"><span class="sub2">With the alternative wherever the recommended method is locked or needs a quest: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
         </tbody>
       </table></div>
       ${needTips.size ? `<div class="unlocktips"><h3 class="reqgroup">How to unlock what the route needs</h3><p class="fine">You only need one of each: once anyone in the group has obtained an item, everyone can buy more on the GE.</p><ul>${

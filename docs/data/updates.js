@@ -6,7 +6,8 @@ export default [
     date: "2026-10-03", title: "Smithing: a smarter \"Best of both\" route", link: "#/training/smithing",
     items: [
       "The Best of both route was slower and more expensive than Fastest. It's now worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting the gold you spend and the time it takes.",
-      "You set what an hour of your time is worth (e.g. what your best money maker earns). Higher = faster route, lower = cheaper route. With your name picked, methods that need a quest you haven't done (like Family Crest for gold bars) are skipped."
+      "You set what an hour of your time is worth (e.g. what your best money maker earns). Higher = faster route, lower = cheaper route.",
+      "With your name picked, steps that need a quest you haven't done (like Family Crest for gold bars) are shown in orange with the quest you need, plus an \"Until then\" method you can do right now. This works on every route and on your Player page."
     ]
   },
   {
