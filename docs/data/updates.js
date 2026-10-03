@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Smithing: a smarter \"Best of both\" route", link: "#/training/smithing",
+    items: [
+      "The Best of both route was slower and more expensive than Fastest. It's now worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting the gold you spend and the time it takes.",
+      "You set what an hour of your time is worth (e.g. what your best money maker earns). Higher = faster route, lower = cheaper route. With your name picked, methods that need a quest you haven't done (like Family Crest for gold bars) are skipped."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Merching: every day in one chart", link: "#/merch",
     items: [
       "Click an item on the Merching tab for a new third chart: the buy and sell prices through the day, with one line for every day of the last weeks. The most recent day is solid, older days fade out, so you can see if the cheap and expensive hours really come back every day.",

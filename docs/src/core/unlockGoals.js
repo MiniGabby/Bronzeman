@@ -22,7 +22,7 @@ export function reqsFor(name) {
 function routeSteps(methodId) {
   const out = [];
   for (const [skill, g] of Object.entries(GUIDES)) {
-    for (const r of g.routes || [{ route: g.route }]) for (const st of r.route) if (st.method === methodId) out.push({ skill, from: st.from, to: st.to });
+    for (const r of g.routes || [{ route: g.route }]) for (const st of r.route || []) if (st.method === methodId) out.push({ skill, from: st.from, to: st.to });
   }
   return out;
 }

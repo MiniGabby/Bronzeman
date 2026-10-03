@@ -50,15 +50,14 @@ export default {
         ]
       },
       {
-        key: "balanced", name: "Best of both",
-        intro: "Platebodies at the anvil next to Varrock west bank: 100 to 230K XP per hour, simple to do, and much cheaper than gold. A platebody uses 5 bars, so a full inventory is 5 platebodies. The cost per XP drops as you go up, and adamant platebodies come close to breaking even.",
-        route: [
-          KNIGHTS_SWORD,
-          { from: 29, to: 33, method: "smith-iron-warhammers" },
-          { from: 33, to: 48, method: "smith-iron-platebodies" },
-          { from: 48, to: 68, method: "smith-steel-platebodies" },
-          { from: 68, to: 88, method: "smith-mithril-platebodies" },
-          { from: 88, to: 99, method: "smith-adamant-platebodies" }
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
+        before: [KNIGHTS_SWORD],
+        from: 29, to: 99,
+        candidates: [
+          "smith-iron-warhammers", "smith-iron-platebodies", "smith-steel-platebodies", "smith-mithril-platebodies", "smith-adamant-platebodies",
+          "smith-bronze-dart-tips", "smith-iron-dart-tips", "smith-steel-dart-tips", "smith-mithril-dart-tips",
+          "bf-gold-bars", "bf-steel-bars", "bf-mithril-bars", "bf-adamantite-bars", "bf-runite-bars"
         ]
       }
     ]

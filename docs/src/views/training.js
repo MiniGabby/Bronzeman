@@ -12,6 +12,7 @@ import { esc, gp, short, signed, cls, duration, nf } from "../core/format.js";
 import { createMethodCard } from "../components/methodCard.js";
 import GUIDES from "../../data/skill-guides.js";
 import { tipFor } from "../core/unlockTips.js";
+import { stepsOf, timeValue, setTimeValue } from "../core/autoRoute.js";
 
 export const title = "Skill training";
 
@@ -113,17 +114,20 @@ function mountSkill(root, skill) {
     return routes.some(r => r.key === k) ? k : routes[0]?.key;
   };
 
+  const quester = () => (goal.player && group.all().find(x => x.name === goal.player && x.skills)) || null;
+
   function renderRoute(rows, lvlNow) {
     const host = $('[data-f="route"]');
     if (!guide) { host.hidden = true; return; }
     host.hidden = false;
     const active = routes.find(r => r.key === routeKey());
     const byId = Object.fromEntries(rows.map(r => [r.m.id, r]));
+    const steps0 = stepsOf(active, skill.name, quester());
     const usable = (r, level) => r.m.routeAlt !== false && r.req <= level && unlocks.lockedInputs(r.m)?.length === 0 && r.gpXp != null;
     const needTips = new Map();
     let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true;
 
-    const steps = active.route.map(st => {
+    const steps = steps0.map(st => {
       const here = lvlNow >= st.from && lvlNow < st.to;
       const lv = `<td class="num">${st.from}–${st.to}${here ? ` <span class="pill good">You</span>` : ""}</td>`;
       if (st.quest) {
@@ -154,13 +158,19 @@ function mountSkill(root, skill) {
       </tr>`;
     }).join("");
 
-    const first = active.route[0].from, last = active.route[active.route.length - 1].to;
+    const first = steps0[0].from, last = steps0[steps0.length - 1].to;
     const tabs = routes.length > 1 ? `<div class="seg routetabs" role="group" aria-label="Route">${routes.map(r =>
       `<button type="button" data-route="${esc(r.key)}" aria-pressed="${r.key === active.key}">${esc(r.name)}</button>`).join("")}</div>` : "";
     host.innerHTML = `
       <div class="sechead"><h2 class="pagetitle small">Training route${routes.length > 1 ? "s" : ""}</h2>${tabs}</div>
       ${guide.intro ? `<p class="lead">${esc(guide.intro)}</p>` : ""}
       ${active.intro ? `<p class="lead">${esc(active.intro)}</p>` : ""}
+      ${active.auto ? `<div class="toolbar timevalue">
+        <div class="field"><label for="t-timevalue">Your time is worth (gp per hour)</label>
+          <input id="t-timevalue" type="number" min="0" step="100000" inputmode="numeric" value="${timeValue()}"></div>
+        <div class="presets">${[0, 250_000, 500_000, 1_000_000, 2_000_000, 5_000_000].map(v => `<button type="button" data-tv="${v}">${v ? short(v) : "Only cost"}</button>`).join("")}</div>
+        <p class="fine">Higher = faster route, lower = cheaper route. A good value is what your best money maker earns per hour: an hour spent training is an hour you're not making money.${quester() ? ` Methods that need a quest ${esc(quester().name)} hasn't done are skipped.` : " Pick a player above to skip methods that need a quest they haven't done."}</p>
+      </div>` : ""}
       <div class="board"><table>
         <thead><tr><th>Levels</th><th>Recommended</th><th class="r">XP / hr</th><th class="r">GP / XP</th><th class="r">Cost for these levels</th><th>Unlocks</th></tr></thead>
         <tbody data-f="route-rows">${steps}
@@ -238,7 +248,13 @@ function mountSkill(root, skill) {
   cur.addEventListener("input", () => { goal.current = Math.min(98, Math.max(1, Number(cur.value) || 1)); save(); render(); });
   tgt.addEventListener("input", () => { goal.target = Math.min(99, Math.max(2, Number(tgt.value) || 2)); save(); render(); });
   sortSel.addEventListener("change", () => { goal.sort = sortSel.value; save(); render(); });
+  $('[data-f="route"]').addEventListener("change", e => {
+    if (e.target.id !== "t-timevalue") return;
+    setTimeValue(e.target.value); render();
+  });
   $('[data-f="route"]').addEventListener("click", e => {
+    const tv = e.target.closest("[data-tv]");
+    if (tv) { setTimeValue(tv.dataset.tv); render(); return; }
     const tab = e.target.closest("[data-route]");
     if (tab) { store.set("route:" + skill.key, tab.dataset.route); render(); return; }
     const a = e.target.closest("[data-jump]");
