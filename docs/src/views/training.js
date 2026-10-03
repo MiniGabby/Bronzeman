@@ -23,22 +23,50 @@ export function mount(root, [skillKey]) {
   return skill ? mountSkill(root, skill) : mountGrid(root);
 }
 
+// The skills tab, laid out like in game: 3 columns in the in-game order, total level at the bottom.
+// Shows the levels of one player ("You" in the header by default) or the group's best per skill.
+// Skill icons are loaded from the OSRS Wiki.
+const ICON = name => `https://oldschool.runescape.wiki/images/${encodeURIComponent(name)}_icon.png`;
+
 function mountGrid(root) {
+  let who = me.get() || "";   // player name, or "" = group best
   function render() {
+    const ps = group.all().filter(p => p.skills);
+    const p = who && ps.find(x => x.name.toLowerCase() === who.toLowerCase());
+    const levelOf = s => (p ? group.level(p, s.name) : ps.length ? Math.max(...ps.map(x => group.level(x, s.name))) : null);
+    const total = SKILLS.reduce((t, s) => t + (levelOf(s) || 0), 0);
     root.innerHTML = `
       <p class="lead">Pick a skill to compare every method that trains it: what it costs or earns per XP, how fast it is, and what it takes to reach your next goal.</p>
-      <div class="skillgrid">${SKILLS.map(s => {
-        const n = methodsFor(s.name).length;
-        const best = group.loaded() ? Math.max(...group.all().map(p => group.level(p, s.name))) : null;
-        return `<a class="skill${n ? "" : " empty"}" href="#/training/${s.key}">
-          <span class="sname">${esc(s.name)}</span>
-          <span class="scount">${n ? `${n} method${n > 1 ? "s" : ""}` : "No methods yet"}${best ? ` · group best ${best}` : ""}</span>
+      <form class="toolbar" data-f="who">
+        <div class="field"><label for="g-who">Levels of</label>
+          <select id="g-who"><option value="">Group best</option>${group.all().map(x => `<option>${esc(x.name)}</option>`).join("")}</select></div>
+        <p class="fine">Bar = progress to the next level${p ? "" : " (shown for a single player only)"}. "Route" = this skill has a training route.</p>
+      </form>
+      <div class="rsgrid" role="list">${SKILLS.map(s => {
+        const n = methodsFor(s.name).length, lvl = levelOf(s);
+        let pct = null, tip = `${s.name}${lvl ? ` ${lvl}` : ""} · ${n ? `${n} method${n > 1 ? "s" : ""}` : "no methods yet"}`;
+        if (p && lvl) {
+          const xp = group.xp(p, s.name), a = xpForLevel(lvl), b = xpForLevel(lvl + 1);
+          pct = lvl >= 99 ? 100 : Math.max(0, Math.min(100, ((xp - a) / (b - a)) * 100));
+          tip += lvl >= 99 ? " · maxed" : ` · ${nf.format(xp)} XP, ${nf.format(b - xp)} to ${lvl + 1}`;
+        }
+        return `<a role="listitem" class="rstile${n ? "" : " empty"}" href="#/training/${s.key}" title="${esc(tip)}" aria-label="${esc(tip)}">
+          <img src="${ICON(s.name)}" alt="" width="25" height="25" loading="lazy" onerror="this.closest('.rstile').classList.add('noicon'); this.remove()">
+          <span class="rsname">${esc(s.name)}${GUIDES[s.key] ? ` <span class="rsroute">Route</span>` : ""}</span>
+          <span class="rslvl">${lvl ?? "–"}</span>
+          ${pct != null ? `<span class="rsbar"><span style="width:${pct.toFixed(1)}%"></span></span>` : ""}
         </a>`;
-      }).join("")}</div>`;
+      }).join("")}
+        <div class="rstotal">Total level: ${group.loaded() ? nf.format(total) : "…"}${p ? "" : " <span>(group best per skill)</span>"}</div>
+      </div>`;
+    const sel = root.querySelector("#g-who");
+    sel.value = p ? p.name : "";
+    sel.addEventListener("change", () => { who = sel.value; render(); });
+    root.querySelector('[data-f="who"]').addEventListener("submit", e => e.preventDefault());
   }
-  const off = group.onChange(render);
+  const offs = [group.onChange(render), me.onChange(() => { who = me.get(); render(); })];
   render();
-  return off;
+  return () => offs.forEach(off => off());
 }
 
 function mountSkill(root, skill) {

@@ -298,3 +298,25 @@ th.me,td.me{background:var(--gold-soft)}
 tr.questneed > td{background:var(--warn-soft)}
 tr.questneed.here > td{background:var(--warn-soft)}
 li.questneed{background:var(--warn-soft);border-radius:6px;padding:2px 6px;margin-left:-6px}
+
+/* Skills tab (training page), styled after the in-game skills panel. Fixed colours: it's a
+   "game panel", the same in light and dark mode. Yellow on dark stone is well above 7:1 contrast. */
+.rsgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:640px;padding:10px;border-radius:10px;
+  background:#4a4234;border:2px solid #2b2620;box-shadow:inset 0 0 0 1px #6b604d}
+.rstile{position:relative;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;padding:8px 10px 12px;
+  background:linear-gradient(#5c5341,#4e4636);border:1px solid #2b2620;border-radius:4px;box-shadow:inset 0 1px 0 #75694f;
+  color:#e9dfc6;text-decoration:none;min-height:48px}
+.rstile:hover,.rstile:focus-visible{background:linear-gradient(#6a5f4a,#5a5040);outline:2px solid #ffd84a;outline-offset:-2px}
+.rstile img{display:block;image-rendering:pixelated}
+.rsname{font:600 13px var(--sans);line-height:1.15;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.rsroute{display:inline-block;font:700 9px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:#2b2620;background:#ffd84a;border-radius:3px;padding:0 3px;vertical-align:1px}
+.rslvl{font:700 20px var(--mono);color:#ffff4a;text-shadow:1px 1px 0 #000}
+.rstile.empty .rsname,.rstile.empty .rslvl{opacity:.6}
+.rsbar{position:absolute;left:8px;right:8px;bottom:4px;height:4px;background:#2b2620;border-radius:2px;overflow:hidden}
+.rsbar span{display:block;height:100%;background:#3fbf3f}
+.rstotal{grid-column:1/-1;text-align:center;padding:8px;font:700 16px var(--sans);color:#ffff4a;text-shadow:1px 1px 0 #000;background:#2b2620;border-radius:4px}
+.rstotal span{font-weight:500;font-size:12px;color:#e9dfc6;text-shadow:none}
+.rstile.noicon{grid-template-columns:1fr auto}
+/* Phones: icon + level only, like in game (the name is in the tooltip); names stay if the icon didn't load. */
+@media (max-width:520px){.rstile{grid-template-columns:24px 1fr;gap:6px;padding:6px 8px 10px}.rstile .rslvl{text-align:right;font-size:17px}
+  .rstile:not(.noicon) .rsname{display:none}.rstile.noicon .rsname{font-size:11px}.rsroute{display:none}}

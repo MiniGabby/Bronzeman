@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Skill training looks like the skills tab", link: "#/training",
+    items: [
+      "The Skill training page now shows the skills like in game: three columns in the same order, each with its icon, level and a bar showing progress to the next level, and the total level at the bottom.",
+      "It shows your levels when you've picked your name at the top; switch to anyone else or to the group's best per skill. Skills with a training route have a small \"Route\" label. Click a skill for its methods and route."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Smithing: a smarter \"Best of both\" route", link: "#/training/smithing",
     items: [
       "The Best of both route was slower and more expensive than Fastest. It's now worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting the gold you spend and the time it takes.",
