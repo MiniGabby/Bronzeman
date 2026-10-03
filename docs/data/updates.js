@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "15 new unlocks (621 in total)", link: "#/unlocked",
+    items: [
+      "Mithril bars and mithril dart tips (Mini Gabby): mithril dart tips can now be bought, so smithing mithril dart tips and the mithril darts step of the Fletching route are open to everyone.",
+      "Also new: all games necklaces and ring of wealth charges, woad leaf with blue, red, yellow and green dye, raw chicken and bowl of water. Most unlocks this time by Lil Fool (13)."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Thieving guide to 99", link: "#/training/thieving",
     items: [
       "Three routes. Fastest: stalls, then blackjacking bandits and Menaphite thugs in Pollnivneach (up to 265K XP per hour, needs part of The Feud). Relaxed: stalls, master farmers, then Ardougne knights from 55. Best of both picks per level range from your time value.",
