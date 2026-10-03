@@ -6,7 +6,7 @@ export default [
     date: "2026-10-03", title: "Skill training looks like the skills tab", link: "#/training",
     items: [
       "The Skill training page now shows the skills like in game: three columns in the same order, each with its icon, level and a bar showing progress to the next level, and the total level at the bottom.",
-      "It shows your levels when you've picked your name at the top; switch to anyone else or to the group's best per skill. Skills with a training route have a small \"Route\" label. Click a skill for its methods and route."
+      "Levels show as 45/60: your level / the highest level in the group (in yellow when you're the highest). Pick your name at the top, or switch to anyone else or to the group's best per skill. Skills with a training route have a small \"Route\" label. Click a skill for its methods and route."
     ]
   },
   {
