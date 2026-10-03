@@ -62,6 +62,7 @@ prices.onChange(() => { renderMode(); renderStatus(); });
 renderMode();
 prices.start();
 group.load();
+group.loadQuests();
 unlocks.load();
 window.addEventListener("hashchange", () => { a11yFocus = true; route(); });
 route();

@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-03", title: "Quests load automatically with WikiSync", link: "#/group",
+    items: [
+      "If you use the WikiSync plugin in RuneLite, your quests now load on the site automatically (Group page, player pages and the \"who can do it\" checks). Mini Gabby's already work.",
+      "Not set up yet? In RuneLite, open the Plugin Hub, install or turn on WikiSync, and log in once. Until then your quests are filled in by hand."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Player pages, unlock goals, quests, goals and more", link: "#/player",
     items: [
       "New Player tab: pick your name and see what to do now: money makers you can do (and almost can), your next step on each training route, flips that are cheap to buy right now, your goals and unlocks you can get. Click a name on the Group page to get there too.",

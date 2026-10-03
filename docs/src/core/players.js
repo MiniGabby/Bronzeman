@@ -117,8 +117,49 @@ export const xp = (p, skillName) => Math.max(0, skillData(p, skillName)?.experie
 // Quest list per player, keyed case-insensitively by RuneScape name.
 const questsByPlayer = Object.fromEntries(Object.entries(QUESTS).map(([n, q]) => [idOf(n), q]));
 
-/** Has the player done this quest? true / false, or null when nobody has filled it in (data/quests.js). */
+// ---- Quests from the wiki's WikiSync (players with the WikiSync plugin in RuneLite) ----
+// GET https://sync.runescape.wiki/runelite/player/<name>/STANDARD → { timestamp, quests: { "Quest name": 0|1|2 } }
+// 0 = not started, 1 = started, 2 = done. Players without the plugin get { code: "NO_USER_DATA" }.
+const SYNC = "https://sync.runescape.wiki/runelite/player/";
+const SYNC_MS = 60 * 60_000;
+const syncCache = store.get("wikisync", {});
+for (const p of state.players) if (syncCache[p.id]) Object.assign(p, { wikiQuests: syncCache[p.id].quests, wikiAt: syncCache[p.id].at, wikiStatus: syncCache[p.id].status });
+
+/** Loads quest progress from WikiSync for everyone (cached for an hour). */
+export async function loadQuests({ force = false } = {}) {
+  const todo = state.players.filter(p => force || !syncCache[p.id] || Date.now() - syncCache[p.id].fetchedAt > SYNC_MS);
+  if (!todo.length) return;
+  await Promise.all(todo.map(async p => {
+    let entry;
+    try {
+      const r = await fetch(SYNC + encodeURIComponent(p.name.replace(/ /g, "_")) + "/STANDARD");
+      const j = await r.json().catch(() => ({}));
+      entry = j.quests ? { status: "ok", quests: j.quests, at: j.timestamp }
+        : { status: j.code === "NO_USER_DATA" ? "none" : "error", quests: null, at: null };
+    } catch {
+      entry = { status: "error", quests: null, at: null };   // network or the site blocks cross-site requests
+    }
+    syncCache[p.id] = { ...entry, fetchedAt: Date.now() };
+    Object.assign(p, { wikiQuests: entry.quests, wikiAt: entry.at, wikiStatus: entry.status });
+  }));
+  store.set("wikisync", syncCache);
+  emit();
+}
+
+/** "ok" (synced), "none" (no WikiSync data), "error", or undefined (not loaded yet). */
+export const questSource = p => p.wikiStatus;
+
+/**
+ * Has the player done this quest? true / false, or null when unknown.
+ * WikiSync first; otherwise the hand-kept list (data/quests.js) and what levels prove (INFERRED).
+ * "X (started)" only needs the quest to be started.
+ */
 export function questDone(p, quest) {
+  if (p.wikiQuests) {
+    const started = quest.match(/^(.+) \(started\)$/);
+    const v = p.wikiQuests[started ? started[1] : quest];
+    if (v != null) return started ? v >= 1 : v === 2;
+  }
   const v = questsByPlayer[p.id]?.[quest];
   if (v === true || v === false) return v;
   const inf = INFERRED[quest];

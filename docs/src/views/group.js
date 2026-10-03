@@ -75,7 +75,7 @@ export function mount(root) {
 
     <section class="section">
       <h2 class="pagetitle small">Quests</h2>
-      <p class="fine">Quests that methods or routes on this site need. Wise Old Man doesn't track quests, so ✓ and ✗ are filled in by hand: tell Claude in the Bronzeman project (for example "Mini Gabby finished The Tourist Trap"). ? means nobody has filled it in yet. Druidic Ritual counts as done for anyone with Herblore 3 or higher.</p>
+      <p class="fine">Quests that methods or routes on this site need. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; it updates every time you log in). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ? means unknown.</p>
       <div data-f="quests"></div>
     </section>`;
 
@@ -190,6 +190,14 @@ export function mount(root) {
     host.innerHTML = `<div class="goals">${GOALS.map(g => goalCard(g, group.gained("week", group.all().find(p => p.name.toLowerCase() === g.player.toLowerCase()) || {}, g.skill))).join("")}</div>`;
   }
 
+  const syncLabel = p => {
+    const s = group.questSource(p);
+    if (s === "ok") return `<span class="pill good" title="From WikiSync, ${esc(p.wikiAt ? new Date(p.wikiAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "")}">WikiSync ${esc(p.wikiAt ? ago(p.wikiAt) : "")}</span>`;
+    if (s === "none") return `<span class="sub2" title="No WikiSync data: turn on the WikiSync plugin in RuneLite and log in">By hand</span>`;
+    if (s === "error") return `<span class="sub2" title="Couldn't reach WikiSync">By hand</span>`;
+    return `<span class="sub2">…</span>`;
+  };
+
   function renderQuests() {
     const host = $('[data-f="quests"]');
     const needed = new Set(METHODS.flatMap(m => m.reqs?.quests || []));
@@ -197,7 +205,8 @@ export function mount(root) {
     const ps = group.all();
     const uses = q => METHODS.filter(m => (m.reqs?.quests || []).includes(q)).length;
     host.innerHTML = `<div class="board"><table>
-      <thead><tr><th>Quest</th><th class="r">Methods</th>${ps.map(p => `<th class="r">${esc(p.name)}</th>`).join("")}</tr></thead>
+      <thead><tr><th>Quest</th><th class="r">Methods</th>${ps.map(p => `<th class="r">${esc(p.name)}</th>`).join("")}</tr>
+        <tr class="subhead"><td class="muted">Source</td><td></td>${ps.map(p => `<td class="r">${syncLabel(p)}</td>`).join("")}</tr></thead>
       <tbody>${list.map(q => `<tr><td><a href="https://oldschool.runescape.wiki/w/${encodeURIComponent(q.replace(/ \(started\)$/, "").replace(/ /g, "_"))}" target="_blank" rel="noopener">${esc(q)}</a></td>
         <td class="r num">${uses(q) || "–"}</td>
         ${ps.map(p => { const d = group.questDone(p, q); return `<td class="r">${d === true ? `<span class="pos" title="Done">✓</span>` : d === false ? `<span class="neg" title="Not done">✗</span>` : `<span class="muted" title="Unknown">?</span>`}</td>`; }).join("")}</tr>`).join("")}</tbody>

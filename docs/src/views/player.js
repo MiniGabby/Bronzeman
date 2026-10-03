@@ -119,7 +119,7 @@ export function mount(root, [nameParam]) {
   function questSection(p) {
     const unknown = [...new Set(METHODS.flatMap(m => m.reqs?.quests || []))].filter(q => group.questDone(p, q) === null);
     if (!unknown.length) return "";
-    return section("Quests to fill in", `<p class="fine">Methods need these, but it's not known yet if ${esc(p.name)} has done them: ${esc(unknown.join(", "))}. Tell Claude which ones are done.</p>`, { href: "#/group", text: "Quests" });
+    return section("Quests to fill in", `<p class="fine">Methods need these, but it's not known yet if ${esc(p.name)} has done them: ${esc(unknown.join(", "))}. Turn on the WikiSync plugin in RuneLite to fill them in automatically, or tell Claude which ones are done.</p>`, { href: "#/group", text: "Quests" });
   }
 
   function render() {
