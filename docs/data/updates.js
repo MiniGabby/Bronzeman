@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-04", title: "Cooking shows when you stop burning", link: "#/training/cooking",
+    items: [
+      "Every fish on the Cooking page now shows the level where you stop burning it, for the fire or range and cooking gauntlets you picked, e.g. \"On a range: stops burning at 74 (with gauntlets: 60)\" for lobsters. You'll see it on each route step, in the methods table and on the method cards."
+    ]
+  },
+  {
     date: "2026-10-04", title: "Routes count from your own XP", link: "#/training/cooking",
     items: [
       "On the route step you're on (marked \"You\"), the amount to buy, the cost and the time now count only what's left from your current XP, e.g. \"Still to buy (from your 7,528 XP): 8 Raw trout\" instead of the whole 15 to 25 range."

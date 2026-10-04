@@ -122,7 +122,7 @@ export function createMethodCard(m) {
       ["Profit / hr", `<span class="num ${cls(c.profitHr)}">${gp(c.profitHr)}</span>`],
       [c.fees.length ? "Supplies + fees / hr" : "Supplies / hr", `<span class="num">${gp(c.cost * c.perHour)}</span>`],
       ["GE tax / hr", `<span class="num">${gp(c.taxEach * c.perHour)}</span>`],
-      ...(c.success != null ? [["Not burnt", `<span class="num">${Math.round(c.success * 100)}%</span> <span class="muted">on ${esc(burn.label(burn.source()))}</span>`]] : []),
+      ...(c.success != null ? [["Not burnt", `<span class="num">${Math.round(c.success * 100)}%</span> <span class="muted">on ${esc(burn.label(burn.source()))}, ${esc(burn.stopText(m))}</span>`]] : []),
       ...Object.entries(c.xpHr).map(([s, v]) => [`${s} XP / hr`, `<span class="num">${gp(v)}</span>`])
     ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
 

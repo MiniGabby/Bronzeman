@@ -192,7 +192,8 @@ function mountSkill(root, skill) {
         const tries = xp / (per * ok);
         const list = r.c.ins.map(i => `${nf.format(Math.ceil(i.qty * tries))} ${esc(i.it.name)}`).join(", ");
         const burnt = ok < 1 ? ` <span class="muted">(about ${nf.format(Math.round(tries * (1 - ok)))} will burn)</span>` : "";
-        return `<div class="sub2 buy">${here ? `Still to buy (from your ${nf.format(Math.max(xpNow, xpForLevel(st.from)))} XP)` : "Buy"}: ${list}${burnt}</div>`;
+        const stops = r.m.burn ? `<div class="sub2 stopburn">On ${esc(burn.label(burn.source()))}: ${esc(burn.stopText(r.m))}</div>` : "";
+        return `<div class="sub2 buy">${here ? `Still to buy (from your ${nf.format(Math.max(xpNow, xpForLevel(st.from)))} XP)` : "Buy"}: ${list}${burnt}</div>${stops}`;
       })(rec);
       if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
       if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
@@ -275,7 +276,7 @@ function mountSkill(root, skill) {
     rows.sort((a, b) => (b.open - a.open) || by(a, b));
 
     $('[data-f="rows"]').innerHTML = rows.map(r => `<tr class="${r.open ? "" : "locked"}">
-      <td><a href="#/training/${skill.key}" data-jump="${r.m.id}">${esc(r.m.name)}</a>${r.open ? "" : ` <span class="pill warn">Needs ${r.req}</span>`}</td>
+      <td><a href="#/training/${skill.key}" data-jump="${r.m.id}">${esc(r.m.name)}</a>${r.open ? "" : ` <span class="pill warn">Needs ${r.req}</span>`}${r.m.burn ? `<div class="sub2">${esc(burn.stopText(r.m))}</div>` : ""}</td>
       <td class="r num">${r.req}</td>
       <td class="r num">${short(r.xpHr)}</td>
       <td class="r num ${cls(r.gpXp)}">${r.gpXp == null ? "–" : (r.gpXp > 0 ? "+" : "") + r.gpXp.toFixed(1)}</td>

@@ -17,7 +17,7 @@ export function setSource(v) { store.set("cookSource", { ...source(), ...v }); }
 export const label = s => `${s.where === "fire" ? "a fire" : "a range"}${s.gauntlets ? " with cooking gauntlets" : ""}`;
 
 /** Level where this method stops burning with the current setting; null = never. */
-function stopLevel(m, s) {
+export function stopLevel(m, s = source()) {
   const b = m.burn;
   const g = s.gauntlets ? (s.where === "fire" ? b.gauntletsFire : b.gauntletsRange) : undefined;
   return g !== undefined ? g : (s.where === "fire" ? b.fire : b.range);
@@ -46,4 +46,15 @@ export function averageSuccess(m, from, to, s = source()) {
     xp += w; attempts += w / success(m, l, s);
   }
   return xp / attempts;
+}
+
+/** Short text for the stop-burn level with the current setting, e.g. "stops burning at 49". */
+export function stopText(m, s = source()) {
+  if (!m.burn) return "";
+  const stop = stopLevel(m, s);
+  const req = m.reqs?.skills?.Cooking || 1;
+  const g = s.where === "fire" ? m.burn.gauntletsFire : m.burn.gauntletsRange;
+  const withG = !s.gauntlets && g != null ? ` (with gauntlets: ${g})` : "";
+  if (stop != null) return stop <= req ? "never burns" : `stops burning at ${stop}${withG}`;
+  return `never stops burning${withG}`;
 }
