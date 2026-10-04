@@ -183,6 +183,15 @@ function mountSkill(root, skill) {
       const alt = doableAlt(rows, st.from, p, active.auto ? "auto" : active.prefer);
       const cost = r => r && r.xpHr ? { h: xp / r.xpHr, gp: (xp / r.xpHr) * (r.c.profitHr ?? 0) } : null;
       const cr = cost(rec), ca = cost(blocked ? alt : rec);
+      // What to buy for this level range: actions needed (failed ones included, e.g. burnt fish) × inputs per action.
+      const buy = (r => {
+        const per = r?.m.xp?.[skill.name], ok = r?.c.success ?? 1;
+        if (!r || !per || !(r.c.ins || []).length) return "";
+        const tries = xp / (per * ok);
+        const list = r.c.ins.map(i => `${nf.format(Math.ceil(i.qty * tries))} ${esc(i.it.name)}`).join(", ");
+        const burnt = ok < 1 ? ` <span class="muted">(about ${nf.format(Math.round(tries * (1 - ok)))} will burn)</span>` : "";
+        return `<div class="sub2 buy">Buy: ${list}${burnt}</div>`;
+      })(rec);
       if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
       if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
       const status = [
@@ -191,7 +200,7 @@ function mountSkill(root, skill) {
         ...unkQ.map(q => `<span class="sub2" title="Not known if ${esc(p.name)} has done it">Needs ${esc(q)} (done?)</span>`)
       ].filter(Boolean);
       return `<tr class="${[here ? "here" : "", needQ.length ? "questneed" : ""].join(" ").trim()}">${lv}
-        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
+        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
         <td class="r num">${rec ? short(rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
         <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? duration(cr.h) : ""}</div></td>

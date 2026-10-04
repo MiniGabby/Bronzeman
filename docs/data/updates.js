@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-04", title: "Routes show what to buy", link: "#/training/cooking",
+    items: [
+      "Every step of a training route now shows how much you need to buy for that level range, e.g. \"Buy: 116 Raw salmon (about 54 will burn)\" for salmon from 25 to 30.",
+      "For Cooking the burnt fish are included, based on whether you cook on a fire or a range and whether you wear cooking gauntlets. It works on every skill's routes: bars for Smithing, logs for Firemaking, herbs for Herblore and so on."
+    ]
+  },
+  {
     date: "2026-10-04", title: "Cooking counts burnt fish", link: "#/training/cooking",
     items: [
       "Cooking now counts the fish you burn: burnt fish give no XP and can't be sold, so XP per hour and cost per XP are lower and higher at the start of every fish, and get better as you level.",
