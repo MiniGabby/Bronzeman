@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-04", title: "Routes count from your own XP", link: "#/training/cooking",
+    items: [
+      "On the route step you're on (marked \"You\"), the amount to buy, the cost and the time now count only what's left from your current XP, e.g. \"Still to buy (from your 7,528 XP): 8 Raw trout\" instead of the whole 15 to 25 range."
+    ]
+  },
+  {
     date: "2026-10-04", title: "Routes show what to buy", link: "#/training/cooking",
     items: [
       "Every step of a training route now shows how much you need to buy for that level range, e.g. \"Buy: 116 Raw salmon (about 54 will burn)\" for salmon from 25 to 30.",

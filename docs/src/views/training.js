@@ -146,7 +146,7 @@ function mountSkill(root, skill) {
 
   const quester = () => (goal.player && group.all().find(x => x.name === goal.player && x.skills)) || null;
 
-  function renderRoute(rows, lvlNow) {
+  function renderRoute(rows, lvlNow, xpNow) {
     const host = $('[data-f="route"]');
     if (!guide) { host.hidden = true; return; }
     host.hidden = false;
@@ -165,12 +165,14 @@ function mountSkill(root, skill) {
           <td class="r muted">Quest</td><td class="r muted">–</td><td class="r muted">Free</td><td class="wrapcell"><span class="muted">–</span></td></tr>`;
       }
       let rec = byId[st.method];
+      // On the step you're on, only count what's left: from your current XP (and level, for burning).
+      const startLvl = here ? lvlNow : st.from;
       // Burnt food depends on level: work the step out over its own level range.
       if (rec?.m.burn) {
-        const c = calc.compute(rec.m, { from: st.from, to: st.to }), xpHr = c.xpHr[skill.name] || 0;
+        const c = calc.compute(rec.m, { from: startLvl, to: st.to }), xpHr = c.xpHr[skill.name] || 0;
         rec = { ...rec, c, xpHr, gpXp: c.profitHr == null || !xpHr ? null : c.profitHr / xpHr };
       }
-      const xp = Math.max(0, xpForLevel(st.to) - xpForLevel(st.from));
+      const xp = Math.max(0, xpForLevel(st.to) - (here ? Math.max(xpNow, xpForLevel(st.from)) : xpForLevel(st.from)));
       const locked = rec ? unlocks.lockedInputs(rec.m) : null;
       locked?.forEach(x => { if (tipFor(x.name)) needTips.set(x.name, tipFor(x.name)); });
       // Quests the chosen player still needs for this method (known not done) or that we don't know about.
@@ -190,7 +192,7 @@ function mountSkill(root, skill) {
         const tries = xp / (per * ok);
         const list = r.c.ins.map(i => `${nf.format(Math.ceil(i.qty * tries))} ${esc(i.it.name)}`).join(", ");
         const burnt = ok < 1 ? ` <span class="muted">(about ${nf.format(Math.round(tries * (1 - ok)))} will burn)</span>` : "";
-        return `<div class="sub2 buy">Buy: ${list}${burnt}</div>`;
+        return `<div class="sub2 buy">${here ? `Still to buy (from your ${nf.format(Math.max(xpNow, xpForLevel(st.from)))} XP)` : "Buy"}: ${list}${burnt}</div>`;
       })(rec);
       if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
       if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
@@ -283,7 +285,7 @@ function mountSkill(root, skill) {
       <td class="wrapcell">${lockCell(r.m)}</td>
     </tr>`).join("");
 
-    renderRoute(rows, lvlNow);
+    renderRoute(rows, lvlNow, xpNow);
 
     const host = $('[data-f="cards"]');
     for (const r of rows) {
