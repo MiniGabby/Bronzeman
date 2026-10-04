@@ -3,6 +3,7 @@
 import { esc, gp, short, signed, cls, qty, nf } from "../core/format.js";
 import * as prices from "../core/prices.js";
 import * as calc from "../core/calc.js";
+import * as burn from "../core/burn.js";
 import * as group from "../core/players.js";
 import * as unlocks from "../core/unlocks.js";
 import { tipFor } from "../core/unlockTips.js";
@@ -121,6 +122,7 @@ export function createMethodCard(m) {
       ["Profit / hr", `<span class="num ${cls(c.profitHr)}">${gp(c.profitHr)}</span>`],
       [c.fees.length ? "Supplies + fees / hr" : "Supplies / hr", `<span class="num">${gp(c.cost * c.perHour)}</span>`],
       ["GE tax / hr", `<span class="num">${gp(c.taxEach * c.perHour)}</span>`],
+      ...(c.success != null ? [["Not burnt", `<span class="num">${Math.round(c.success * 100)}%</span> <span class="muted">on ${esc(burn.label(burn.source()))}</span>`]] : []),
       ...Object.entries(c.xpHr).map(([s, v]) => [`${s} XP / hr`, `<span class="num">${gp(v)}</span>`])
     ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
 

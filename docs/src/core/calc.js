@@ -2,6 +2,7 @@
 import * as prices from "./prices.js";
 import { store } from "./store.js";
 import { geTax } from "./format.js";
+import * as burn from "./burn.js";
 
 const rates = store.get("aph", {});
 const listeners = new Set();
@@ -15,8 +16,16 @@ export function setRate(m, value) {
   listeners.forEach(fn => fn());
 }
 
-export function compute(m) {
+/**
+ * opts (optional): { level } or { from, to } for methods whose result depends on level (burnt food).
+ * Without them, burning is worked out at the method's level requirement (the worst case).
+ */
+export function compute(m, opts = {}) {
   const perHour = getRate(m);
+  // Share of attempts that succeed (Cooking: food that doesn't burn). Burnt food gives no XP and can't be sold.
+  const req = Object.values(m.reqs?.skills || {})[0] || 1;
+  const success = !m.burn ? 1 : opts.from != null ? burn.averageSuccess(m, opts.from, opts.to)
+    : burn.success(m, opts.level ?? req);
   // Items can be given by id or by exact name ({ name: "Guam potion (unf)" }).
   const lookup = x => {
     const id = prices.resolve(x);
@@ -27,7 +36,8 @@ export function compute(m) {
     const { id, it } = lookup(x), { p, own } = id == null ? { p: null, own: false } : prices.price(id, "buy");
     return { ...x, id, it, price: p, own, total: p == null ? null : p * x.qty };
   });
-  const outs = (m.outputs || []).map(x => {
+  const outs = (m.outputs || []).map(x0 => {
+    const x = success < 1 ? { ...x0, qty: x0.qty * success } : x0;
     const { id, it } = lookup(x), { p, own } = id == null ? { p: null, own: false } : prices.price(id, "sell");
     const tax = p == null ? null : geTax(Math.floor(p));
     return { ...x, it, price: p, own, tax, total: p == null ? null : (p - tax) * x.qty };
@@ -51,9 +61,9 @@ export function compute(m) {
     }
   }
 
-  const xpHr = Object.fromEntries(Object.entries(m.xp || {}).map(([s, v]) => [s, v * perHour]));
+  const xpHr = Object.fromEntries(Object.entries(m.xp || {}).map(([s, v]) => [s, v * perHour * success]));
   return {
-    perHour, ins, outs, fees, coins, cost, revenue, taxEach, profit,
+    perHour, success: m.burn ? success : null, ins, outs, fees, coins, cost, revenue, taxEach, profit,
     profitHr: profit == null ? null : profit * perHour,
     limitActions, limitItem, xpHr,
     xpTotalHr: Object.values(xpHr).reduce((a, b) => a + b, 0)

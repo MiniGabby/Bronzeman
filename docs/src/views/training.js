@@ -13,6 +13,7 @@ import { createMethodCard } from "../components/methodCard.js";
 import GUIDES from "../../data/skill-guides.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, timeValue, setTimeValue, missingQuests, doableAlt } from "../core/autoRoute.js";
+import * as burn from "../core/burn.js";
 
 export const title = "Skill training";
 
@@ -87,8 +88,12 @@ function mountSkill(root, skill) {
           <option value="fast">Fastest XP</option>
           <option value="profit">Most profit per hour</option>
         </select></div>
+      ${methods.some(m => m.burn) ? `<div class="field"><label for="t-cookon">Cooking on</label>
+        <select id="t-cookon"><option value="range">A range</option><option value="fire">A fire</option></select></div>
+      <label class="check"><input type="checkbox" id="t-gauntlets"> Cooking gauntlets</label>` : ""}
       <div class="goal" data-f="goal"></div>
     </form>
+    ${methods.some(m => m.burn) ? `<p class="fine">Burnt food is counted: the success chance rises from about 50% at a fish's level requirement to 100% at its stop-burn level (from the wiki). Route steps use the average over their levels, the table and cards use your current level. Gauntlets only help with lobsters, swordfish, monkfish, sharks and anglerfish.</p>` : ""}
     <section class="section" data-f="route" hidden></section>
     <h2 class="pagetitle small">All ${esc(skill.name)} methods</h2>
     <section class="board"><table>
@@ -107,8 +112,10 @@ function mountSkill(root, skill) {
       .map(p => `<option value="${esc(p.name)}">${esc(p.name)} (${group.level(p, skill.name)})</option>`).join("");
     playerSel.innerHTML = `<option value="">Custom level</option>${opts}`;
     // Match case-insensitively: Wise Old Man may capitalise names differently from data/players.js.
-    goal.player = group.all().find(p => p.skills && p.name.toLowerCase() === (goal.player || "").toLowerCase())?.name || "";
-    playerSel.value = goal.player;
+    // Only drop an unknown name once the levels have loaded; before that the list is still empty.
+    const found = group.all().find(p => p.skills && p.name.toLowerCase() === (goal.player || "").toLowerCase())?.name;
+    if (found || group.loaded()) goal.player = found || "";
+    playerSel.value = found || "";
   }
 
   function currentXp() {
@@ -157,7 +164,12 @@ function mountSkill(root, skill) {
           <td class="wrapcell"><a href="${esc(st.url || "#")}" target="_blank" rel="noopener">Quest: ${esc(st.quest)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
           <td class="r muted">Quest</td><td class="r muted">–</td><td class="r muted">Free</td><td class="wrapcell"><span class="muted">–</span></td></tr>`;
       }
-      const rec = byId[st.method];
+      let rec = byId[st.method];
+      // Burnt food depends on level: work the step out over its own level range.
+      if (rec?.m.burn) {
+        const c = calc.compute(rec.m, { from: st.from, to: st.to }), xpHr = c.xpHr[skill.name] || 0;
+        rec = { ...rec, c, xpHr, gpXp: c.profitHr == null || !xpHr ? null : c.profitHr / xpHr };
+      }
       const xp = Math.max(0, xpForLevel(st.to) - xpForLevel(st.from));
       const locked = rec ? unlocks.lockedInputs(rec.m) : null;
       locked?.forEach(x => { if (tipFor(x.name)) needTips.set(x.name, tipFor(x.name)); });
@@ -237,7 +249,7 @@ function mountSkill(root, skill) {
     }
 
     const rows = methods.map(m => {
-      const c = calc.compute(m);
+      const c = calc.compute(m, { level: lvlNow });
       const xpHr = c.xpHr[skill.name] || 0;
       const req = m.reqs?.skills?.[skill.name] || 1;
       const gpXp = c.profitHr == null || !xpHr ? null : c.profitHr / xpHr;
@@ -278,6 +290,12 @@ function mountSkill(root, skill) {
   cur.addEventListener("input", () => { goal.current = Math.min(98, Math.max(1, Number(cur.value) || 1)); save(); render(); });
   tgt.addEventListener("input", () => { goal.target = Math.min(99, Math.max(2, Number(tgt.value) || 2)); save(); render(); });
   sortSel.addEventListener("change", () => { goal.sort = sortSel.value; save(); render(); });
+  const cookOn = $("#t-cookon"), gaunt = $("#t-gauntlets");
+  if (cookOn) {
+    cookOn.value = burn.source().where; gaunt.checked = burn.source().gauntlets;
+    cookOn.addEventListener("change", () => { burn.setSource({ where: cookOn.value }); render(); });
+    gaunt.addEventListener("change", () => { burn.setSource({ gauntlets: gaunt.checked }); render(); });
+  }
   $('[data-f="route"]').addEventListener("change", e => {
     if (e.target.id !== "t-timevalue") return;
     setTimeValue(e.target.value); render();

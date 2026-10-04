@@ -78,13 +78,13 @@ export function mount(root, [nameParam]) {
       if (st.quest) return `<li>${head}: do the quest <b>${esc(st.quest)}</b> <span class="muted">(levels ${st.from}–${st.to})</span></li>`;
       const m = METHODS.find(x => x.id === st.method);
       if (!m) return `<li>${head}: ${esc(st.method)}</li>`;
-      const c = calc.compute(m), xpHr = c.xpHr[skill.name] || 0, gpXp = c.profitHr != null && xpHr ? c.profitHr / xpHr : null;
+      const c = calc.compute(m, { level: lvl }), xpHr = c.xpHr[skill.name] || 0, gpXp = c.profitHr != null && xpHr ? c.profitHr / xpHr : null;
       const locked = unlocks.lockedInputs(m) || [];
       // Blocked by a lock or a missing quest: name the best method this player can do right now.
       let altLine = "";
       if (locked.length || missingQuests(m, p).length) {
         const rows = METHODS.filter(x => (x.xp?.[skill.name] || 0) > 0).map(x => {
-          const cx = calc.compute(x), xh = cx.xpHr[skill.name] || 0;
+          const cx = calc.compute(x, { level: lvl }), xh = cx.xpHr[skill.name] || 0;
           return { m: x, xpHr: xh, req: x.reqs?.skills?.[skill.name] || 1, gpXp: cx.profitHr != null && xh ? cx.profitHr / xh : null };
         });
         const alt = doableAlt(rows, lvl, p, r.auto ? "auto" : r.prefer);

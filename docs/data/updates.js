@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-04", title: "Cooking counts burnt fish", link: "#/training/cooking",
+    items: [
+      "Cooking now counts the fish you burn: burnt fish give no XP and can't be sold, so XP per hour and cost per XP are lower and higher at the start of every fish, and get better as you level.",
+      "Pick at the top of the Cooking page whether you cook on a fire or a range, and whether you wear cooking gauntlets (lobsters, swordfish, monkfish, sharks and anglerfish). The routes, the table and the method cards all follow your choice; Best of both now waits longer before switching to a new fish.",
+      "Fixed: opening a skill page straight from a link sometimes forgot which player you had picked."
+    ]
+  },
+  {
     date: "2026-10-04", title: "Magic guide to 99", link: "#/training/magic",
     items: [
       "19 new Magic methods: teleports (Varrock to Watchtower), enchanting emerald, ruby, diamond and dragonstone jewellery, High Level Alchemy and charging water, earth, fire and air orbs.",
