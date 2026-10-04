@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-04", title: "Magic guide to 99", link: "#/training/magic",
+    items: [
+      "19 new Magic methods: teleports (Varrock to Watchtower), enchanting emerald, ruby, diamond and dragonstone jewellery, High Level Alchemy and charging water, earth, fire and air orbs.",
+      "Three routes. Fastest: teleports up to 49, then enchanting rubies, diamonds and dragonstones (about 125K XP per hour from 68). Cheapest: teleports, then High Level Alchemy from 55. Best of both picks per level range from your time value.",
+      "Runes saved by a staff aren't counted, so wield the staff named on each method. For High Alchemy only the nature rune is counted: pick your items on the Alchemy tab."
+    ]
+  },
+  {
     date: "2026-10-04", title: "Crafting: gems, glass, dragonhide and battlestaves", link: "#/training/crafting",
     items: [
       "24 new Crafting methods: cutting gems (sapphire to dragonstone), smelting molten glass and glassblowing (beer glasses to light orbs), leather, spinning bow strings, battlestaves and green to black d'hide bodies.",

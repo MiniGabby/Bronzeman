@@ -20,6 +20,7 @@ import cooking from "./cooking.js";
 import thieving from "./thieving.js";
 import firemaking from "./firemaking.js";
 import craftingOther from "./crafting-other.js";
+import magic from "./magic.js";
 
 export default [
   sapphireRings,
@@ -42,5 +43,6 @@ export default [
   ...cooking,           // fish and wine for the Cooking routes
   ...thieving,          // pickpocketing, stalls and artefacts for the Thieving routes
   ...firemaking,        // log burning and Wintertodt for the Firemaking routes
-  ...craftingOther      // gems, glass, leather, spinning, dragonhide and battlestaves
+  ...craftingOther,     // gems, glass, leather, spinning, dragonhide and battlestaves
+  ...magic              // teleports, enchanting, High Alchemy and charging orbs
 ];

@@ -279,5 +279,47 @@ export default {
         ]
       }
     ]
+  },
+  magic: {
+    intro: "Magic is trained by casting spells over and over. Teleports are the cheapest fast XP, enchanting jewellery and charging orbs can earn money, and High Level Alchemy is the relaxed option that turns items into coins. Every method assumes you wield the matching elemental staff, so those runes aren't counted. Below level 25, enchant sapphire rings (7) or use combat spells.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Teleports up to 49, then enchanting rubies, diamonds and dragonstones: about 125K XP per hour with dragonstone rings from 68. Enchanting costs or earns money depending on prices, so check the numbers below.",
+        route: [
+          { from: 7, to: 25, method: "sapphire-rings" },
+          { from: 25, to: 31, method: "magic-tele-varrock" },
+          { from: 31, to: 37, method: "magic-tele-lumbridge" },
+          { from: 37, to: 45, method: "magic-tele-falador" },
+          { from: 45, to: 49, method: "magic-tele-camelot" },
+          { from: 49, to: 57, method: "magic-enchant-ruby-amulets", note: "Ruby rings (into rings of forging) work just as well." },
+          { from: 57, to: 68, method: "magic-enchant-diamond-amulets", note: "Diamond rings (into rings of life) work just as well." },
+          { from: 68, to: 99, method: "magic-enchant-dragonstone-rings" }
+        ]
+      },
+      {
+        key: "cheapest", name: "Cheapest", prefer: "cheap",
+        intro: "Teleports are cheap (one law rune per cast) and fast. From 55, High Level Alchemy: slower, but with the right items from the Alchemy tab it pays for itself, and it's the most relaxed way to train. Enchanting is a good alternative whenever the enchanted jewellery sells for more than it costs.",
+        route: [
+          { from: 7, to: 25, method: "sapphire-rings" },
+          { from: 25, to: 31, method: "magic-tele-varrock" },
+          { from: 31, to: 37, method: "magic-tele-lumbridge" },
+          { from: 37, to: 45, method: "magic-tele-falador" },
+          { from: 45, to: 55, method: "magic-tele-camelot" },
+          { from: 55, to: 99, method: "magic-high-alchemy", note: "The cost shown is just the nature runes: pick items on the Alchemy tab that alch for more than they cost." }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
+        from: 7, to: 99,
+        candidates: [
+          "sapphire-rings", "superheat-lead",
+          "magic-tele-varrock", "magic-tele-lumbridge", "magic-tele-falador", "magic-tele-camelot", "magic-tele-ardougne", "magic-tele-watchtower",
+          "magic-enchant-emerald-rings", "magic-enchant-ruby-rings", "magic-enchant-ruby-amulets", "magic-enchant-diamond-rings", "magic-enchant-diamond-amulets", "magic-enchant-dragonstone-rings",
+          "magic-high-alchemy", "magic-charge-water-orbs", "magic-charge-earth-orbs", "magic-charge-fire-orbs", "magic-charge-air-orbs"
+        ]
+      }
+    ]
   }
 };
