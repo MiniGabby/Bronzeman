@@ -5,7 +5,7 @@ export default [
   {
     date: "2026-10-04", title: "Cooking shows when you stop burning", link: "#/training/cooking",
     items: [
-      "Every fish on the Cooking page now shows the level where you stop burning it, for the fire or range and cooking gauntlets you picked, e.g. \"On a range: stops burning at 74 (with gauntlets: 60)\" for lobsters. You'll see it on each route step, in the methods table and on the method cards."
+      "Every fish on the Cooking page now shows the level where you stop burning it, for the fire or range and cooking gauntlets you picked, e.g. \"On a range: stops burning at 74 (with gauntlets: 64)\" for lobsters. Gauntlet levels fixed on 4 Oct: sharks stop burning at 94 with gauntlets (the lower levels on the wiki are for the Hosidius range). You'll see it on each route step, in the methods table and on the method cards."
     ]
   },
   {

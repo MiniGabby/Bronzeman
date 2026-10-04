@@ -54,7 +54,7 @@ export function stopText(m, s = source()) {
   const stop = stopLevel(m, s);
   const req = m.reqs?.skills?.Cooking || 1;
   const g = s.where === "fire" ? m.burn.gauntletsFire : m.burn.gauntletsRange;
-  const withG = !s.gauntlets && g != null ? ` (with gauntlets: ${g})` : "";
+  const withG = !s.gauntlets && g != null && (stop == null || g < stop) ? ` (with gauntlets: ${g})` : "";
   if (stop != null) return stop <= req ? "never burns" : `stops burning at ${stop}${withG}`;
   return `never stops burning${withG}`;
 }
