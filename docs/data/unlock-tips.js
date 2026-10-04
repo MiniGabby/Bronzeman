@@ -51,6 +51,18 @@ export default {
   "Adamant dart tip": "Smith one bar into 10 dart tips: Smithing 74 and The Tourist Trap, with an adamantite bar (see its tip if it's locked).",
   "Rune dart tip": "Smith one bar into 10 dart tips: Smithing 89 and The Tourist Trap, with a runite bar (see its tip if it's locked).",
 
+  // Crafting
+  "Battlestaff": "Buy one from Zaff's Superior Staffs in Varrock: he sells battlestaves every day.",
+  "Unpowered orb": "Blow one yourself: a glassblowing pipe on molten glass (both unlocked), Crafting 46.",
+  "Water orb": "Charge one yourself: blow an unpowered orb (Crafting 46), then cast Charge Water Orb on the Obelisk of Water (Taverley Dungeon) with Magic 56, 30 water runes and 3 cosmic runes.",
+  "Earth orb": "Charge one yourself: blow an unpowered orb (Crafting 46), then cast Charge Earth Orb on the Obelisk of Earth (Edgeville Dungeon, in the Wilderness part) with Magic 60, 30 earth runes and 3 cosmic runes.",
+  "Fire orb": "Charge one yourself: blow an unpowered orb (Crafting 46), then cast Charge Fire Orb on the Obelisk of Fire (on Entrana: no weapons or armour allowed) with Magic 63, 30 fire runes and 3 cosmic runes.",
+  "Air orb": "Charge one yourself: blow an unpowered orb (Crafting 46), then cast Charge Air Orb on the Obelisk of Air (in the Wilderness north of Edgeville) with Magic 66, 30 air runes and 3 cosmic runes.",
+  "Green dragon leather": "Kill one green dragon (combat 79) and take the hide to a tanner (Ellis in Al Kharid tans it for 20 coins). Green dragons live in the Wilderness, so go with a friend and bring only what you're willing to lose.",
+  "Blue dragon leather": "Kill one blue dragon (combat 111), e.g. in Taverley Dungeon, and take the hide to a tanner (Ellis in Al Kharid).",
+  "Red dragon leather": "Kill one red dragon (combat 152) in Brimhaven Dungeon and take the hide to a tanner (Ellis in Al Kharid).",
+  "Black dragon leather": "Kill one black dragon (combat 227) in Taverley Dungeon and take the hide to a tanner (Ellis in Al Kharid). A tough fight: an antifire shield is a must.",
+
   // Firemaking
   "Teak logs": "Chop one teak tree: Woodcutting 35. Teaks grow in the Hardwood Grove in Tai Bwo Wannai (100 trading sticks to get in) and on Fossil Island. Wintertodt supply crates can also give teak logs.",
   "Mahogany logs": "Chop one mahogany tree: Woodcutting 50, in the same places as teaks (Hardwood Grove in Tai Bwo Wannai, Fossil Island). Wintertodt supply crates can also give mahogany logs.",
@@ -89,6 +101,8 @@ export const REQS = {
   "Maple longbow (u)": { Fletching: 55, Woodcutting: 45 }, "Yew longbow (u)": { Fletching: 70, Woodcutting: 60 },
   "Magic longbow (u)": { Fletching: 85, Woodcutting: 75 },
   "Mithril dart tip": { Smithing: 54 }, "Adamant dart tip": { Mining: 70, Smithing: 74 }, "Rune dart tip": { Mining: 85, Smithing: 89 },
+  "Battlestaff": {}, "Unpowered orb": { Crafting: 46 },
+  "Water orb": { Crafting: 46, Magic: 56 }, "Earth orb": { Crafting: 46, Magic: 60 }, "Fire orb": { Crafting: 46, Magic: 63 }, "Air orb": { Crafting: 46, Magic: 66 },
   "Teak logs": { Woodcutting: 35 }, "Mahogany logs": { Woodcutting: 50 }, "Arctic pine logs": { Woodcutting: 54 }, "Redwood logs": { Woodcutting: 90 },
   "Grapes": { Cooking: 32 },   // Cooks' Guild spawn (or Thieving 22 for a market stall)
   "Raw monkfish": { Fishing: 62 }, "Raw karambwan": { Fishing: 65 }, "Raw anglerfish": { Fishing: 82 }

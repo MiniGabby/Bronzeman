@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-04", title: "Crafting: gems, glass, dragonhide and battlestaves", link: "#/training/crafting",
+    items: [
+      "24 new Crafting methods: cutting gems (sapphire to dragonstone), smelting molten glass and glassblowing (beer glasses to light orbs), leather, spinning bow strings, battlestaves and green to black d'hide bodies.",
+      "Crafting now has three routes. Fastest: gem cutting from 20 (140K to 380K XP per hour, all uncut gems are unlocked), then d'hide bodies from 63. Jewellery: the old route, the cheapest. Best of both picks per level range from your time value.",
+      "Dragon leather, battlestaves and orbs aren't unlocked yet. Each has a tip: battlestaves are sold by Zaff in Varrock, orbs you charge at an obelisk, and dragon leather needs one dragon kill and a tanner."
+    ]
+  },
+  {
     date: "2026-10-03", title: "Firemaking guide to 99", link: "#/training/firemaking",
     items: [
       "Three routes. Fastest: line burning the best log for your level at the Grand Exchange (up to 450K XP per hour with magic logs). Cheapest: cheap logs up to 50, then Wintertodt to 99, about 50 hours that earn money. Best of both picks per level range from your time value.",

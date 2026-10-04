@@ -63,19 +63,55 @@ export default {
     ]
   },
   crafting: {
-    intro: "A jewellery route: make jewellery from gold bars and cut gems at a furnace (Edgeville has a furnace next to a bank), so it often pays for itself or earns a bit. Below level 7, make gold rings (level 5). The fastest Crafting XP comes from glassblowing, battlestaves and dragonhide, which aren't on the site yet. Check \"Traded / hr\" on each method before you make hundreds: some pieces sell slowly.",
-    route: [
-      { from: 7, to: 23, method: "craft-gold-bracelets" },
-      { from: 23, to: 31, method: "craft-sapphire-bracelets", note: "Emerald bracelets (30) are an option for the last level." },
-      { from: 31, to: 42, method: "craft-emerald-amulets" },
-      { from: 42, to: 50, method: "craft-ruby-bracelets" },
-      { from: 50, to: 56, method: "craft-ruby-amulets" },
-      { from: 56, to: 58, method: "craft-diamond-necklaces" },
-      { from: 58, to: 70, method: "craft-diamond-bracelets" },
-      { from: 70, to: 72, method: "craft-diamond-amulets" },
-      { from: 72, to: 74, method: "craft-dragon-necklaces" },
-      { from: 74, to: 80, method: "craft-dragonstone-bracelets" },
-      { from: 80, to: 99, method: "craft-dragonstone-amulets", note: "150 XP each: by far the best jewellery XP." }
+    intro: "Crafting has many methods. Gem cutting is fast and the uncut gems are already unlocked. Glassblowing and leather are cheap. Jewellery from gold bars and gems often pays for itself. The very fastest Crafting, dragonhide bodies and battlestaves, needs things nobody has unlocked yet: the tips say how to get the first one. Check \"Traded / hr\" before you make hundreds of something: some items sell slowly.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Gem cutting from 20 (140K to 380K XP per hour), then dragonhide bodies from 63 (300K to 450K XP per hour). Dragon leather isn't unlocked yet: until someone kills a green dragon and tans the hide, the route shows the best alternative. Battlestaves (54 to 66) are almost as fast once battlestaves and orbs are unlocked.",
+        route: [
+          { from: 1, to: 20, method: "craft-molten-glass", note: "Or beer glasses (1) with the molten glass." },
+          { from: 20, to: 27, method: "craft-cut-sapphire" },
+          { from: 27, to: 34, method: "craft-cut-emerald" },
+          { from: 34, to: 43, method: "craft-cut-ruby" },
+          { from: 43, to: 55, method: "craft-cut-diamond" },
+          { from: 55, to: 63, method: "craft-cut-dragonstone" },
+          { from: 63, to: 71, method: "craft-green-dhide-bodies" },
+          { from: 71, to: 77, method: "craft-blue-dhide-bodies" },
+          { from: 77, to: 84, method: "craft-red-dhide-bodies" },
+          { from: 84, to: 99, method: "craft-black-dhide-bodies" }
+        ]
+      },
+      {
+        key: "jewellery", name: "Jewellery", prefer: "cheap",
+        intro: "Make jewellery from gold bars and cut gems at a furnace (Edgeville has a furnace next to a bank), so it often pays for itself or earns a bit. Below level 7, make gold rings (level 5). Slower than gem cutting, but the cheapest route.",
+        route: [
+          { from: 7, to: 23, method: "craft-gold-bracelets" },
+          { from: 23, to: 31, method: "craft-sapphire-bracelets", note: "Emerald bracelets (30) are an option for the last level." },
+          { from: 31, to: 42, method: "craft-emerald-amulets" },
+          { from: 42, to: 50, method: "craft-ruby-bracelets" },
+          { from: 50, to: 56, method: "craft-ruby-amulets" },
+          { from: 56, to: 58, method: "craft-diamond-necklaces" },
+          { from: 58, to: 70, method: "craft-diamond-bracelets" },
+          { from: 70, to: 72, method: "craft-diamond-amulets" },
+          { from: 72, to: 74, method: "craft-dragon-necklaces" },
+          { from: 74, to: 80, method: "craft-dragonstone-bracelets" },
+          { from: 80, to: 99, method: "craft-dragonstone-amulets", note: "150 XP each: by far the best jewellery XP." }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
+        from: 1, to: 99,
+        candidates: [
+          "craft-molten-glass", "craft-bow-strings", "craft-leather-gloves", "craft-leather-vambraces", "craft-leather-bodies", "craft-leather-chaps",
+          "craft-glass-beer-glasses", "craft-glass-vials", "craft-glass-unpowered-orbs", "craft-glass-lantern-lenses", "craft-glass-light-orbs",
+          "craft-cut-sapphire", "craft-cut-emerald", "craft-cut-ruby", "craft-cut-diamond", "craft-cut-dragonstone",
+          "craft-gold-necklaces", "craft-gold-bracelets", "craft-sapphire-bracelets", "craft-emerald-bracelets", "craft-emerald-amulets", "craft-ruby-bracelets", "craft-ruby-amulets",
+          "craft-diamond-necklaces", "craft-diamond-bracelets", "craft-diamond-amulets", "craft-dragonstone-rings", "craft-dragon-necklaces", "craft-dragonstone-bracelets", "craft-dragonstone-amulets",
+          "craft-water-battlestaves", "craft-earth-battlestaves", "craft-fire-battlestaves", "craft-air-battlestaves",
+          "craft-green-dhide-bodies", "craft-blue-dhide-bodies", "craft-red-dhide-bodies", "craft-black-dhide-bodies"
+        ]
+      }
     ]
   },
   fletching: {
