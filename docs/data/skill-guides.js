@@ -321,5 +321,82 @@ export default {
         ]
       }
     ]
+  },
+  construction: {
+    intro: "Construction is building furniture in your own house (buy one from an estate agent for 1,000 coins) with planks, a saw and a hammer. It costs money, but it's the fastest skill to level. From Construction 50 hire a demon butler: he fetches planks from the bank while you keep building, which makes oak larders and mahogany tables several times faster. Mahogany planks aren't unlocked yet; see the tip on how to get the first one.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Cheap furniture up to 33, oak larders to 52, then mahogany tables and gnome benches with a demon butler: up to about 1 million XP per hour, but mahogany planks cost a lot.",
+        route: [
+          { from: 1, to: 4, method: "con-crude-chairs" },
+          { from: 4, to: 9, method: "con-wooden-bookcases" },
+          { from: 9, to: 22, method: "con-wooden-larders" },
+          { from: 22, to: 33, method: "con-oak-dining-tables" },
+          { from: 33, to: 52, method: "con-oak-larders", note: "Slower until you have the demon butler at 50." },
+          { from: 52, to: 77, method: "con-mahogany-tables" },
+          { from: 77, to: 99, method: "con-gnome-benches" }
+        ]
+      },
+      {
+        key: "cheapest", name: "Cheapest", prefer: "cheap",
+        intro: "Oak planks only: oak larders from 33 and oak dungeon doors from 74. About half the speed of mahogany, but much cheaper per XP, and oak planks are already unlocked.",
+        route: [
+          { from: 1, to: 4, method: "con-crude-chairs" },
+          { from: 4, to: 9, method: "con-wooden-bookcases" },
+          { from: 9, to: 22, method: "con-wooden-larders" },
+          { from: 22, to: 33, method: "con-oak-dining-tables" },
+          { from: 33, to: 74, method: "con-oak-larders", note: "Slower until you have the demon butler at 50." },
+          { from: 74, to: 99, method: "con-oak-dungeon-doors" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
+        from: 1, to: 99,
+        candidates: ["con-crude-chairs", "con-wooden-bookcases", "con-wooden-larders", "con-oak-dining-tables", "con-oak-larders", "con-mahogany-tables", "con-oak-dungeon-doors", "con-gnome-benches"]
+      }
+    ]
+  },
+  runecrafting: {
+    intro: "Runecraft is slow everywhere. Quests that give Runecraft XP skip the first levels (Rune Mysteries, Temple of the Eye, Enter the Abyss and more). Three good ways to train: lava runes (fastest, costs money), the Ourania altar (earns money, no talismans needed) and Guardians of the Rift (a free group minigame from 27 that also gives the essence pouches and the Raiments of the Eye outfit).",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Ourania until 23, then lava runes all the way: 43K XP per hour at first and up to 100K with the colossal pouch and Magic Imbue. It costs about 2 gp per XP, and you need a binding necklace, a fire tiara and an earth talisman (or Magic Imbue at Magic 82).",
+        route: [
+          { from: 1, to: 23, method: "rc-ourania-1" },
+          { from: 23, to: 99, method: "rc-lava-runes" }
+        ]
+      },
+      {
+        key: "money", name: "Earn money", prefer: "cheap",
+        intro: "The Ourania (ZMI) altar the whole way: every essence becomes a random rune, and the runes are worth more than the essence, about 350K to 400K gp per hour at mid levels. XP per essence goes up as you level. Lunar Diplomacy (Ourania Teleport) makes it a lot faster.",
+        route: [
+          { from: 1, to: 50, method: "rc-ourania-1" },
+          { from: 50, to: 75, method: "rc-ourania-50" },
+          { from: 75, to: 90, method: "rc-ourania-75" },
+          { from: 90, to: 99, method: "rc-ourania-90" }
+        ]
+      },
+      {
+        key: "gotr", name: "Guardians of the Rift",
+        intro: "The free, social route: Guardians of the Rift from 27 (after Temple of the Eye). Slower XP than lava runes, but it costs nothing, the rewards (runes, essence pouches, the Raiments of the Eye outfit for 60% more runes) aren't counted here, and you can play it together.",
+        route: [
+          { from: 1, to: 27, method: "rc-ourania-1", note: "Or do the Runecraft quests." },
+          { from: 27, to: 50, method: "rc-gotr-27" },
+          { from: 50, to: 75, method: "rc-gotr-50" },
+          { from: 75, to: 85, method: "rc-gotr-75" },
+          { from: 85, to: 99, method: "rc-gotr-85" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
+        from: 1, to: 99,
+        candidates: ["rc-air-runes", "rc-earth-runes", "rc-fire-runes", "rc-body-runes", "rc-lava-runes",
+          "rc-ourania-1", "rc-ourania-50", "rc-ourania-75", "rc-ourania-90", "rc-gotr-27", "rc-gotr-50", "rc-gotr-75", "rc-gotr-85"]
+      }
+    ]
   }
 };

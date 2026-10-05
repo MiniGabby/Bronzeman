@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-05", title: "Construction and Runecraft guides to 99", link: "#/training/construction",
+    items: [
+      "Construction: furniture from crude chairs to gnome benches. Fastest: oak larders, then mahogany tables and gnome benches with a demon butler (up to about 1M XP per hour). Cheapest: oak planks only (oak larders, then oak dungeon doors). Plus Best of both. Mahogany planks aren't unlocked yet; the tip says how to get the first one.",
+      "Runecraft: four routes. Fastest: lava runes from 23. Earn money: the Ourania altar all the way (random runes, about 350K to 400K gp per hour). Guardians of the Rift: the free group minigame from 27. Plus Best of both.",
+      "Guardians of the Rift rewards aren't counted, and the Ourania runes are an estimate from the wiki, so check those numbers in game."
+    ]
+  },
+  {
     date: "2026-10-04", title: "Cooking shows when you stop burning", link: "#/training/cooking",
     items: [
       "Every fish on the Cooking page now shows the level where you stop burning it, for the fire or range and cooking gauntlets you picked, e.g. \"On a range: stops burning at 74 (with gauntlets: 64)\" for lobsters. Gauntlet levels fixed on 4 Oct: sharks stop burning at 94 with gauntlets (the lower levels on the wiki are for the Hosidius range). You'll see it on each route step, in the methods table and on the method cards."

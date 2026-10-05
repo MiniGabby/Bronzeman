@@ -21,6 +21,8 @@ import thieving from "./thieving.js";
 import firemaking from "./firemaking.js";
 import craftingOther from "./crafting-other.js";
 import magic from "./magic.js";
+import construction from "./construction.js";
+import runecraft from "./runecraft.js";
 
 export default [
   sapphireRings,
@@ -44,5 +46,7 @@ export default [
   ...thieving,          // pickpocketing, stalls and artefacts for the Thieving routes
   ...firemaking,        // log burning and Wintertodt for the Firemaking routes
   ...craftingOther,     // gems, glass, leather, spinning, dragonhide and battlestaves
-  ...magic              // teleports, enchanting, High Alchemy and charging orbs
+  ...magic,             // teleports, enchanting, High Alchemy and charging orbs
+  ...construction,      // furniture in your house for the Construction routes
+  ...runecraft          // runes, Ourania and Guardians of the Rift for the Runecraft routes
 ];

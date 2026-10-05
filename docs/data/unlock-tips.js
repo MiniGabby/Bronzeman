@@ -63,6 +63,9 @@ export default {
   "Red dragon leather": "Kill one red dragon (combat 152) in Brimhaven Dungeon and take the hide to a tanner (Ellis in Al Kharid).",
   "Black dragon leather": "Kill one black dragon (combat 227) in Taverley Dungeon and take the hide to a tanner (Ellis in Al Kharid). A tough fight: an antifire shield is a must.",
 
+  // Construction
+  "Mahogany plank": "Turn one mahogany log into a plank at the sawmill in Varrock (1,500 coins) or with a demon butler. Mahogany logs: chop one (Woodcutting 50) in the Hardwood Grove in Tai Bwo Wannai or on Fossil Island, or get them from Wintertodt crates.",
+
   // Firemaking
   "Teak logs": "Chop one teak tree: Woodcutting 35. Teaks grow in the Hardwood Grove in Tai Bwo Wannai (100 trading sticks to get in) and on Fossil Island. Wintertodt supply crates can also give teak logs.",
   "Mahogany logs": "Chop one mahogany tree: Woodcutting 50, in the same places as teaks (Hardwood Grove in Tai Bwo Wannai, Fossil Island). Wintertodt supply crates can also give mahogany logs.",
@@ -101,6 +104,7 @@ export const REQS = {
   "Maple longbow (u)": { Fletching: 55, Woodcutting: 45 }, "Yew longbow (u)": { Fletching: 70, Woodcutting: 60 },
   "Magic longbow (u)": { Fletching: 85, Woodcutting: 75 },
   "Mithril dart tip": { Smithing: 54 }, "Adamant dart tip": { Mining: 70, Smithing: 74 }, "Rune dart tip": { Mining: 85, Smithing: 89 },
+  "Mahogany plank": { Woodcutting: 50 },
   "Battlestaff": {}, "Unpowered orb": { Crafting: 46 },
   "Water orb": { Crafting: 46, Magic: 56 }, "Earth orb": { Crafting: 46, Magic: 60 }, "Fire orb": { Crafting: 46, Magic: 63 }, "Air orb": { Crafting: 46, Magic: 66 },
   "Teak logs": { Woodcutting: 35 }, "Mahogany logs": { Woodcutting: 50 }, "Arctic pine logs": { Woodcutting: 54 }, "Redwood logs": { Woodcutting: 90 },
