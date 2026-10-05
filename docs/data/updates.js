@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-05", title: "60 new unlocks (681 in total)", link: "#/unlocked",
+    items: [
+      "Grapes (lil oldkitty): jugs of wine, the fastest Cooking from 35, are now open on the Cooking route.",
+      "Earth talisman (Lil Fool), fire talisman (Key Kode) and fire tiara (Mini Gabby): together that's everything for lava runes, the fastest Runecraft route from 23.",
+      "Also maple and teak logs (Firemaking, Fletching), adamantite ore, bass, grimy lantadyme, green d'hide body, red dragonhide and all the coloured wizard robes. Most unlocks this time by Lil Fool (33) and Mini Gabby (18)."
+    ]
+  },
+  {
     date: "2026-10-05", title: "Construction and Runecraft guides to 99", link: "#/training/construction",
     items: [
       "Construction: furniture from crude chairs to gnome benches. Fastest: oak larders, then mahogany tables and gnome benches with a demon butler (up to about 1M XP per hour). Cheapest: oak planks only (oak larders, then oak dungeon doors). Plus Best of both. Mahogany planks aren't unlocked yet; the tip says how to get the first one.",
