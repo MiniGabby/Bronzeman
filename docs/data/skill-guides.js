@@ -359,7 +359,7 @@ export default {
     ]
   },
   runecrafting: {
-    intro: "Runecraft is slow everywhere. Quests that give Runecraft XP skip the first levels (Rune Mysteries, Temple of the Eye, Enter the Abyss and more). Three good ways to train: lava runes (fastest, costs money), the Ourania altar (earns money, no talismans needed) and Guardians of the Rift (a free group minigame from 27 that also gives the essence pouches and the Raiments of the Eye outfit).",
+    intro: "Runecraft is slow everywhere. Quests that give Runecraft XP skip the first levels (Temple of the Eye, Enter the Abyss and more). Three good ways to train: lava runes (fastest, costs money), the Ourania altar (earns money, no talismans needed) and Guardians of the Rift (a free group minigame from 27 that also gives the essence pouches and the Raiments of the Eye outfit).",
     routes: [
       {
         key: "fastest", name: "Fastest",
