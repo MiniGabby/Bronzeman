@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-07", title: "Daily prices are now behind a switch", link: "#/training/cooking",
+    items: [
+      "The daily low and high prices made the training routes hard to read, so they're hidden by default. Tick \"Daily prices\" above a route (next to the route tabs) to show them; the site remembers your choice."
+    ]
+  },
+  {
     date: "2026-10-07", title: "Routes show daily low and high prices", link: "#/training/cooking",
     items: [
       "Every step of a training route now shows the usual price range over a day for what you buy and sell, and the hour it's usually best, e.g. \"Raw herring: buy at 271–305 gp over a day, cheapest around 02:00\". A green label shows when an item is cheap right now.",

@@ -156,6 +156,7 @@ function mountSkill(root, skill) {
     const steps0 = stepsOf(active, skill.name, quester());
     const needTips = new Map();
     const histIds = new Set();   // items whose daily price range the steps show
+    const showDaily = !!store.get("routeDaily", false);   // the "Daily prices" switch above the route
     let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true;
 
     const steps = steps0.map(st => {
@@ -200,7 +201,7 @@ function mountSkill(root, skill) {
       // Usual price range over a day for what this step buys and sells, and the best hour for each.
       const daily = (r => {
         const per = r?.m.xp?.[skill.name];
-        if (!r || !per) return "";
+        if (!showDaily || !r || !per) return "";
         const tries = xp / (per * (r.c.success ?? 1));
         const outs = (r.c.outs || []).length <= 2 ? r.c.outs || [] : [];   // long loot lists would swamp the step
         const line = (x, side) => {
@@ -247,7 +248,8 @@ function mountSkill(root, skill) {
     const tabs = routes.length > 1 ? `<div class="seg routetabs" role="group" aria-label="Route">${routes.map(r =>
       `<button type="button" data-route="${esc(r.key)}" aria-pressed="${r.key === active.key}">${esc(r.name)}</button>`).join("")}</div>` : "";
     host.innerHTML = `
-      <div class="sechead"><h2 class="pagetitle small">Training route${routes.length > 1 ? "s" : ""}</h2>${tabs}</div>
+      <div class="sechead"><h2 class="pagetitle small">Training route${routes.length > 1 ? "s" : ""}</h2>
+        <div class="routeopts"><label class="check" title="Show the usual price range over a day, and the best hour to buy or sell, under every step"><input type="checkbox" id="t-daily"${showDaily ? " checked" : ""}> Daily prices</label>${tabs}</div></div>
       ${guide.intro ? `<p class="lead">${esc(guide.intro)}</p>` : ""}
       ${active.intro ? `<p class="lead">${esc(active.intro)}</p>` : ""}
       ${active.auto ? `<div class="toolbar timevalue">
@@ -264,7 +266,7 @@ function mountSkill(root, skill) {
             <td class="wrapcell"><span class="sub2">With the alternative wherever the recommended method is locked or needs a quest: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
         </tbody>
       </table></div>
-      ${histIds.size ? `<p class="fine">Daily prices: the usual range a buy or sell offer fills at over a day, and the hour (your time) it's usually best, from about 3 weeks of hourly prices. Hourly averages hide short spikes, so treat them as a guide.</p>` : ""}
+      ${showDaily && histIds.size ? `<p class="fine">Daily prices: the usual range a buy or sell offer fills at over a day, and the hour (your time) it's usually best, from about 3 weeks of hourly prices. Hourly averages hide short spikes, so treat them as a guide.</p>` : ""}
       ${needTips.size ? `<div class="unlocktips"><h3 class="reqgroup">How to unlock what the route needs</h3><p class="fine">You only need one of each: once anyone in the group has obtained an item, everyone can buy more on the GE.</p><ul>${
         [...needTips].map(([n, t]) => `<li><b>${esc(n)}</b>: ${esc(t)}</li>`).join("")}</ul></div>` : ""}`;
   }
@@ -341,6 +343,7 @@ function mountSkill(root, skill) {
     gaunt.addEventListener("change", () => { burn.setSource({ gauntlets: gaunt.checked }); render(); });
   }
   $('[data-f="route"]').addEventListener("change", e => {
+    if (e.target.id === "t-daily") { store.set("routeDaily", e.target.checked); render(); return; }
     if (e.target.id !== "t-timevalue") return;
     setTimeValue(e.target.value); render();
   });
