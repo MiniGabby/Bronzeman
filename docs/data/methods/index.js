@@ -23,6 +23,7 @@ import craftingOther from "./crafting-other.js";
 import magic from "./magic.js";
 import construction from "./construction.js";
 import runecraft from "./runecraft.js";
+import agility from "./agility.js";
 
 export default [
   sapphireRings,
@@ -48,5 +49,6 @@ export default [
   ...craftingOther,     // gems, glass, leather, spinning, dragonhide and battlestaves
   ...magic,             // teleports, enchanting, High Alchemy and charging orbs
   ...construction,      // furniture in your house for the Construction routes
-  ...runecraft          // runes, Ourania and Guardians of the Rift for the Runecraft routes
+  ...runecraft,         // runes, Ourania and Guardians of the Rift for the Runecraft routes
+  ...agility            // rooftops, Brimhaven, the Agility Pyramid, Wilderness course and Hallowed Sepulchre
 ];

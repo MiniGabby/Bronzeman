@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-07", title: "Agility guide to 99", link: "#/training/agility",
+    items: [
+      "26 Agility methods: all nine rooftop courses, the Brimhaven Agility Arena, the Agility Pyramid, the Wilderness, Shayzien, Ape Atoll, Werewolf, Colossal Wyrm and Prifddinas courses, and the Hallowed Sepulchre.",
+      "Four routes. Rooftops: the simple one, with marks of grace all the way (stay at Canifis from 40 for the graceful outfit, 260 marks). Fastest: The Tourist Trap, Brimhaven floor spikes, the Wilderness course, then the Hallowed Sepulchre from 62. Earn money: the Agility Pyramid from 30 (10,000 coins per top) and the Wilderness course from 52. Plus Best of both.",
+      "Marks of grace are counted as amylase crystals (10 per mark), so the money on the rooftops only becomes real once you have graceful. The Agility Pyramid and the Wilderness course are also on the Money makers page. The Wilderness loot and the laps per hour are estimates from the wiki."
+    ]
+  },
+  {
     date: "2026-10-05", title: "60 new unlocks (681 in total)", link: "#/unlocked",
     items: [
       "Grapes (lil oldkitty): jugs of wine, the fastest Cooking from 35, are now open on the Cooking route.",

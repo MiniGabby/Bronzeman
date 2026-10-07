@@ -398,5 +398,59 @@ export default {
           "rc-ourania-1", "rc-ourania-50", "rc-ourania-75", "rc-ourania-90", "rc-gotr-27", "rc-gotr-50", "rc-gotr-75", "rc-gotr-85"]
       }
     ]
+  },
+  agility: {
+    intro: "Agility costs nothing: you run laps. It's slow, so skip the start with quests: The Tourist Trap (put both XP rewards in Agility: 9,300 XP, level 1 to 26), Recruitment Drive (1,000), The Depths of Despair (1,500) and The Grand Tree (7,900) together give 19,700 XP, level 33. Rooftop courses drop marks of grace: 260 marks buy the full graceful outfit from Grace in the Rogues' Den (it restores run energy faster and weighs nothing), and after that 10 marks buy 100 amylase crystals to sell. The routes count marks as amylase crystals, so the money shown only becomes real once you have graceful. Always run, and bring stamina or energy potions for the courses that aren't rooftops. A summer pie boosts Agility by 5, enough to start most courses early.",
+    routes: [
+      {
+        key: "rooftops", name: "Rooftops",
+        intro: "The simple route: the best rooftop course for your level, all the way. Slow (10K XP per hour at first, 50K from 70, 70K at 90), but safe, relaxed, no requirements beyond the level, and marks of grace the whole way. For the graceful outfit, stay at Canifis from 40 until you have your 260 marks: it gives the most marks and doesn't slow down as you level.",
+        route: [
+          { from: 1, to: 20, method: "agi-draynor" },
+          { from: 20, to: 30, method: "agi-al-kharid" },
+          { from: 30, to: 40, method: "agi-varrock" },
+          { from: 40, to: 50, method: "agi-canifis", note: "Stay here for the graceful outfit; move on at 50 if you only want XP." },
+          { from: 50, to: 60, method: "agi-falador" },
+          { from: 60, to: 70, method: "agi-seers" },
+          { from: 70, to: 80, method: "agi-pollnivneach" },
+          { from: 80, to: 90, method: "agi-rellekka" },
+          { from: 90, to: 99, method: "agi-ardougne" }
+        ]
+      },
+      {
+        key: "fastest", name: "Fastest",
+        intro: "The Tourist Trap first, then the Brimhaven floor spikes (30K+ XP per hour, three times the rooftops), the Wilderness course from 52 and the Hallowed Sepulchre from 62 (56K XP per hour, rising to about 100K at 87). The Sepulchre needs Sins of the Father, a long quest line, and takes practice; until someone has it, the route shows the best alternative. No marks of grace on this route, so do some Canifis laps on the side for graceful.",
+        route: [
+          { from: 1, to: 26, quest: "The Tourist Trap", url: "https://oldschool.runescape.wiki/w/The_Tourist_Trap", note: "Put both XP rewards (4,650 each) in Agility: level 1 to 26 at once. Needs Fletching 10 and Smithing 20. The same quest unlocks darts for Fletching and Smithing." },
+          { from: 26, to: 52, method: "agi-brimhaven-spikes", note: "From 40 the arena's tickets are faster still (45K to 50K XP per hour). With summer pies you can start the Wilderness course at 47." },
+          { from: 52, to: 62, method: "agi-wilderness", note: "Player killers come by: bring only the fee and summer pies." },
+          { from: 62, to: 72, method: "agi-sepulchre-62" },
+          { from: 72, to: 77, method: "agi-sepulchre-72" },
+          { from: 77, to: 87, method: "agi-sepulchre-77" },
+          { from: 87, to: 99, method: "agi-sepulchre-87" }
+        ]
+      },
+      {
+        key: "money", name: "Earn money", prefer: "cheap",
+        intro: "Agility that pays. The Agility Pyramid from 30 gives 10,000 coins per pyramid top, straight into your pocket: 130K per hour at first, 260K from 75. The Wilderness Agility Course from 52 pays far more (rune armour and blighted supplies from the dispenser, well over a million per hour on a long streak), but it's in the deep Wilderness and you can lose the 150K fee. Not keen on the Wilderness? Stay on the pyramid.",
+        route: [
+          { from: 1, to: 20, method: "agi-draynor" },
+          { from: 20, to: 30, method: "agi-al-kharid" },
+          { from: 30, to: 52, method: "agi-pyramid-30", note: "You fall a lot below 50; Canifis (40) is the calmer option and gives marks." },
+          { from: 52, to: 99, method: "agi-wilderness", note: "Safe alternative: the Agility Pyramid, 200K to 260K coins per hour from 60." }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live: for every level range it picks the course with the lowest total cost, counting what the course earns (marks of grace as amylase crystals, pyramid tops, Wilderness loot at GE prices) and the time it takes, valued at what you say your time is worth below. With a high value it picks the fastest XP, with a low value the best money.",
+        from: 1, to: 99,
+        candidates: [
+          "agi-draynor", "agi-al-kharid", "agi-varrock", "agi-canifis", "agi-falador", "agi-seers", "agi-pollnivneach", "agi-rellekka", "agi-ardougne",
+          "agi-brimhaven-spikes", "agi-brimhaven-arena", "agi-pyramid-30", "agi-pyramid-60", "agi-pyramid-75",
+          "agi-shayzien-advanced", "agi-ape-atoll", "agi-wilderness", "agi-wyrm-basic", "agi-wyrm-advanced", "agi-werewolf",
+          "agi-sepulchre-52", "agi-sepulchre-62", "agi-sepulchre-72", "agi-sepulchre-77", "agi-sepulchre-87", "agi-prifddinas"
+        ]
+      }
+    ]
   }
 };
