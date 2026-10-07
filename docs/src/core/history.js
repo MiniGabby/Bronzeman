@@ -155,6 +155,16 @@ function analyse(rows) {
   };
 }
 
+/**
+ * The usual price range over a day for one side ("buy" = what buy offers fill at, "sell" = what sell
+ * offers fill at): the last 24 hours' typical price times the cheapest and dearest hour of the daily
+ * pattern. Returns [low, high], or null when there were too few trades in the last day.
+ */
+export function dayRange(t, side) {
+  const avg = side === "buy" ? t.lowAvg : t.highAvg, r = side === "buy" ? t.low : t.high;
+  return avg ? [avg * Math.min(...r), avg * Math.max(...r)] : null;
+}
+
 /** "04:00" for an hour of the day. */
 export const hourLabel = h => String(h).padStart(2, "0") + ":00";
 

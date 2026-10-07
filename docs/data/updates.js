@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-07", title: "Routes show daily low and high prices", link: "#/training/cooking",
+    items: [
+      "Every step of a training route now shows the usual price range over a day for what you buy and sell, and the hour it's usually best, e.g. \"Raw herring: buy at 271–305 gp over a day, cheapest around 02:00\". A green label shows when an item is cheap right now.",
+      "On bigger steps it also shows what the timing is worth, e.g. buying grapes at the daily low instead of the high saves about 74K on the way from 35 to 99.",
+      "It works on every skill's routes, not only Cooking. The ranges come from about 3 weeks of hourly prices (the same data as the Merching tab), so treat them as a guide. Hours are in your own time zone."
+    ]
+  },
+  {
     date: "2026-10-07", title: "Agility guide to 99", link: "#/training/agility",
     items: [
       "26 Agility methods: all nine rooftop courses, the Brimhaven Agility Arena, the Agility Pyramid, the Wilderness, Shayzien, Ape Atoll, Werewolf, Colossal Wyrm and Prifddinas courses, and the Hallowed Sepulchre.",

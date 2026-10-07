@@ -14,6 +14,7 @@ import GUIDES from "../../data/skill-guides.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, timeValue, setTimeValue, missingQuests, doableAlt } from "../core/autoRoute.js";
 import * as burn from "../core/burn.js";
+import * as history from "../core/history.js";
 
 export const title = "Skill training";
 
@@ -154,6 +155,7 @@ function mountSkill(root, skill) {
     const byId = Object.fromEntries(rows.map(r => [r.m.id, r]));
     const steps0 = stepsOf(active, skill.name, quester());
     const needTips = new Map();
+    const histIds = new Set();   // items whose daily price range the steps show
     let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true;
 
     const steps = steps0.map(st => {
@@ -195,6 +197,32 @@ function mountSkill(root, skill) {
         const stops = r.m.burn ? `<div class="sub2 stopburn">On ${esc(burn.label(burn.source()))}: ${esc(burn.stopText(r.m))}</div>` : "";
         return `<div class="sub2 buy">${here ? `Still to buy (from your ${nf.format(Math.max(xpNow, xpForLevel(st.from)))} XP)` : "Buy"}: ${list}${burnt}</div>${stops}`;
       })(rec);
+      // Usual price range over a day for what this step buys and sells, and the best hour for each.
+      const daily = (r => {
+        const per = r?.m.xp?.[skill.name];
+        if (!r || !per) return "";
+        const tries = xp / (per * (r.c.success ?? 1));
+        const outs = (r.c.outs || []).length <= 2 ? r.c.outs || [] : [];   // long loot lists would swamp the step
+        const line = (x, side) => {
+          if (x.id == null && x.it?.id == null) return "";
+          const id = x.id ?? x.it.id;
+          histIds.add(id);
+          const t = history.get(id);
+          if (t === undefined) return history.loading(id) ? `<div class="sub2 daily muted">${esc(x.it.name)}: daily prices loading…</div>` : "";
+          const range = t && history.dayRange(t, side);
+          if (!range) return "";
+          const [lo, hi] = range, buying = side === "buy";
+          const rel = history.reliability(buying ? t.buyHit : t.sellHit);
+          const hits = buying ? `Below the day's average on ${t.buyHitDays} of ${t.buyDays} days` : `Above the day's average on ${t.sellHitDays} of ${t.sellDays} days`;
+          const until = buying ? history.cheapNow(t) : null;
+          const diff = (hi - lo) * x.qty * tries;
+          return `<div class="sub2 daily"><b>${esc(x.it.name)}</b>: ${buying ? "buy" : "sell"} at <span class="num">${gp(lo)}${Math.round(lo) === Math.round(hi) ? "" : `–${gp(hi)}`}</span> gp over a day, ${
+            buying ? "cheapest" : "best"} around <b class="num">${history.hourLabel(buying ? t.buyHour : t.sellHour)}</b> <span class="pill ${rel.pill}" title="${hits}">${rel.label}</span>${
+            until != null ? ` <span class="pill good">Cheap now, until ${history.hourLabel(until)}</span>` : ""}${
+            diff >= 1000 ? ` <span class="muted">· ${buying ? "buying at the low instead of the high saves" : "selling at the high instead of the low earns"} about ${short(diff)} ${here ? "on what's left" : "on this step"}</span>` : ""}</div>`;
+        };
+        return (r.c.ins || []).map(x => line(x, "buy")).join("") + outs.map(x => line(x, "sell")).join("");
+      })(rec);
       if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
       if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
       const status = [
@@ -203,7 +231,7 @@ function mountSkill(root, skill) {
         ...unkQ.map(q => `<span class="sub2" title="Not known if ${esc(p.name)} has done it">Needs ${esc(q)} (done?)</span>`)
       ].filter(Boolean);
       return `<tr class="${[here ? "here" : "", needQ.length ? "questneed" : ""].join(" ").trim()}">${lv}
-        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
+        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
         <td class="r num">${rec ? short(rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
         <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? duration(cr.h) : ""}</div></td>
@@ -211,6 +239,9 @@ function mountSkill(root, skill) {
           ? (alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${short(alt.xpHr)} XP/hr, ${fmtGpXp(alt.gpXp)} gp/XP)</div>` : `<div class="sub2">Nothing else on the site fits this level yet.</div>`) : ""}</td>
       </tr>`;
     }).join("");
+
+    // Price history for the items on screen, at most 40 requests (cached for an hour).
+    history.want([...histIds].slice(0, 40));
 
     const first = steps0[0].from, last = steps0[steps0.length - 1].to;
     const tabs = routes.length > 1 ? `<div class="seg routetabs" role="group" aria-label="Route">${routes.map(r =>
@@ -233,6 +264,7 @@ function mountSkill(root, skill) {
             <td class="wrapcell"><span class="sub2">With the alternative wherever the recommended method is locked or needs a quest: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
         </tbody>
       </table></div>
+      ${histIds.size ? `<p class="fine">Daily prices: the usual range a buy or sell offer fills at over a day, and the hour (your time) it's usually best, from about 3 weeks of hourly prices. Hourly averages hide short spikes, so treat them as a guide.</p>` : ""}
       ${needTips.size ? `<div class="unlocktips"><h3 class="reqgroup">How to unlock what the route needs</h3><p class="fine">You only need one of each: once anyone in the group has obtained an item, everyone can buy more on the GE.</p><ul>${
         [...needTips].map(([n, t]) => `<li><b>${esc(n)}</b>: ${esc(t)}</li>`).join("")}</ul></div>` : ""}`;
   }
@@ -329,7 +361,7 @@ function mountSkill(root, skill) {
     document.getElementById(a.dataset.jump)?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render),
+  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render), history.onChange(render),
     me.onChange(() => { goal.player = me.get(); save(); render(); })];
   render();
   return () => offs.forEach(off => off());
