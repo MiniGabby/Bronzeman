@@ -112,10 +112,10 @@ export function mount(root) {
       const able = group.loaded() ? group.all().filter(p => group.missing(p, m)?.length === 0) : null;
       return `<tr>
         <td class="wrapcell"><span class="rank">${i + 1}</span><a href="#/money" data-jump="${m.id}">${esc(m.name)}</a></td>
-        <td class="r num ${cls(c.profitHr)}" title="${gp(c.profitHr)} gp">${short(c.profitHr)}</td>
+        <td class="r num ${cls(c.profitHr)}" title="${gp(c.profitHr)} gp per hour">${m.per === "day" ? `${short(c.profitHr * 24)} <span class="muted">/day</span>` : short(c.profitHr)}</td>
         <td class="r num ${cls(c.profit)}">${gp(c.profit)}</td>
-        <td class="r num">${short(c.xpTotalHr)}</td>
-        <td class="r num">${gp(c.perHour)}</td>
+        <td class="r num">${m.per === "day" ? `${short(c.xpTotalHr * 24)} <span class="muted">/day</span>` : short(c.xpTotalHr)}</td>
+        <td class="r num">${m.per === "day" ? `${calc.getRate(m)} <span class="muted">/day</span>` : gp(c.perHour)}</td>
         <td class="wrapcell"><span class="pill ${pace.pill}">${pace.text}</span></td>
         <td class="wrapcell">${unlockCell(m, c)}</td>
         <td class="wrapcell">${able == null ? "…" : able.length ? able.map(p => { const unk = group.unknownQuests(p, m); return unk.length ? `<span title="Not known yet if ${esc(p.name)} has done ${esc(unk.join(", "))}">${esc(p.name)}?</span>` : esc(p.name); }).join(", ") : `<span class="muted">Nobody yet</span>`}${nearNote(m, filterNear(m))}</td>

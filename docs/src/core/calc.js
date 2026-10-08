@@ -8,8 +8,13 @@ const rates = store.get("aph", {});
 const listeners = new Set();
 export const onChange = fn => (listeners.add(fn), () => listeners.delete(fn));
 
-/** Actions per hour for a method: the viewer's own value, or the method's default. */
-export const getRate = m => Number(rates[m.id] ?? m.actionsPerHour) || 0;
+/**
+ * Actions per hour for a method: the viewer's own value, or the method's default.
+ * Methods with per: "day" (farm runs) count per day instead: their default is actionsPerDay.
+ */
+export const getRate = m => Number(rates[m.id] ?? (m.per === "day" ? m.actionsPerDay : m.actionsPerHour)) || 0;
+/** 24 for methods counted per day, 1 for the rest: multiply per-hour numbers by it to show them. */
+export const periodHours = m => (m.per === "day" ? 24 : 1);
 export function setRate(m, value) {
   rates[m.id] = Number(value) || 0;
   store.set("aph", rates);
@@ -21,7 +26,7 @@ export function setRate(m, value) {
  * Without them, burning is worked out at the method's level requirement (the worst case).
  */
 export function compute(m, opts = {}) {
-  const perHour = getRate(m);
+  const perHour = getRate(m) / periodHours(m);
   // Share of attempts that succeed (Cooking: food that doesn't burn). Burnt food gives no XP and can't be sold.
   const req = Object.values(m.reqs?.skills || {})[0] || 1;
   const success = !m.burn ? 1 : opts.from != null ? burn.averageSuccess(m, opts.from, opts.to)
@@ -43,7 +48,9 @@ export function compute(m, opts = {}) {
     return { ...x, it, price: p, own, tax, total: p == null ? null : (p - tax) * x.qty };
   });
   // Fixed costs per hour (e.g. the Blast Furnace coffer), spread over each action.
-  const fees = (m.fees || []).map(f => ({ ...f, each: perHour > 0 ? f.perHour / perHour : 0 }));
+  // A fee can also be given per action (each), e.g. paying a farmer to remove a tree.
+  const fees = (m.fees || []).map(f => (f.each != null ? { ...f, perHour: f.each * perHour }
+    : { ...f, each: perHour > 0 ? f.perHour / perHour : 0 }));
   const missing = [...ins, ...outs].some(r => r.total == null);
   const cost = ins.reduce((a, r) => a + (r.total || 0), 0) + fees.reduce((a, f) => a + f.each, 0);
   // Coins you get straight away per action (e.g. pickpocketing), not traded so no GE tax.

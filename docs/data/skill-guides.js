@@ -452,5 +452,63 @@ export default {
         ]
       }
     ]
+  },
+  farming: {
+    intro: "Farming works differently from every other skill: you plant, go and do something else, and come back when it has grown. So the numbers here are per DAY, not per hour: a run takes 5 to 10 minutes of play, once a day. Tree runs give by far the most XP; herb runs earn money. Do both, plus hardwood trees on Fossil Island, and the XP adds up. Quests skip the start: the Goblin generals part of Recipe for Disaster, Fairytale I, Forgettable Tale, The Garden of Death, Garden of Tranquillity, Enlightened Journey and My Arm's Big Adventure together give 32,500 XP (level 38). Bronzeman: almost every sapling is still locked. You only need one of each: plant the seed in a filled plant pot, water it and wait a few minutes. Tree seeds come from bird nests (bird house runs), Wintertodt crates and farming contracts in the Farming Guild (45). The Tithe Farm (34) is the only way to train without waiting.",
+    routes: [
+      {
+        key: "trees", name: "Tree runs",
+        intro: "The fastest route: once a day, plant the best tree in the 5 tree patches and the best fruit tree in the 4 fruit tree patches, and pay the farmers to look after them. About 15K XP per day at 33, 50K at 60 and 170K from 85. Yew and magic saplings are expensive; if that hurts, plant the fruit trees only (next tab).",
+        route: [
+          { from: 1, to: 15, method: "farm-bagged-plants", note: "Or the quests: Fairytale I alone gives 3,500 XP (level 17)." },
+          { from: 15, to: 27, method: "farm-run-15" },
+          { from: 27, to: 30, method: "farm-run-27" },
+          { from: 30, to: 33, method: "farm-run-30" },
+          { from: 33, to: 39, method: "farm-run-33" },
+          { from: 39, to: 42, method: "farm-run-39" },
+          { from: 42, to: 45, method: "farm-run-42" },
+          { from: 45, to: 51, method: "farm-run-45" },
+          { from: 51, to: 57, method: "farm-run-51" },
+          { from: 57, to: 60, method: "farm-run-57" },
+          { from: 60, to: 68, method: "farm-run-60" },
+          { from: 68, to: 72, method: "farm-run-68" },
+          { from: 72, to: 75, method: "farm-run-72" },
+          { from: 75, to: 81, method: "farm-run-75" },
+          { from: 81, to: 85, method: "farm-run-81" },
+          { from: 85, to: 99, method: "farm-run-85" }
+        ]
+      },
+      {
+        key: "fruit", name: "Fruit trees only", prefer: "cheap",
+        intro: "The cheap route: only the 4 fruit tree patches (and the calquat tree from 72). Fruit tree saplings cost a fraction of yew and magic saplings, and you still get about half the XP of a full tree run for a shorter run. Oak trees first, until you can plant apple trees at 27.",
+        route: [
+          { from: 1, to: 15, method: "farm-bagged-plants", note: "Or the quests: Fairytale I alone gives 3,500 XP (level 17)." },
+          { from: 15, to: 27, method: "farm-run-15" },
+          { from: 27, to: 33, method: "farm-fruit-27" },
+          { from: 33, to: 39, method: "farm-fruit-33" },
+          { from: 39, to: 42, method: "farm-fruit-39" },
+          { from: 42, to: 51, method: "farm-fruit-42" },
+          { from: 51, to: 57, method: "farm-fruit-51" },
+          { from: 57, to: 68, method: "farm-fruit-57" },
+          { from: 68, to: 72, method: "farm-fruit-68" },
+          { from: 72, to: 81, method: "farm-fruit-72" },
+          { from: 81, to: 99, method: "farm-fruit-81" }
+        ]
+      },
+      {
+        key: "herbs", name: "Herb runs (money)", prefer: "cheap",
+        intro: "Herb runs are one of the best money makers for the time they take: 5 patches, 5 minutes, twice a day. On their own they're slow XP, so do them next to your tree runs. Which herb pays best changes with prices: sort the table below by \"Most profit per hour\" and plant the best one you have the level and the seed for. The route below is the usual pick per level.",
+        route: [
+          { from: 9, to: 14, method: "farm-herb-guam" },
+          { from: 14, to: 19, method: "farm-herb-marrentill" },
+          { from: 19, to: 26, method: "farm-herb-tarromin" },
+          { from: 26, to: 32, method: "farm-herb-harralander" },
+          { from: 32, to: 38, method: "farm-herb-ranarr" },
+          { from: 38, to: 62, method: "farm-herb-toadflax", note: "Ranarr, irit, avantoe and kwuarm are close: check the table." },
+          { from: 62, to: 85, method: "farm-herb-snapdragon", note: "Only when the seed is cheap enough; otherwise toadflax, kwuarm or cadantine." },
+          { from: 85, to: 99, method: "farm-herb-torstol" }
+        ]
+      }
+    ]
   }
 };

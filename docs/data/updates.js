@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-08", title: "Farming guide to 99", link: "#/training/farming",
+    items: [
+      "Farming is done in runs, so it's the first skill on the site that counts per day instead of per hour: one tree run a day, a couple of herb runs. Cards and routes show XP, cost and profit per day and the time in days.",
+      "Three routes. Tree runs: the best tree and fruit tree for your level in 9 patches, about 15K XP a day at 33 and 170K from 85. Fruit trees only: about half the XP for a fraction of the cost. Herb runs: slow XP but good money, also on the Money makers page.",
+      "Also in the table: hardwood trees on Fossil Island, the Tithe Farm (the only Farming without waiting) and bagged plants for the first levels.",
+      "Bronzeman: nearly every sapling is still locked. The tips say how to make the first one (seed in a plant pot). The herbs per patch (6.5) and the Tithe Farm rates are estimates."
+    ]
+  },
+  {
     date: "2026-10-07", title: "Daily prices are now behind a switch", link: "#/training/cooking",
     items: [
       "The daily low and high prices made the training routes hard to read, so they're hidden by default. Tick \"Daily prices\" above a route (next to the route tabs) to show them; the site remembers your choice."

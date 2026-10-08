@@ -34,23 +34,25 @@ export function createMethodCard(m) {
   el.className = "method";
   el.id = m.id;
   const perHourTable = m.ledger === "hour";
+  // Farm runs are counted per day: the rate, the totals and the hourly table all show a day.
+  const H = calc.periodHours(m), unit = H === 24 ? "day" : "hour", u = H === 24 ? "day" : "hr";
   el.innerHTML = `
     <div class="mhead">
       <div>
         <h2><a href="${esc(m.guide || "#")}" target="_blank" rel="noopener">${esc(m.name)}</a></h2>
         <div class="meta">${reqList(m).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
       </div>
-      <div class="hero"><span class="big num" data-f="hero"></span><span class="sub">profit per hour</span></div>
+      <div class="hero"><span class="big num" data-f="hero"></span><span class="sub">profit per ${unit}</span></div>
     </div>
     <div class="mbody">
       <div class="ledger"><table>
-        <thead><tr><th>Item</th><th class="r">${perHourTable ? "Per hour" : "Per " + esc(m.action)}</th><th class="r">Price</th><th class="r">GE tax</th><th class="r">Total</th><th class="r">Traded / hr</th><th class="r">Buy limit</th></tr></thead>
+        <thead><tr><th>Item</th><th class="r">${perHourTable ? "Per " + unit : "Per " + esc(m.action)}</th><th class="r">Price</th><th class="r">GE tax</th><th class="r">Total</th><th class="r">Traded / hr</th><th class="r">Buy limit</th></tr></thead>
         <tbody data-f="ledger"></tbody>
       </table></div>
       <div class="side">
         <div class="field">
           <label for="aph-${m.id}">${esc(m.actionLabel || "Actions per hour")}</label>
-          <input id="aph-${m.id}" type="number" min="0" step="10" inputmode="numeric">
+          <input id="aph-${m.id}" type="number" min="0" step="${H === 24 ? "any" : 10}" inputmode="${H === 24 ? "decimal" : "numeric"}">
           <div class="presets">${(m.presets || []).map(([l, v]) => `<button type="button" data-v="${v}">${esc(l)} · ${nf.format(v)}</button>`).join("")}</div>
         </div>
         <dl class="kv" data-f="kv"></dl>
@@ -79,12 +81,13 @@ export function createMethodCard(m) {
 
   function update(c) {
     const hero = el.querySelector('[data-f="hero"]');
-    hero.textContent = signed(c.profitHr);
-    hero.className = "big num " + cls(c.profitHr);
-    hero.title = gp(c.profitHr) + " gp";
-    if (document.activeElement !== rateInput) rateInput.value = c.perHour;
+    const profitP = c.profitHr == null ? null : c.profitHr * H;
+    hero.textContent = signed(profitP);
+    hero.className = "big num " + cls(profitP);
+    hero.title = gp(profitP) + " gp";
+    if (document.activeElement !== rateInput) rateInput.value = calc.getRate(m);
 
-    const mult = perHourTable ? c.perHour : 1;
+    const mult = perHourTable ? c.perHour * H : 1;
     const row = (r, isOut) => {
       const side = isOut ? "sell" : "buy";
       const tot = r.total == null ? null : r.total * mult;
@@ -106,24 +109,24 @@ export function createMethodCard(m) {
     ledger.innerHTML =
       (c.ins.length ? `<tr class="sect"><td colspan="7">You buy</td></tr>` + c.ins.map(r => row(r, false)).join("") : "") +
       (c.fees.length ? `<tr class="sect"><td colspan="7">You pay</td></tr>` + c.fees.map(f => `<tr>
-        <td>${esc(f.label)}</td><td class="r num"></td><td class="r num">${gp(f.perHour)}<div class="sub2">per hour</div></td><td></td>
+        <td>${esc(f.label)}</td><td class="r num"></td><td class="r num">${gp(f.perHour * H)}<div class="sub2">per ${unit}</div></td><td></td>
         <td class="r num neg">-${gp(f.each * mult)}</td><td colspan="2"></td></tr>`).join("") : "") +
       (c.outs.length ? `<tr class="sect"><td colspan="7">You sell</td></tr>` + c.outs.map(r => row(r, true)).join("") : "") +
       (c.coins ? `<tr class="sect"><td colspan="7">You get</td></tr><tr>
         <td>Coins${m.coinsLabel ? ` <span class="muted">(${esc(m.coinsLabel)})</span>` : ""}</td><td class="r num">${qty(c.coins * mult)}</td><td></td><td class="r num">0</td>
         <td class="r num pos">+${gp(c.coins * mult)}</td><td colspan="2"></td></tr>` : "") +
-      `<tr class="total"><td colspan="4">Profit per ${perHourTable ? "hour" : esc(m.action)}</td><td class="r num ${cls(totalProfit)}">${gp(totalProfit)}</td><td colspan="2"></td></tr>`;
+      `<tr class="total"><td colspan="4">Profit per ${perHourTable ? unit : esc(m.action)}</td><td class="r num ${cls(totalProfit)}">${gp(totalProfit)}</td><td colspan="2"></td></tr>`;
     if (focused) {
       const [id, side] = focused.split(":");
       ledger.querySelector(`.pin[data-id="${id}"][data-side="${side}"]`)?.focus();
     }
 
     el.querySelector('[data-f="kv"]').innerHTML = [
-      ["Profit / hr", `<span class="num ${cls(c.profitHr)}">${gp(c.profitHr)}</span>`],
-      [c.fees.length ? "Supplies + fees / hr" : "Supplies / hr", `<span class="num">${gp(c.cost * c.perHour)}</span>`],
-      ["GE tax / hr", `<span class="num">${gp(c.taxEach * c.perHour)}</span>`],
+      [`Profit / ${u}`, `<span class="num ${cls(profitP)}">${gp(profitP)}</span>`],
+      [c.fees.length ? `Supplies + fees / ${u}` : `Supplies / ${u}`, `<span class="num">${gp(c.cost * c.perHour * H)}</span>`],
+      [`GE tax / ${u}`, `<span class="num">${gp(c.taxEach * c.perHour * H)}</span>`],
       ...(c.success != null ? [["Not burnt", `<span class="num">${Math.round(c.success * 100)}%</span> <span class="muted">on ${esc(burn.label(burn.source()))}, ${esc(burn.stopText(m))}</span>`]] : []),
-      ...Object.entries(c.xpHr).map(([s, v]) => [`${s} XP / hr`, `<span class="num">${gp(v)}</span>`])
+      ...Object.entries(c.xpHr).map(([s, v]) => [`${s} XP / ${u}`, `<span class="num">${gp(v * H)}</span>`])
     ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
 
     el.querySelector('[data-f="group"]').innerHTML = groupChips(m) || `<span class="muted">Loading stats…</span>`;

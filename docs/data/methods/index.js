@@ -24,6 +24,7 @@ import magic from "./magic.js";
 import construction from "./construction.js";
 import runecraft from "./runecraft.js";
 import agility from "./agility.js";
+import farming from "./farming.js";
 
 export default [
   sapphireRings,
@@ -50,5 +51,6 @@ export default [
   ...magic,             // teleports, enchanting, High Alchemy and charging orbs
   ...construction,      // furniture in your house for the Construction routes
   ...runecraft,         // runes, Ourania and Guardians of the Rift for the Runecraft routes
+  ...farming,           // tree runs, fruit trees, herb runs and the Tithe Farm (counted per day)
   ...agility            // rooftops, Brimhaven, the Agility Pyramid, Wilderness course and Hallowed Sepulchre
 ];

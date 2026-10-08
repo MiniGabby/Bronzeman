@@ -18,6 +18,12 @@ export default {
   "Snapdragon": SEEDS(62), "Grimy snapdragon": SEEDS(62),
   "Torstol": SEEDS(85), "Grimy torstol": SEEDS(85),
 
+  // Farming supplies
+  "Supercompost": "Make it yourself: put 15 pineapples (already unlocked; charter ship shops sell them) in a compost bin next to an allotment, close the lid, and scoop it out with an empty bucket once it has rotted.",
+  "Ultracompost": "Use 2 volcanic ash on a bucket of supercompost. Volcanic ash is mined on Fossil Island (Bone Voyage, Mining 22).",
+  "Sweetcorn": "Grow a sweetcorn seed in an allotment (Farming 20) and pick it.",
+  "Watermelon": "Grow watermelon seeds in an allotment (Farming 47; the seed is already unlocked) and pick one.",
+
   // Secondaries
   "Unicorn horn dust": "Kill a unicorn (combat 15, always drops a unicorn horn): there's one west of Lumbridge and two south of Edgeville. Grind the horn with a pestle and mortar; that unlocks both.",
   "Unicorn horn": "Kill a unicorn (combat 15, always drops one): there's one west of Lumbridge and two south of Edgeville.",

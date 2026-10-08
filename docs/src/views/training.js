@@ -127,6 +127,13 @@ function mountSkill(root, skill) {
 
   const guide = GUIDES[skill.key];
   const fmtGpXp = v => v == null ? "–" : (v > 0 ? "+" : "") + v.toFixed(1);
+  // Farm runs (per: "day" methods) happen once or twice a day, so their numbers are shown per day
+  // and their time in days of real time; everything else is per hour of play.
+  const isDaily = m => m?.per === "day";
+  const perTag = m => (isDaily(m) ? ` <span class="muted">/day</span>` : "");
+  const rateOf = (m, v, f = short) => f(v == null ? v : v * calc.periodHours(m)) + perTag(m);
+  const days = h => (h == null || !isFinite(h) ? "–" : h < 36 ? `${Math.max(1, Math.round(h))} h` : `${h < 240 ? (h / 24).toFixed(1) : nf.format(Math.round(h / 24))} days`);
+  const timeOf = (m, h) => (isDaily(m) ? days(h) : duration(h));
 
   function lockCell(m) {
     if (!(m.inputs || []).length) return `<span class="muted">No inputs</span>`;
@@ -157,7 +164,7 @@ function mountSkill(root, skill) {
     const needTips = new Map();
     const histIds = new Set();   // items whose daily price range the steps show
     const showDaily = !!store.get("routeDaily", false);   // the "Daily prices" switch above the route
-    let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true;
+    let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true, anyDaily = false;
 
     const steps = steps0.map(st => {
       const here = lvlNow >= st.from && lvlNow < st.to;
@@ -225,6 +232,7 @@ function mountSkill(root, skill) {
         return (r.c.ins || []).map(x => line(x, "buy")).join("") + outs.map(x => line(x, "sell")).join("");
       })(rec);
       if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
+      if (isDaily(rec?.m)) anyDaily = true;
       if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
       const status = [
         locked == null ? "…" : locked.length ? `<span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>` : "",
@@ -233,11 +241,11 @@ function mountSkill(root, skill) {
       ].filter(Boolean);
       return `<tr class="${[here ? "here" : "", needQ.length ? "questneed" : ""].join(" ").trim()}">${lv}
         <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
-        <td class="r num">${rec ? short(rec.xpHr) : "–"}</td>
+        <td class="r num">${rec ? rateOf(rec.m, rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
-        <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? duration(cr.h) : ""}</div></td>
+        <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? timeOf(rec.m, cr.h) : ""}</div></td>
         <td class="wrapcell">${status.length ? status.join(" ") : `<span class="pill good">All unlocked</span>`}${blocked
-          ? (alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${short(alt.xpHr)} XP/hr, ${fmtGpXp(alt.gpXp)} gp/XP)</div>` : `<div class="sub2">Nothing else on the site fits this level yet.</div>`) : ""}</td>
+          ? (alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${rateOf(alt.m, alt.xpHr)} XP${isDaily(alt.m) ? "" : "/hr"}, ${fmtGpXp(alt.gpXp)} gp/XP)</div>` : `<div class="sub2">Nothing else on the site fits this level yet.</div>`) : ""}</td>
       </tr>`;
     }).join("");
 
@@ -262,8 +270,8 @@ function mountSkill(root, skill) {
         <thead><tr><th>Levels</th><th>Recommended</th><th class="r">XP / hr</th><th class="r">GP / XP</th><th class="r">Cost for these levels</th><th>Unlocks &amp; quests</th></tr></thead>
         <tbody data-f="route-rows">${steps}
           <tr class="total"><td>${first}–${last}</td><td>Whole route${recComplete ? "" : " (some prices missing)"}</td><td></td><td></td>
-            <td class="r num ${cls(totalRec)}">${signed(totalRec)}<div class="sub2">${duration(totalRecH)}</div></td>
-            <td class="wrapcell"><span class="sub2">With the alternative wherever the recommended method is locked or needs a quest: <b class="num">${signed(totalBest)}</b> over ${duration(totalBestH)}</span></td></tr>
+            <td class="r num ${cls(totalRec)}">${signed(totalRec)}<div class="sub2">${anyDaily ? days(totalRecH) : duration(totalRecH)}</div></td>
+            <td class="wrapcell"><span class="sub2">With the alternative wherever the recommended method is locked or needs a quest: <b class="num">${signed(totalBest)}</b>${anyDaily ? "" : ` over ${duration(totalBestH)}`}</span></td></tr>
         </tbody>
       </table></div>
       ${showDaily && histIds.size ? `<p class="fine">Daily prices: the usual range a buy or sell offer fills at over a day, and the hour (your time) it's usually best, from about 3 weeks of hourly prices. Hourly averages hide short spikes, so treat them as a guide.</p>` : ""}
@@ -312,10 +320,10 @@ function mountSkill(root, skill) {
     $('[data-f="rows"]').innerHTML = rows.map(r => `<tr class="${r.open ? "" : "locked"}">
       <td><a href="#/training/${skill.key}" data-jump="${r.m.id}">${esc(r.m.name)}</a>${r.open ? "" : ` <span class="pill warn">Needs ${r.req}</span>`}${r.m.burn ? `<div class="sub2">${esc(burn.stopText(r.m))}</div>` : ""}</td>
       <td class="r num">${r.req}</td>
-      <td class="r num">${short(r.xpHr)}</td>
+      <td class="r num">${rateOf(r.m, r.xpHr)}</td>
       <td class="r num ${cls(r.gpXp)}">${r.gpXp == null ? "–" : (r.gpXp > 0 ? "+" : "") + r.gpXp.toFixed(1)}</td>
-      <td class="r num ${cls(r.c.profitHr)}">${signed(r.c.profitHr)}</td>
-      <td class="r num">${need ? duration(r.hrs) : "–"}</td>
+      <td class="r num ${cls(r.c.profitHr)}">${rateOf(r.m, r.c.profitHr, signed)}</td>
+      <td class="r num">${need ? timeOf(r.m, r.hrs) : "–"}</td>
       <td class="r num ${cls(r.total)}">${need ? signed(r.total) : "–"}</td>
       <td class="wrapcell">${lockCell(r.m)}</td>
     </tr>`).join("");
