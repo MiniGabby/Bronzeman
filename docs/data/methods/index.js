@@ -7,7 +7,6 @@ import superheatLead from "./superheat-lead.js";
 import aerialFishing from "./aerial-fishing.js";
 import masterFarmers from "./master-farmers.js";
 import motherlodeMine from "./motherlode-mine.js";
-import birdHousesRegular from "./bird-houses-regular.js";
 import smithBronzeDartTips from "./smith-bronze-dart-tips.js";
 import smithIronDartTips from "./smith-iron-dart-tips.js";
 import smithSteelDartTips from "./smith-steel-dart-tips.js";
@@ -25,6 +24,7 @@ import construction from "./construction.js";
 import runecraft from "./runecraft.js";
 import agility from "./agility.js";
 import farming from "./farming.js";
+import hunter from "./hunter.js";
 
 export default [
   sapphireRings,
@@ -35,7 +35,6 @@ export default [
   aerialFishing,
   masterFarmers,
   motherlodeMine,
-  birdHousesRegular,
   smithBronzeDartTips,
   smithIronDartTips,
   smithSteelDartTips,
@@ -52,5 +51,6 @@ export default [
   ...construction,      // furniture in your house for the Construction routes
   ...runecraft,         // runes, Ourania and Guardians of the Rift for the Runecraft routes
   ...farming,           // tree runs, fruit trees, herb runs and the Tithe Farm (counted per day)
+  ...hunter,            // bird house runs (per day), tracking, falconry, salamanders, chinchompas and rumours
   ...agility            // rooftops, Brimhaven, the Agility Pyramid, Wilderness course and Hallowed Sepulchre
 ];

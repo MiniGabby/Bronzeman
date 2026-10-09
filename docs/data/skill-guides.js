@@ -510,5 +510,68 @@ export default {
         ]
       }
     ]
+  },
+  hunter: {
+    intro: "Hunter costs almost nothing: you need a few cheap tools (noose wand, butterfly net, bird snares, box traps, ropes and small fishing nets) and what you catch is mostly dropped. Start with the Natural History Quiz in the Varrock Museum basement: 1,000 XP, level 9, in ten minutes. Bird house runs on Fossil Island (Bone Voyage) are the low-effort way and are counted per day; everything else is per hour of play. Box traps need the start of Eagles' Peak. Chinchompas are where Hunter starts to pay: red ones from 63, black ones (Wilderness) from 73. Hunter tools aren't unlocked yet: the hunter shops in Yanille and Nardah sell them all for a few coins.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "The fastest XP per hour of play: tracking and butterflies at the start, falconry from 43, razor-backed kebbits from 49 to 72 (100K to 130K XP per hour, no quest needed) and Hunters' Rumours in the Hunter Guild from 72 (160K XP per hour, rising to 250K at 99). Red crabs need the Pandemonium quest, and jerboas and the guild need Varlamore (Children of the Sun); the route shows what to do instead if you don't have them. Black chinchompas are as fast as rumours only with tick manipulation, but they pay: see Earn money.",
+        route: [
+          { from: 1, to: 9, quest: "Natural History Quiz", url: "https://oldschool.runescape.wiki/w/Natural_History_Quiz", note: "Talk to Orlando Smith in the basement of the Varrock Museum: 1,000 Hunter XP (and 1,000 Slayer XP)." },
+          { from: 9, to: 15, method: "hunt-feldip-weasels" },
+          { from: 15, to: 21, method: "hunt-ruby-harvests" },
+          { from: 21, to: 39, method: "hunt-red-crabs", note: "Without Pandemonium: sapphire glacialis (25) or swamp lizards (29)." },
+          { from: 39, to: 43, method: "hunt-embertailed-jerboas" },
+          { from: 43, to: 49, method: "hunt-falconry-spotted" },
+          { from: 49, to: 72, method: "hunt-razor-backed-kebbits" },
+          { from: 72, to: 91, method: "hunt-rumours-72", note: "Or black chinchompas (73) in the Wilderness: similar XP with tick manipulation, and well over a million coins per hour." },
+          { from: 91, to: 99, method: "hunt-rumours-91" }
+        ]
+      },
+      {
+        key: "birdhouses", name: "Bird houses",
+        intro: "The lazy route: bird house runs only, a minute or two every time you think of it. Slow in days, but it takes almost no play time and the bird nests give tree seeds for Farming. You need Bone Voyage and the Crafting level for each house (about the same as the Hunter level). The time shown is for 6 runs a day; do bird houses next to another route and the XP adds up.",
+        route: [
+          { from: 1, to: 9, quest: "Natural History Quiz", url: "https://oldschool.runescape.wiki/w/Natural_History_Quiz", note: "Talk to Orlando Smith in the basement of the Varrock Museum: 1,000 Hunter XP (and 1,000 Slayer XP)." },
+          { from: 9, to: 14, method: "hunt-bird-houses-regular" },
+          { from: 14, to: 24, method: "hunt-bird-houses-oak" },
+          { from: 24, to: 34, method: "hunt-bird-houses-willow" },
+          { from: 34, to: 44, method: "hunt-bird-houses-teak" },
+          { from: 44, to: 49, method: "hunt-bird-houses-maple" },
+          { from: 49, to: 59, method: "hunt-bird-houses-mahogany" },
+          { from: 59, to: 74, method: "hunt-bird-houses-yew" },
+          { from: 74, to: 89, method: "hunt-bird-houses-magic" },
+          { from: 89, to: 99, method: "hunt-bird-houses-redwood" }
+        ]
+      },
+      {
+        key: "money", name: "Earn money", prefer: "cheap",
+        intro: "Hunter that pays. Up to 35 there's nothing worth selling, so get there quickly. Aerial fishing (Hunter 35, Fishing 43) earns through Molch pearls, red chinchompas from 63 sell one for one, and black chinchompas from 73 are the best money in the skill, at the price of hunting in the Wilderness.",
+        route: [
+          { from: 1, to: 9, quest: "Natural History Quiz", url: "https://oldschool.runescape.wiki/w/Natural_History_Quiz", note: "Talk to Orlando Smith in the basement of the Varrock Museum: 1,000 Hunter XP (and 1,000 Slayer XP)." },
+          { from: 9, to: 15, method: "hunt-feldip-weasels" },
+          { from: 15, to: 25, method: "hunt-ruby-harvests" },
+          { from: 25, to: 35, method: "hunt-sapphire-glacialis", note: "Swamp lizards (29) are a calmer alternative." },
+          { from: 35, to: 63, method: "aerial-fishing", note: "Needs Fishing 43. Razor-backed kebbits (49) are three times as fast if you only want the levels." },
+          { from: 63, to: 73, method: "hunt-red-chinchompas" },
+          { from: 73, to: 80, method: "hunt-black-chinchompas-73", note: "Not keen on the Wilderness? Stay on red chinchompas." },
+          { from: 80, to: 90, method: "hunt-black-chinchompas-80" },
+          { from: 90, to: 99, method: "hunt-black-chinchompas-90" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live: for every level range it picks the method with the lowest total cost, counting what it earns or costs (chinchompas sold, drift nets and bananas bought) and the time it takes, valued at what you say your time is worth below. Bird house runs aren't in here, because they don't take play time.",
+        from: 7, to: 99,
+        candidates: [
+          "hunt-feldip-weasels", "hunt-ruby-harvests", "hunt-red-crabs", "hunt-sapphire-glacialis", "hunt-swamp-lizards", "hunt-embertailed-jerboas",
+          "hunt-falconry-spotted", "hunt-falconry-dark", "hunt-orange-salamanders", "hunt-razor-backed-kebbits", "hunt-red-salamanders", "hunt-red-chinchompas",
+          "hunt-black-salamanders", "hunt-moonlight-moths", "aerial-fishing", "hunt-drift-nets-44", "hunt-drift-nets-55", "hunt-drift-nets-70",
+          "hunt-maniacal-monkeys-60", "hunt-maniacal-monkeys-75", "hunt-maniacal-monkeys-90", "hunt-rumours-72", "hunt-rumours-91",
+          "hunt-black-chinchompas-73", "hunt-black-chinchompas-80", "hunt-black-chinchompas-90"
+        ]
+      }
+    ]
   }
 };

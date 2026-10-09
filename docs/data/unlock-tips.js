@@ -18,6 +18,9 @@ export default {
   "Snapdragon": SEEDS(62), "Grimy snapdragon": SEEDS(62),
   "Torstol": SEEDS(85), "Grimy torstol": SEEDS(85),
 
+  // Hunter supplies
+  "Drift net": "Make one yourself: weave 2 jute fibres on a loom (Crafting 26). Jute grows from jute seeds in a hops patch (Farming 13).",
+
   // Farming supplies
   "Supercompost": "Make it yourself: put 15 pineapples (already unlocked; charter ship shops sell them) in a compost bin next to an allotment, close the lid, and scoop it out with an empty bucket once it has rotted.",
   "Ultracompost": "Use 2 volcanic ash on a bucket of supercompost. Volcanic ash is mined on Fossil Island (Bone Voyage, Mining 22).",

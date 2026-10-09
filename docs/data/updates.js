@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-09", title: "Hunter guide to 99", link: "#/training/hunter",
+    items: [
+      "34 Hunter methods: bird house runs with every kind of log, tracking weasels and razor-backed kebbits, butterflies, falconry, salamanders, red crabs, jerboas, drift net fishing, maniacal monkeys, moonlight moths, Hunters' Rumours, and red and black chinchompas.",
+      "Four routes. Fastest: the Natural History Quiz (level 9 in ten minutes), then tracking, falconry, razor-backed kebbits from 49 to 72 and Hunters' Rumours. Bird houses: a minute or two per run, counted per day like Farming. Earn money: aerial fishing, then red chinchompas from 63 and black ones from 73. Plus Best of both.",
+      "Fixed: bird house runs no longer count the clockworks as used up (you get them back), and they now use the wiki's current XP per run.",
+      "Catches per hour are worked back from the wiki's XP per hour, and the red chinchompa rate is my own estimate, so check those in game. Red and black chinchompas are also on the Money makers page."
+    ]
+  },
+  {
     date: "2026-10-08", title: "Farming guide to 99", link: "#/training/farming",
     items: [
       "Farming is done in runs, so it's the first skill on the site that counts per day instead of per hour: one tree run a day, a couple of herb runs. Cards and routes show XP, cost and profit per day and the time in days.",
