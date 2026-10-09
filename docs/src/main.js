@@ -3,6 +3,7 @@ import * as prices from "./core/prices.js";
 import * as group from "./core/players.js";
 import * as unlocks from "./core/unlocks.js";
 import * as me from "./core/me.js";
+import * as ui from "./core/ui.js";
 import PLAYERS from "../data/players.js";
 import * as money from "./views/money.js";
 import * as training from "./views/training.js";
@@ -21,12 +22,28 @@ const ROUTES = { player, money, training, alchemy, merch, group: groupView, unlo
 const view = document.getElementById("view");
 let cleanup = null;
 
+// Simple view: one plain sentence at the top of every page about what it's for.
+const PAGE_HELP = {
+  player: "This page is about you. Pick your name at the top of the site and it shows what you can do right now.",
+  money: "Ways to earn coins, the best one first. Click a name in the list to see what to buy and what to sell.",
+  training: "Pick a skill to see how to train it, step by step.",
+  alchemy: "Items you can turn into coins with the High Level Alchemy spell, and how much each one earns.",
+  merch: "Buying items cheaply and selling them for more. This page shows what to buy, and when.",
+  group: "Everyone's levels side by side, and who has gained XP lately.",
+  unlocked: "Every item the group can already buy on the Grand Exchange.",
+  requests: "Ask here for a new guide on the site.",
+  updates: "What's new on the site, newest first."
+};
+const pageHelp = document.getElementById("pageHelp");
+
 function route() {
   const [name, ...params] = location.hash.replace(/^#\/?/, "").split("/");
   const page = ROUTES[name] ? name : "money";
   if (typeof cleanup === "function") cleanup();
   view.innerHTML = "";
   cleanup = ROUTES[page].mount(view, params);
+  pageHelp.hidden = !ui.simple();
+  pageHelp.textContent = PAGE_HELP[page] || "";
   document.querySelectorAll(".tabs a").forEach(a =>
     a.toggleAttribute("aria-current", a.getAttribute("href") === "#/" + page));
   if (a11yFocus) view.focus({ preventScroll: true });
@@ -59,6 +76,14 @@ function renderStatus() {
     text.textContent = `Live prices · updated ${fetchedAt.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
   }
 }
+
+// Simple view switch in the header: re-opens the current page so it's drawn again in the chosen view.
+const simpleBtn = document.getElementById("simpleBtn");
+function renderSimple() { simpleBtn.setAttribute("aria-pressed", String(ui.simple())); }
+simpleBtn.addEventListener("click", () => ui.setSimple(!ui.simple()));
+ui.onChange(() => { renderSimple(); route(); });
+ui.apply();
+renderSimple();
 
 // "Who are you?" picker in the header.
 const meSel = document.getElementById("meSel");

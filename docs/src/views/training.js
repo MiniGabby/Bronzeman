@@ -15,6 +15,7 @@ import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, timeValue, setTimeValue, missingQuests, doableAlt } from "../core/autoRoute.js";
 import * as burn from "../core/burn.js";
 import * as history from "../core/history.js";
+import * as ui from "../core/ui.js";
 
 export const title = "Skill training";
 
@@ -98,7 +99,7 @@ function mountSkill(root, skill) {
     <section class="section" data-f="route" hidden></section>
     <h2 class="pagetitle small">All ${esc(skill.name)} methods</h2>
     <section class="board"><table>
-      <thead><tr><th>Method</th><th class="r">Level</th><th class="r">${esc(skill.name)} XP / hr</th><th class="r">GP / XP</th><th class="r">Profit / hr</th><th class="r">Time to target</th><th class="r">Cost to target</th><th>Inputs unlocked</th></tr></thead>
+      <thead><tr><th>Method</th><th class="r">Level</th><th class="r">${esc(skill.name)} ${ui.t("XP / hr", "XP per hour")}</th><th class="r">${ui.t("GP / XP", "Coins per XP")}</th><th class="r">${ui.t("Profit / hr", "Profit per hour")}</th><th class="r">${ui.t("Time to target", "Time to your goal")}</th><th class="r">${ui.t("Cost to target", "Cost to your goal")}</th><th>${ui.t("Inputs unlocked", "Items unlocked")}</th></tr></thead>
       <tbody data-f="rows"></tbody>
     </table></section>
     <p class="fine">GP / XP counts all profit or cost of a method against ${esc(skill.name)} XP, even when the method also trains other skills. Time and cost assume you stay on one method the whole way.</p>
@@ -163,7 +164,7 @@ function mountSkill(root, skill) {
     const steps0 = stepsOf(active, skill.name, quester());
     const needTips = new Map();
     const histIds = new Set();   // items whose daily price range the steps show
-    const showDaily = !!store.get("routeDaily", false);   // the "Daily prices" switch above the route
+    const showDaily = !ui.simple() && !!store.get("routeDaily", false);   // the "Daily prices" switch above the route
     let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true, anyDaily = false;
 
     const steps = steps0.map(st => {
@@ -257,9 +258,9 @@ function mountSkill(root, skill) {
       `<button type="button" data-route="${esc(r.key)}" aria-pressed="${r.key === active.key}">${esc(r.name)}</button>`).join("")}</div>` : "";
     host.innerHTML = `
       <div class="sechead"><h2 class="pagetitle small">Training route${routes.length > 1 ? "s" : ""}</h2>
-        <div class="routeopts"><label class="check" title="Show the usual price range over a day, and the best hour to buy or sell, under every step"><input type="checkbox" id="t-daily"${showDaily ? " checked" : ""}> Daily prices</label>${tabs}</div></div>
-      ${guide.intro ? `<p class="lead">${esc(guide.intro)}</p>` : ""}
-      ${active.intro ? `<p class="lead">${esc(active.intro)}</p>` : ""}
+        <div class="routeopts"><label class="check simple-hide" title="Show the usual price range over a day, and the best hour to buy or sell, under every step"><input type="checkbox" id="t-daily"${showDaily ? " checked" : ""}> Daily prices</label>${tabs}</div></div>
+      ${guide.intro ? `<p class="lead">${esc(ui.simple() ? ui.firstSentences(guide.intro) : guide.intro)}</p>` : ""}
+      ${active.intro ? `<p class="lead">${esc(ui.simple() ? ui.firstSentences(active.intro) : active.intro)}</p>` : ""}
       ${active.auto ? `<div class="toolbar timevalue">
         <div class="field"><label for="t-timevalue">Your time is worth (gp per hour)</label>
           <input id="t-timevalue" type="number" min="0" step="100000" inputmode="numeric" value="${timeValue()}"></div>
@@ -267,7 +268,7 @@ function mountSkill(root, skill) {
         <p class="fine">Higher = faster route, lower = cheaper route. A good value is what your best money maker earns per hour: an hour spent training is an hour you're not making money.${quester() ? ` Methods that need a quest ${esc(quester().name)} hasn't done are shown in orange, with an alternative you can do now.` : " Pick a player above to see which methods need a quest they haven't done."}</p>
       </div>` : ""}
       <div class="board"><table>
-        <thead><tr><th>Levels</th><th>Recommended</th><th class="r">XP / hr</th><th class="r">GP / XP</th><th class="r">Cost for these levels</th><th>Unlocks &amp; quests</th></tr></thead>
+        <thead><tr><th>Levels</th><th>${ui.t("Recommended", "What to do")}</th><th class="r">${ui.t("XP / hr", "XP per hour")}</th><th class="r">${ui.t("GP / XP", "Coins per XP")}</th><th class="r">${ui.t("Cost for these levels", "Cost and time for these levels")}</th><th>${ui.t("Unlocks &amp; quests", "What you still need")}</th></tr></thead>
         <tbody data-f="route-rows">${steps}
           <tr class="total"><td>${first}–${last}</td><td>Whole route${recComplete ? "" : " (some prices missing)"}</td><td></td><td></td>
             <td class="r num ${cls(totalRec)}">${signed(totalRec)}<div class="sub2">${anyDaily ? days(totalRecH) : duration(totalRecH)}</div></td>

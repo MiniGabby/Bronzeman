@@ -8,6 +8,7 @@ A small website for our Old School RuneScape bronzeman group. It shows money mak
 - **Alchemy:** live High Level Alchemy margins for every unlocked item, the best hour of the day to buy each one, a best plan per 4-hour buy-limit window, and items that take one shop purchase to unlock (`data/alch-unlocks.js`, with how to unlock them).
 - **Merching:** flips for items the group has unlocked: what to buy at what hour and price, and when to sell for what price, based on each item's daily price pattern over the last 3 weeks. Includes a short how-to.
 - **Unlocked:** every item the group has unlocked (bronzeman), with who unlocked it, when and the GE price. The Money makers page also flags methods whose inputs nobody has unlocked yet.
+- **Simple view:** a button in the header for larger text, plain labels and fewer columns (`src/core/ui.js`). In a view, use `ui.t("GP / XP", "Coins per XP")` for a label with a plain version, and give cells that only traders need the class `simple-hide`.
 - **Updates:** what's new on the site, from `data/updates.js`. Add an entry there with every change the group would notice.
 - **Requests:** a form to ask for a new guide. It opens a pre-filled GitHub issue; the list of requests on the page comes from `data/requests.json`, which a GitHub Action keeps in sync with the issues.
 

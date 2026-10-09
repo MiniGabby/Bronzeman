@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-09", title: "Simple view: larger text and plain words",
+    items: [
+      "New button at the top of the site: Simple view. It makes everything about 20% larger, writes out the abbreviations (\"Coins per XP\" instead of \"GP / XP\", \"XP per hour\" instead of \"XP / hr\") and adds one plain sentence at the top of every page about what it's for.",
+      "It also leaves out what only traders need: GE tax, trade volume and buy limits on the method cards and the Money makers list, and the daily price ranges on the routes. Route introductions are shortened to their first two sentences.",
+      "Every page is still there, and the numbers are the same. Click the button again to go back; the site remembers your choice in this browser."
+    ]
+  },
+  {
     date: "2026-10-09", title: "Hunter guide to 99", link: "#/training/hunter",
     items: [
       "34 Hunter methods: bird house runs with every kind of log, tracking weasels and razor-backed kebbits, butterflies, falconry, salamanders, red crabs, jerboas, drift net fishing, maniacal monkeys, moonlight moths, Hunters' Rumours, and red and black chinchompas.",

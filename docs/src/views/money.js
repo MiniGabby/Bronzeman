@@ -9,6 +9,8 @@ import { store } from "../core/store.js";
 import * as me from "../core/me.js";
 import { createMethodCard } from "../components/methodCard.js";
 
+import * as ui from "../core/ui.js";
+
 export const title = "Money makers";
 
 export function mount(root) {
@@ -33,8 +35,8 @@ export function mount(root) {
     <section class="board" aria-label="Methods ranked by profit per hour">
       <table>
         <thead><tr>
-          <th>Method</th><th class="r">Profit / hr</th><th class="r">Profit / action</th><th class="r">XP / hr</th>
-          <th class="r">Actions / hr</th><th>Buy limit</th><th>Inputs unlocked</th><th>Group can do it</th>
+          <th>Method</th><th class="r">${ui.t("Profit / hr", "Profit per hour")}</th><th class="r simple-hide">Profit / action</th><th class="r">${ui.t("XP / hr", "XP per hour")}</th>
+          <th class="r simple-hide">Actions / hr</th><th class="simple-hide">Buy limit</th><th>${ui.t("Inputs unlocked", "Items unlocked")}</th><th>${ui.t("Group can do it", "Who can do it")}</th>
         </tr></thead>
         <tbody data-f="board"><tr><td colspan="8" class="muted">Loading prices…</td></tr></tbody>
       </table>
@@ -113,10 +115,10 @@ export function mount(root) {
       return `<tr>
         <td class="wrapcell"><span class="rank">${i + 1}</span><a href="#/money" data-jump="${m.id}">${esc(m.name)}</a></td>
         <td class="r num ${cls(c.profitHr)}" title="${gp(c.profitHr)} gp per hour">${m.per === "day" ? `${short(c.profitHr * 24)} <span class="muted">/day</span>` : short(c.profitHr)}</td>
-        <td class="r num ${cls(c.profit)}">${gp(c.profit)}</td>
+        <td class="r num simple-hide ${cls(c.profit)}">${gp(c.profit)}</td>
         <td class="r num">${m.per === "day" ? `${short(c.xpTotalHr * 24)} <span class="muted">/day</span>` : short(c.xpTotalHr)}</td>
-        <td class="r num">${m.per === "day" ? `${calc.getRate(m)} <span class="muted">/day</span>` : gp(c.perHour)}</td>
-        <td class="wrapcell"><span class="pill ${pace.pill}">${pace.text}</span></td>
+        <td class="r num simple-hide">${m.per === "day" ? `${calc.getRate(m)} <span class="muted">/day</span>` : gp(c.perHour)}</td>
+        <td class="wrapcell simple-hide"><span class="pill ${pace.pill}">${pace.text}</span></td>
         <td class="wrapcell">${unlockCell(m, c)}</td>
         <td class="wrapcell">${able == null ? "…" : able.length ? able.map(p => { const unk = group.unknownQuests(p, m); return unk.length ? `<span title="Not known yet if ${esc(p.name)} has done ${esc(unk.join(", "))}">${esc(p.name)}?</span>` : esc(p.name); }).join(", ") : `<span class="muted">Nobody yet</span>`}${nearNote(m, filterNear(m))}</td>
       </tr>`;

@@ -39,6 +39,15 @@ h1 .coin{display:inline-block;width:.62em;height:.62em;border-radius:50%;backgro
 .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px}
 .seg button{font:600 13px var(--sans);border:0;background:transparent;color:var(--ink-2);padding:6px 10px;border-radius:6px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.simplebtn{font:600 13px var(--sans);border:1px solid var(--line);background:var(--surface);color:var(--ink-2);padding:9px 12px;border-radius:8px;cursor:pointer}
+.simplebtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.simplehelp{margin:0;font-size:17px;color:var(--ink);max-width:60ch}
+/* Simple view: everything larger, the small print readable, and trader-only columns hidden. */
+:root[data-simple] .wrap{zoom:1.2}
+:root[data-simple] body{line-height:1.6}
+:root[data-simple] .sub2,:root[data-simple] .fine{font-size:13px;color:var(--ink-2)}
+:root[data-simple] .board td,:root[data-simple] .board th,:root[data-simple] .ledger td,:root[data-simple] .ledger th{padding-block:12px}
+:root[data-simple] .simple-hide{display:none}
 button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .status{font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
