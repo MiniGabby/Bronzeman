@@ -227,6 +227,9 @@ tr.total td{font-weight:600}
 .timingrow .sub2{line-height:1.7}
 td.timing{min-width:180px}
 .timingrow{gap:8px}
+.leveldetail>td{background:var(--surface-2);padding:10px 14px 14px}
+.levelbox{max-height:600px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface);margin-bottom:8px}
+.levelbox table{width:100%}.levelbox thead th{position:sticky;top:0;background:var(--surface)}
 .linkbtn{font:inherit;color:var(--gold);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
 .tprice{font-size:15px;font-weight:600}
 .tprice small{font:500 12px var(--sans);color:var(--ink-3)}

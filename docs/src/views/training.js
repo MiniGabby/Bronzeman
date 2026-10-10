@@ -108,6 +108,7 @@ function mountSkill(root, skill) {
   const $ = s => root.querySelector(s);
   const playerSel = $("#t-player"), cur = $("#t-current"), tgt = $("#t-target"), sortSel = $("#t-sort");
   const cards = new Map();
+  const openLevels = new Set();   // route steps whose "per level" table is open
 
   function fillPlayers() {
     const opts = group.all().filter(p => p.skills)
@@ -155,6 +156,33 @@ function mountSkill(root, skill) {
 
   const quester = () => (goal.player && group.all().find(x => x.name === goal.player && x.skills)) || null;
 
+  // Per level of a route step, for methods that burn food: how much burns at that level, and what the
+  // level costs or earns. Each row is worked out at that exact level (the step itself uses the average).
+  function levelRows(m, st, lvlNow) {
+    const per = m.xp?.[skill.name] || 0;
+    let sumGp = 0, sumTries = 0, complete = true;
+    const body = Array.from({ length: st.to - st.from }, (_, i) => st.from + i).map(lvl => {
+      const c = calc.compute(m, { level: lvl }), ok = c.success ?? 1, xpHr = c.xpHr[skill.name] || 0;
+      const need = xpForLevel(lvl + 1) - xpForLevel(lvl);
+      const tries = per && ok ? need / (per * ok) : 0;
+      const gpLevel = c.profitHr == null || !xpHr ? null : (need / xpHr) * c.profitHr;
+      if (gpLevel == null) complete = false; else sumGp += gpLevel;
+      sumTries += tries;
+      return `<tr class="${lvl === lvlNow ? "here" : ""}"><td class="num">${lvl} → ${lvl + 1}${lvl === lvlNow ? ` <span class="pill good">You</span>` : ""}</td>
+        <td class="r num ${ok >= 1 ? "pos" : ""}">${ok >= 1 ? "None" : `${Math.round((1 - ok) * 100)}%`}</td>
+        <td class="r num">${nf.format(Math.ceil(tries))}<div class="sub2">${ok >= 1 ? "" : `${nf.format(Math.round(tries * (1 - ok)))} burn`}</div></td>
+        <td class="r num">${short(xpHr)}</td>
+        <td class="r num ${cls(c.profitHr)}">${signed(c.profitHr)}</td>
+        <td class="r num ${cls(gpLevel)}">${gpLevel == null ? "–" : signed(gpLevel)}</td></tr>`;
+    }).join("");
+    return `<tr class="leveldetail"><td colspan="6"><div class="levelbox"><table>
+      <thead><tr><th>Level</th><th class="r">${ui.t("Burn rate", "How much burns")}</th><th class="r">${ui.t("To cook", "How many to cook")}</th><th class="r">${ui.t("XP / hr", "XP per hour")}</th><th class="r">${ui.t("GP / hr", "Coins per hour")}</th><th class="r">${ui.t("GP for this level", "Coins for this level")}</th></tr></thead>
+      <tbody>${body}
+        <tr class="total"><td>${st.from} → ${st.to}</td><td></td><td class="r num">${nf.format(Math.ceil(sumTries))}</td><td></td><td></td><td class="r num ${cls(sumGp)}">${complete ? signed(sumGp) : "–"}</td></tr>
+      </tbody></table></div>
+      <p class="fine">On ${esc(burn.label(burn.source()))}, at live prices. Minus means it costs coins, plus means it earns them. Burnt food gives no XP and can't be sold.</p></td></tr>`;
+  }
+
   function renderRoute(rows, lvlNow, xpNow) {
     const host = $('[data-f="route"]');
     if (!guide) { host.hidden = true; return; }
@@ -196,6 +224,7 @@ function mountSkill(root, skill) {
       const alt = doableAlt(rows, st.from, p, active.auto ? "auto" : active.prefer);
       const cost = r => r && r.xpHr ? { h: xp / r.xpHr, gp: (xp / r.xpHr) * (r.c.profitHr ?? 0) } : null;
       const cr = cost(rec), ca = cost(blocked ? alt : rec);
+      const lvKey = `${active.key}:${st.from}`;
       // What to buy for this level range: actions needed (failed ones included, e.g. burnt fish) × inputs per action.
       const buy = (r => {
         const per = r?.m.xp?.[skill.name], ok = r?.c.success ?? 1;
@@ -203,7 +232,7 @@ function mountSkill(root, skill) {
         const tries = xp / (per * ok);
         const list = r.c.ins.map(i => `${nf.format(Math.ceil(i.qty * tries))} ${esc(i.it.name)}`).join(", ");
         const burnt = ok < 1 ? ` <span class="muted">(about ${nf.format(Math.round(tries * (1 - ok)))} will burn)</span>` : "";
-        const stops = r.m.burn ? `<div class="sub2 stopburn">On ${esc(burn.label(burn.source()))}: ${esc(burn.stopText(r.m))}</div>` : "";
+        const stops = r.m.burn ? `<div class="sub2 stopburn">On ${esc(burn.label(burn.source()))}: ${esc(burn.stopText(r.m))} · <button type="button" class="linkbtn" data-levels="${lvKey}" aria-expanded="${openLevels.has(lvKey)}">${openLevels.has(lvKey) ? "Hide levels ▾" : "Show per level ▸"}</button></div>` : "";
         return `<div class="sub2 buy">${here ? `Still to buy (from your ${nf.format(Math.max(xpNow, xpForLevel(st.from)))} XP)` : "Buy"}: ${list}${burnt}</div>${stops}`;
       })(rec);
       // Usual price range over a day for what this step buys and sells, and the best hour for each.
@@ -247,7 +276,7 @@ function mountSkill(root, skill) {
         <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? timeOf(rec.m, cr.h) : ""}</div></td>
         <td class="wrapcell">${status.length ? status.join(" ") : `<span class="pill good">All unlocked</span>`}${blocked
           ? (alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${rateOf(alt.m, alt.xpHr)} XP${isDaily(alt.m) ? "" : "/hr"}, ${fmtGpXp(alt.gpXp)} gp/XP)</div>` : `<div class="sub2">Nothing else on the site fits this level yet.</div>`) : ""}</td>
-      </tr>`;
+      </tr>${rec?.m.burn && openLevels.has(lvKey) ? levelRows(rec.m, st, lvlNow) : ""}`;
     }).join("");
 
     // Price history for the items on screen, at most 40 requests (cached for an hour).
@@ -361,6 +390,8 @@ function mountSkill(root, skill) {
     if (tv) { setTimeValue(tv.dataset.tv); render(); return; }
     const tab = e.target.closest("[data-route]");
     if (tab) { store.set("route:" + skill.key, tab.dataset.route); render(); return; }
+    const lv = e.target.closest("[data-levels]");
+    if (lv) { openLevels.has(lv.dataset.levels) ? openLevels.delete(lv.dataset.levels) : openLevels.add(lv.dataset.levels); render(); return; }
     const a = e.target.closest("[data-jump]");
     if (!a || !a.dataset.jump) return;
     e.preventDefault();

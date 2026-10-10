@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Cooking: burn rate and coins per level", link: "#/training/cooking",
+    items: [
+      "Every fish on a Cooking route now has a \"Show per level\" button. It opens a table with one row per level: how much burns at that level, how many fish you need to cook, XP per hour, coins per hour and what that one level costs or earns.",
+      "It follows your choice of fire or range and cooking gauntlets, and uses live prices. The row for your own level is marked \"You\"."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Levels and achievement diaries from WikiSync", link: "#/group",
     items: [
       "The site now also reads your levels from the WikiSync plugin, not only your quests. WikiSync follows along while you play, so \"who can do this\" stays up to date even when nobody has pressed Update stats. On the Group page those levels are marked with a *.",
