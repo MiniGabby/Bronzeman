@@ -14,7 +14,7 @@ import { goals as unlockGoals } from "../core/unlockGoals.js";
 import { goalCard } from "./group.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, missingQuests, doableAlt } from "../core/autoRoute.js";
-import { skillByKey } from "../core/osrs.js";
+import { skillByKey, skillByName } from "../core/osrs.js";
 import { store } from "../core/store.js";
 import * as me from "../core/me.js";
 import { esc, gp, short, signed, cls } from "../core/format.js";
@@ -35,6 +35,13 @@ export function mount(root, [nameParam]) {
     <div data-f="body"></div>`;
   const $ = s => root.querySelector(s);
   const sel = $("#pl-name");
+  const openUnlocks = new Set();   // unlocks whose list of methods is open
+  root.addEventListener("click", e => {
+    const b = e.target.closest("[data-opens]");
+    if (!b) return;
+    openUnlocks.has(b.dataset.opens) ? openUnlocks.delete(b.dataset.opens) : openUnlocks.add(b.dataset.opens);
+    render();
+  });
   $('[data-f="pick"]').addEventListener("submit", e => e.preventDefault());
   sel.addEventListener("change", () => { location.hash = "#/player/" + encodeURIComponent(sel.value); });
 
@@ -122,10 +129,28 @@ export function mount(root, [nameParam]) {
     return herbTip ? `Make one from a clean ${unf[1].toLowerCase()}. ${first(herbTip)}` : first(g.tip);
   }
 
+  // The methods an unlock opens: where to find each one, and whether this player has the levels for it.
+  function opensList(p, g) {
+    return `<ul class="opens">${g.methods.map(m => {
+      const skills = Object.keys(m.xp || {}), key = skillByName(skills[0])?.key;
+      const href = key ? `#/training/${key}` : "#/money";
+      const miss = group.missing(p, m);
+      const others = unlocks.lockedInputs(m).filter(x => x.name !== g.name).map(x => x.name);
+      const reqs = Object.entries(m.reqs?.skills || {}).map(([s, l]) => `${s} ${l}`).join(", ");
+      return `<li><a href="${href}">${esc(m.name)}</a> ${miss?.length ? "" : `<span class="muted">${esc(reqs)}</span>`}
+        ${miss == null ? "" : miss.length ? `<span class="pill warn">Needs ${esc(miss.join(", "))}</span>` : `<span class="pill good">You can do it</span>`}
+        ${others.length ? `<span class="pill bad" title="Still locked after this unlock">Also needs ${esc(others.join(", "))}</span>` : ""}</li>`;
+    }).join("")}</ul>`;
+  }
+
   function unlockSection(p) {
     const list = (unlockGoals() || []).filter(g => g.reqs && (!Object.keys(g.reqs).length || g.who.some(w => w.p === p && w.gap === 0))).slice(0, 5);
     return section("Unlocks you can get now", list.length
-      ? `<ul class="plist">${list.map(g => `<li><b>${esc(g.name)}</b> <span class="muted">· opens ${g.methods.length} method${g.methods.length > 1 ? "s" : ""}</span><div class="sub2">${esc(shortTip(g))}</div></li>`).join("")}</ul>`
+      ? `<ul class="plist">${list.map(g => {
+        const open = openUnlocks.has(g.name);
+        return `<li><b>${esc(g.name)}</b> <span class="muted">·</span> <button type="button" class="linkbtn" data-opens="${esc(g.name)}" aria-expanded="${open}">opens ${g.methods.length} method${g.methods.length > 1 ? "s" : ""} ${open ? "▾" : "▸"}</button>
+          <div class="sub2">${esc(shortTip(g))}</div>${open ? opensList(p, g) : ""}</li>`;
+      }).join("")}</ul>`
       : `<p class="muted">None right now.</p>`, { href: "#/unlocked", text: "Unlock goals" });
   }
 

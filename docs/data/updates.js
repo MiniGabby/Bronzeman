@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Player page: see which methods an unlock opens", link: "#/player",
+    items: [
+      "Under \"Unlocks you can get now\", click \"opens 4 methods\" to see which methods they are. Each one links to its skill page and shows whether you have the levels for it, and whether it still needs another locked item."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Four new guides: Mining, Fishing, Woodcutting and Prayer", link: "#/training",
     items: [
       "Mining: power mining iron to 70 and the Volcanic Mine after that (Fastest), or the Motherlode Mine and amethyst (Relaxed, earns money). Also gem rocks, crashed stars, calcified rocks and 3-tick granite.",

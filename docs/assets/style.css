@@ -296,6 +296,7 @@ tr.detailrow > td{background:var(--surface-2);white-space:normal;padding:16px 18
 .psec{margin-bottom:14px}
 .plist{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .plist li{line-height:1.45}
+.opens{margin:6px 0 4px;padding:8px 12px 8px 28px;display:flex;flex-direction:column;gap:5px;background:var(--surface-2);border-radius:8px;font-size:14px}
 @media (max-width:520px){.pgrid{grid-template-columns:1fr}}
 
 /* Quest tables (Group page) */
