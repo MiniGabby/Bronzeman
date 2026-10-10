@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Player page: every part in its own block", link: "#/player",
+    items: [
+      "The parts of the Player page (What to do next, Money makers, Training routes, Flips, Goals, Unlocks) each have their own block now, with the title in a bar at the top, so it's clear where one ends and the next begins."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Arcanekitten: the same level is enough", link: "#/arcanekitten",
     items: [
       "A skill on the Arcanekitten tab is now crossed off as soon as someone in the group has the same level as arcanekitten; it doesn't have to be higher. Every skill that's still open needs one level less than the page said before."
