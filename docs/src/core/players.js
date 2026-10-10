@@ -5,7 +5,7 @@
 // remembered stats instantly and only asks Wise Old Man again once they are older than that.
 import PLAYERS from "../../data/players.js";
 import QUESTS, { INFERRED, ALL_QUESTS } from "../../data/quests.js";
-import { skillByName } from "./osrs.js";
+import { skillByName, xpForLevel } from "./osrs.js";
 import { store } from "./store.js";
 
 const WOM = "https://api.wiseoldman.net/v2/players/";
@@ -111,8 +111,16 @@ export async function updateAll() {
 }
 
 const skillData = (p, skillName) => p.skills?.[skillByName(skillName)?.key];
-export const level = (p, skillName) => Math.max(1, skillData(p, skillName)?.level ?? 1);
-export const xp = (p, skillName) => Math.max(0, skillData(p, skillName)?.experience ?? 0);
+const womLevel = (p, skillName) => skillData(p, skillName)?.level ?? 1;
+// WikiSync (see below) also knows levels, and is updated while you play, so it can be ahead of
+// Wise Old Man until someone presses Update stats. It has no XP: a level that's ahead counts as
+// the XP that level starts at.
+const wikiLevel = (p, skillName) => p.wikiLevels?.[skillByName(skillName)?.name] ?? 0;
+export const level = (p, skillName) => Math.max(1, womLevel(p, skillName), wikiLevel(p, skillName));
+export const xp = (p, skillName) => Math.max(0, skillData(p, skillName)?.experience ?? 0,
+  wikiLevel(p, skillName) > womLevel(p, skillName) ? xpForLevel(wikiLevel(p, skillName)) : 0);
+/** True when this level comes from WikiSync because Wise Old Man is behind. */
+export const levelFromWiki = (p, skillName) => wikiLevel(p, skillName) > womLevel(p, skillName);
 
 // Quest list per player, keyed case-insensitively by RuneScape name.
 const questsByPlayer = Object.fromEntries(Object.entries(QUESTS).map(([n, q]) => [idOf(n), q]));
@@ -120,7 +128,8 @@ const questsByPlayer = Object.fromEntries(Object.entries(QUESTS).map(([n, q]) =>
 // ---- Quests from the wiki's WikiSync (players with the WikiSync plugin in RuneLite) ----
 // The wiki doesn't let other websites read WikiSync from the browser, so a GitHub Action
 // (.github/workflows/sync-wikisync.yml) fetches it every 3 hours into data/wikisync.json:
-// { generatedAt, players: { "<RuneScape name>": { status: "ok"|"none"|"error", timestamp, quests: { "Quest": 0|1|2 } } } }
+// { generatedAt, players: { "<RuneScape name>": { status: "ok"|"none"|"error", timestamp, quests: { "Quest": 0|1|2 },
+//   levels: { "Cooking": 77 }, diaries: { "Ardougne": { "Easy": [tasks done, tasks in total] } } } } }
 // 0 = not started, 1 = started, 2 = done; "none" = no WikiSync data (plugin not used).
 let syncGeneratedAt = null;
 export const questsSyncedAt = () => syncGeneratedAt;
@@ -135,7 +144,9 @@ export async function loadQuests() {
     const byId = Object.fromEntries(Object.entries(j.players || {}).map(([n, v]) => [idOf(n), v]));
     for (const p of state.players) {
       const v = byId[p.id];
-      Object.assign(p, { wikiQuests: v?.status === "ok" ? v.quests : null, wikiAt: v?.timestamp || null, wikiStatus: v ? v.status : "none" });
+      const ok = v?.status === "ok";
+      Object.assign(p, { wikiQuests: ok ? v.quests : null, wikiLevels: ok ? v.levels || null : null, wikiDiaries: ok ? v.diaries || null : null,
+        wikiAt: v?.timestamp || null, wikiStatus: v ? v.status : "none" });
     }
   } catch {
     for (const p of state.players) p.wikiStatus = "error";
@@ -177,6 +188,19 @@ export function allQuests() {
   const set = new Set(ALL_QUESTS);
   for (const p of state.players) for (const q of Object.keys(p.wikiQuests || {})) if (/\w/.test(q)) set.add(q);
   return [...set].sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+}
+
+// ---- Achievement diaries (WikiSync only) ----
+export const DIARY_TIERS = ["Easy", "Medium", "Hard", "Elite"];
+/** Every diary area that shows up in the WikiSync data, A to Z. */
+export const diaryAreas = () => [...new Set(state.players.flatMap(p => Object.keys(p.wikiDiaries || {})))].sort();
+/** [tasks done, tasks in total] for a diary tier, or null when unknown (no WikiSync data). */
+export const diaryProgress = (p, area, tier) => p.wikiDiaries?.[area]?.[tier] || null;
+/** Has the player finished this diary tier, e.g. "Kandarin Hard"? true / false, or null when unknown. */
+export function diaryDone(p, diary) {
+  const m = String(diary).match(/^(.+) (Easy|Medium|Hard|Elite)$/);
+  const v = m && diaryProgress(p, m[1], m[2]);
+  return v ? v[1] > 0 && v[0] >= v[1] : null;
 }
 
 /** Requirements the player doesn't meet yet: skill levels, plus quests known not to be done. */

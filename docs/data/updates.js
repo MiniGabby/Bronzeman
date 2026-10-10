@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Levels and achievement diaries from WikiSync", link: "#/group",
+    items: [
+      "The site now also reads your levels from the WikiSync plugin, not only your quests. WikiSync follows along while you play, so \"who can do this\" stays up to date even when nobody has pressed Update stats. On the Group page those levels are marked with a *.",
+      "New on the Group page: Achievement diaries, with the tasks done per area and tier for everyone who uses the plugin.",
+      "Method cards that get better with a diary now say which one and who has it, for example the Kandarin hard diary for the Seers' Village rooftop course and the Ardougne medium diary for pickpocketing knights.",
+      "XP and XP gains still come from Wise Old Man: WikiSync only knows levels. The site checks WikiSync every 3 hours, so the first diary data shows up after the next check."
+    ]
+  },
+  {
     date: "2026-10-09", title: "Simple view: larger text and plain words",
     items: [
       "New button at the top of the site: Simple view. It makes everything about 20% larger, writes out the abbreviations (\"Coins per XP\" instead of \"GP / XP\", \"XP per hour\" instead of \"XP / hr\") and adds one plain sentence at the top of every page about what it's for.",

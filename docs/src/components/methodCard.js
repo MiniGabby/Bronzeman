@@ -8,6 +8,7 @@ import * as group from "../core/players.js";
 import * as unlocks from "../core/unlocks.js";
 import { tipFor } from "../core/unlockTips.js";
 import * as ui from "../core/ui.js";
+import DIARY_PERKS from "../../data/diary-perks.js";
 
 export function reqList(m) {
   const r = m.reqs || {};
@@ -60,6 +61,7 @@ export function createMethodCard(m) {
         </div>
         <dl class="kv" data-f="kv"></dl>
         <div class="field"><span class="label">Group</span><div class="chips" data-f="group"></div></div>
+        ${DIARY_PERKS[m.id] ? `<div class="field"><span class="label">${DIARY_PERKS[m.id].length > 1 ? "Diaries that help" : "Diary that helps"}</span><div data-f="diaries"></div></div>` : ""}
         <div class="notes" data-f="notes"></div>
       </div>
     </div>`;
@@ -133,6 +135,15 @@ export function createMethodCard(m) {
     ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
 
     el.querySelector('[data-f="group"]').innerHTML = groupChips(m) || `<span class="muted">Loading stats…</span>`;
+
+    // Diaries that make this method better, and who has finished them (WikiSync; "?" = no data).
+    const dHost = el.querySelector('[data-f="diaries"]');
+    if (dHost) dHost.innerHTML = DIARY_PERKS[m.id].map(d => `<div class="diaryperk"><b>${esc(d.diary.replace(/ (\w+)$/, " Diary ($1)").replace(/\((\w)/, (x, c) => "(" + c.toLowerCase()))}</b>: ${esc(d.perk)}
+      <div class="chips">${group.all().map(p => {
+        const v = group.diaryDone(p, d.diary), prog = group.diaryProgress(p, ...d.diary.match(/^(.+) (\w+)$/).slice(1));
+        return v == null ? `<span class="chip" title="No WikiSync data for ${esc(p.name)}">${esc(p.name)} ?</span>`
+          : `<span class="chip ${v ? "yes" : "no"}" title="${prog[0]} of ${prog[1]} tasks done">${esc(p.name)}${v ? "" : ` ${prog[0]}/${prog[1]}`}</span>`;
+      }).join("")}</div></div>`).join("");
 
     const notes = [];
     const locked = unlocks.lockedInputs(m);

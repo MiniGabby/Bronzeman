@@ -9,6 +9,7 @@ A small website for our Old School RuneScape bronzeman group. It shows money mak
 - **Merching:** flips for items the group has unlocked: what to buy at what hour and price, and when to sell for what price, based on each item's daily price pattern over the last 3 weeks. Includes a short how-to.
 - **Unlocked:** every item the group has unlocked (bronzeman), with who unlocked it, when and the GE price. The Money makers page also flags methods whose inputs nobody has unlocked yet.
 - **Simple view:** a button in the header for larger text, plain labels and fewer columns (`src/core/ui.js`). In a view, use `ui.t("GP / XP", "Coins per XP")` for a label with a plain version, and give cells that only traders need the class `simple-hide`.
+- **WikiSync:** besides quests, `data/wikisync.json` holds each player's levels and achievement diaries. Levels are used when they're ahead of Wise Old Man (`core/players.js`). Diaries that improve a method go in `data/diary-perks.js`, keyed by method id; the card then shows who has them.
 - **Updates:** what's new on the site, from `data/updates.js`. Add an entry there with every change the group would notice.
 - **Requests:** a form to ask for a new guide. It opens a pre-filled GitHub issue; the list of requests on the page comes from `data/requests.json`, which a GitHub Action keeps in sync with the issues.
 

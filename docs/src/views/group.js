@@ -75,6 +75,12 @@ export function mount(root) {
     </section>
 
     <section class="section">
+      <h2 class="pagetitle small">Achievement diaries</h2>
+      <p class="fine">Tasks done per diary, from the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (the site checks every 3 hours). A tick means every task of that tier is done. Players without the plugin show "–".</p>
+      <div data-f="diaries"></div>
+    </section>
+
+    <section class="section">
       <h2 class="pagetitle small">Quests</h2>
       <p class="fine">Every quest and miniquest, A to Z. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; the site checks for new data every 3 hours). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ✓ done, Started, ✗ not started, ? unknown. "Methods" is how many methods on this site need the quest.</p>
       <div data-f="quests"></div>
@@ -167,8 +173,8 @@ export function mount(root) {
     const total = p => p.skills ? SKILLS.reduce((a, s) => a + group.level(p, s.name), 0) : null;
     const row = (label, vals, link) => {
       const max = Math.max(...vals.filter(v => v != null));
-      return `<tr><td>${link ? `<a href="${link}">${esc(label)}</a>` : `<b>${esc(label)}</b>`}</td>${vals.map(v =>
-        `<td class="r num${v != null && v === max && max > 1 ? " top" : ""}">${v == null ? "–" : nf.format(v)}</td>`).join("")}</tr>`;
+      return `<tr><td>${link ? `<a href="${link}">${esc(label)}</a>` : `<b>${esc(label)}</b>`}</td>${vals.map((v, i) =>
+        `<td class="r num${v != null && v === max && max > 1 ? " top" : ""}">${v == null ? "–" : nf.format(v)}${link && group.levelFromWiki(ps[i], label) ? `<span class="muted" title="From WikiSync: newer than the last Wise Old Man update">*</span>` : ""}</td>`).join("")}</tr>`;
     };
     host.innerHTML = `<div class="board"><table>
       <thead><tr><th>Skill</th>${ps.map(p => `<th class="r"><a href="#/player/${encodeURIComponent(p.name)}" title="What ${esc(p.name)} can do now">${esc(p.name)}</a></th>`).join("")}</tr></thead>
@@ -178,7 +184,7 @@ export function mount(root) {
         <tr><td class="muted">Last updated</td>${ps.map(p => `<td class="r muted" title="${esc(p.error || "")}">${p.skills ? ago(p.updatedAt) : "No stats"}</td>`).join("")}</tr>
       </tbody>
     </table></div>
-    <p class="fine">The highest level in each skill is highlighted. Click a skill to see its training methods.</p>`;
+    <p class="fine">The highest level in each skill is highlighted. Click a skill to see its training methods. Levels marked * are newer than the last Wise Old Man update: they come from WikiSync, which follows along while you play (checked every 3 hours).</p>`;
   }
 
   function renderGoals() {
@@ -231,8 +237,33 @@ export function mount(root) {
   }
 
 
+  // Tasks done per diary tier, one row per area and tier.
+  function renderDiaries() {
+    const host = $('[data-f="diaries"]');
+    const ps = group.all(), areas = group.diaryAreas();
+    if (!areas.length) {
+      host.innerHTML = `<p class="muted">${group.questSource(ps[0]) === undefined ? "Loading…" : "No diary data yet. It arrives with the next WikiSync check (every 3 hours) for players who use the plugin."}</p>`;
+      return;
+    }
+    const cell = (p, area, tier) => {
+      const v = group.diaryProgress(p, area, tier);
+      if (!v) return `<td class="r muted">–</td>`;
+      const done = v[1] > 0 && v[0] >= v[1];
+      return `<td class="r num ${done ? "done" : v[0] ? "part" : "none"}" title="${v[0]} of ${v[1]} tasks">${done ? "✓" : `${v[0]}/${v[1]}`}</td>`;
+    };
+    const count = p => p.wikiDiaries ? areas.reduce((a, area) => a + group.DIARY_TIERS.filter(t => group.diaryDone(p, `${area} ${t}`)).length, 0) : null;
+    host.innerHTML = `<div class="board"><table class="dtable">
+      <thead><tr><th>Diary</th><th>Tier</th>${ps.map(p => `<th class="r">${esc(p.name)}</th>`).join("")}</tr>
+        <tr class="subhead"><td class="muted">Tiers finished</td><td></td>${ps.map(p => `<td class="r num">${count(p) == null ? "–" : `${count(p)}/${areas.length * 4}`}</td>`).join("")}</tr></thead>
+      <tbody>${areas.map(area => group.DIARY_TIERS.map((tier, i) => `<tr>
+        <td>${i === 0 ? `<a href="https://oldschool.runescape.wiki/w/${encodeURIComponent(area.replace(/ /g, "_"))}_Diary" target="_blank" rel="noopener">${esc(area)}</a>` : ""}</td>
+        <td class="muted">${tier}</td>${ps.map(p => cell(p, area, tier)).join("")}</tr>`).join("")).join("")}</tbody>
+    </table></div>`;
+  }
+
   function render() {
     renderGoals();
+    renderDiaries();
     renderQuests();
     renderButton();
     renderGains();

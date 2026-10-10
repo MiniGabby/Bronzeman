@@ -1,4 +1,4 @@
-# Copies everyone's quest progress from the OSRS Wiki's WikiSync into docs/data/wikisync.json,
+# Copies everyone's quest progress, levels and achievement diaries from the OSRS Wiki's WikiSync into docs/data/wikisync.json,
 # because the website itself isn't allowed to read WikiSync from the browser.
 name: Sync WikiSync quests
 
@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Fetch quests from WikiSync
+      - name: Fetch quests, levels and diaries from WikiSync
         run: node .github/scripts/build-wikisync.js
 
       - name: Commit if changed
