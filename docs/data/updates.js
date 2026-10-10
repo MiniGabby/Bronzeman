@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Construction: Mahogany Homes", link: "#/training/construction",
+    items: [
+      "The Construction guide now has Mahogany Homes: contracts for homeowners in Falador, Varrock, East Ardougne and Hosidius. Four tiers: beginner (level 1, planks), novice (20, oak planks), adept (50, teak planks) and expert (70, mahogany planks).",
+      "You use about a third of the planks per XP compared with building in your own house, and you don't need a house or a demon butler. About 33K XP per hour on beginner contracts, 70K on novice, 140K on adept and 180K on expert.",
+      "There's a new Mahogany Homes route tab, and Best of both now considers the contracts too. Oak planks are unlocked, so novice contracts are open now; teak planks take one log and 500 coins at the sawmill to unlock."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Player page: what to do next", link: "#/player",
     items: [
       "Every player's page now starts with \"What to do next\": the next quest in the Optimal Ironman order of the Quest Helper plugin for RuneLite, based on the quests you've done according to WikiSync.",

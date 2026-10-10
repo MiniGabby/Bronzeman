@@ -351,10 +351,21 @@ export default {
         ]
       },
       {
+        key: "homes", name: "Mahogany Homes", prefer: "cheap",
+        intro: "Contracts for homeowners instead of building in your own house. You use about a third of the planks per XP, you don't need a house or a demon butler, and it works the same at every level: about 33K XP per hour on beginner contracts, 70K on novice, 140K on adept and 180K on expert. Slower than mahogany tables with a butler, but far cheaper. Oak planks are unlocked, so novice contracts are open to everyone now; teak and mahogany planks aren't yet.",
+        route: [
+          { from: 1, to: 20, method: "con-homes-beginner" },
+          { from: 20, to: 50, method: "con-homes-novice" },
+          { from: 50, to: 70, method: "con-homes-adept", note: "Until teak planks are unlocked: stay on novice contracts." },
+          { from: 70, to: 99, method: "con-homes-expert", note: "Adept contracts cost less per XP if mahogany planks are expensive." }
+        ]
+      },
+      {
         key: "balanced", name: "Best of both", auto: true,
         intro: "Worked out live from GE prices: for every level range it picks the method with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
         from: 1, to: 99,
-        candidates: ["con-crude-chairs", "con-wooden-bookcases", "con-wooden-larders", "con-oak-dining-tables", "con-oak-larders", "con-mahogany-tables", "con-oak-dungeon-doors", "con-gnome-benches"]
+        candidates: ["con-crude-chairs", "con-wooden-bookcases", "con-wooden-larders", "con-oak-dining-tables", "con-oak-larders", "con-mahogany-tables", "con-oak-dungeon-doors", "con-gnome-benches",
+          "con-homes-beginner", "con-homes-novice", "con-homes-adept", "con-homes-expert"]
       }
     ]
   },
