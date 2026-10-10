@@ -306,6 +306,7 @@ tr.detailrow > td{background:var(--surface-2);white-space:normal;padding:16px 18
 .psec>.sechead a{font-size:13px}
 .psec .reqgroup{margin:14px 0 6px;padding-top:12px;border-top:1px solid var(--line)}
 .psec>.fine:last-child{margin-top:10px}
+.plist .needs{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.5}.plist .needs b{color:var(--ink)}
 .todo{border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:var(--surface-2)}
 .todo.ready{border-left-color:var(--good)}.todoname{font-size:17px;font-weight:600;margin:2px 0}.todoname a{color:var(--ink)}
 .todobar{display:flex;align-items:center;gap:10px;margin-bottom:10px}.todobar .bar{flex:1;height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden}.todobar .bar span{display:block;height:100%;background:var(--good)}

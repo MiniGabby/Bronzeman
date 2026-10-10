@@ -22,6 +22,7 @@ const rocks = (id, name, level, xpEach, xpHr, note, extra = {}) => {
     inputs: [],
     outputs: extra.outputs || [],
     ...(extra.ledger ? { ledger: extra.ledger } : {}),
+    ...(extra.routeAlt === false ? { routeAlt: false } : {}),   // never offered as the "until then" alternative (tick manipulation)
     xp: { Mining: xpEach, ...(extra.xp || {}) },
     note
   };
@@ -50,7 +51,7 @@ export default [
     { quests: ["Children of the Sun", "Perilous Moons (started)"] }),
   rocks("granite", "3-tick granite", 45, 60, 87000,
     "The fastest Mining XP in the game, but only with tick manipulation: you use swamp tar on a herb to start a 3-tick cycle and move between four granite rocks, clicking every tick. 87K XP per hour at 45, 103K at 65 and 114K at 85. Very hard to keep up and not worth doing without the trick; iron is the better choice if you don't want to learn it. At the quarry south of the Bandit Camp in the desert (bring waterskins) or at Cape Conch.",
-    { items: ["Swamp tar and a clean herb", "Waterskins (desert quarry)"], action: "granite", actionLabel: "Granite per hour",
+    { items: ["Swamp tar and a clean herb", "Waterskins (desert quarry)"], routeAlt: false, action: "granite", actionLabel: "Granite per hour",
       presets: [["Mining 45", 1450], ["Mining 65", 1715], ["Mining 85", 1900]], perHour: 1450 }),
   timed("crashed-stars", "Crashed stars", 10, 26000,
     "The AFK option: about one click every few minutes. A star lands somewhere in the world every couple of hours; star-finder websites and the RuneLite star plugins tell you where. Mine it down with everyone else for stardust, which buys the celestial ring (an invisible +4 Mining). Higher stars need a higher level: every star is open to you from Mining 60, lower stars from level 10. About 24K to 31K XP per hour, including finding the star.",

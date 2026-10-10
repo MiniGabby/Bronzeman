@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Player page: exactly what each training step takes", link: "#/player",
+    items: [
+      "Under every skill in \"Training routes\" there's now a line with exactly what it takes to reach the step's goal from your own XP: how many actions, every item to buy and how many, what it costs or earns, and how long it takes. For example: \"To reach 55 (93,211 XP to go): 933 potions · buy 933 Irit potion (unf), 933 Eye of newt · costs 300,426 gp · 22 min\".",
+      "For Cooking it counts the fish that will burn at your level. Farm runs and bird houses show days instead of hours."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Player page: every part in its own block", link: "#/player",
     items: [
       "The parts of the Player page (What to do next, Money makers, Training routes, Flips, Goals, Unlocks) each have their own block now, with the title in a bar at the top, so it's clear where one ends and the next begins."

@@ -15,12 +15,15 @@ import { plan as questPlan } from "../core/questPlan.js";
 import { goalCard } from "./group.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, missingQuests, doableAlt } from "../core/autoRoute.js";
-import { skillByKey, skillByName } from "../core/osrs.js";
+import { skillByKey, skillByName, xpForLevel } from "../core/osrs.js";
 import { store } from "../core/store.js";
 import * as me from "../core/me.js";
-import { esc, gp, short, signed, cls } from "../core/format.js";
+import { esc, gp, short, signed, cls, nf, duration } from "../core/format.js";
 
 export const title = "Player";
+
+// "catch" → "catches", "fish" stays "fish": the plural of a method's action word.
+const plural = (word, n) => n === 1 || /(fish|essence|pay-dirt|granite|amethyst)$/.test(word) ? word : /(ch|sh|s|x)$/.test(word) ? word + "es" : word + "s";
 
 const NEAR = 5;   // "almost there" = within this many levels
 
@@ -88,6 +91,21 @@ export function mount(root, [nameParam]) {
       if (!m) return `<li>${head}: ${esc(st.method)}</li>`;
       const c = calc.compute(m, { level: lvl }), xpHr = c.xpHr[skill.name] || 0, gpXp = c.profitHr != null && xpHr ? c.profitHr / xpHr : null;
       const locked = unlocks.lockedInputs(m) || [];
+      // Exactly what it takes to reach the step's goal from this player's XP: actions, every item to buy,
+      // the coins and the time. Burnt food is worked out over the levels still to go.
+      const need = (() => {
+        const per = m.xp?.[skill.name], xpLeft = Math.max(0, xpForLevel(st.to) - group.xp(p, skill.name));
+        if (!per || !xpLeft) return "";
+        const cg = m.burn ? calc.compute(m, { from: lvl, to: st.to }) : c, ok = cg.success ?? 1;
+        const tries = Math.ceil(xpLeft / (per * ok)), hrs = (cg.xpHr[skill.name] || 0) ? xpLeft / cg.xpHr[skill.name] : null;
+        const buy = (cg.ins || []).map(i => `<b class="num">${nf.format(Math.ceil(i.qty * tries))}</b> ${esc(i.it.name)}`);
+        const burnt = ok < 1 ? ` <span class="muted">(about ${nf.format(Math.round(tries * (1 - ok)))} will burn)</span>` : "";
+        const total = cg.profit == null ? null : cg.profit * tries;
+        const time = hrs == null ? "" : m.per === "day" ? `${hrs < 36 ? Math.max(1, Math.round(hrs)) + " h" : (hrs / 24).toFixed(hrs < 240 ? 1 : 0) + " days"}` : duration(hrs);
+        return `<div class="sub2 needs">To reach ${st.to} (${nf.format(xpLeft)} XP to go): <b class="num">${nf.format(tries)}</b> ${esc(plural(m.action || "action", tries))}${
+          buy.length ? ` · buy ${buy.join(", ")}${burnt}` : ""}${
+          total == null || Math.round(total) === 0 ? "" : ` · ${total < 0 ? "costs" : "earns"} <b class="num ${cls(total)}">${gp(Math.abs(total))}</b> gp`}${time ? ` · ${time}` : ""}</div>`;
+      })();
       // Blocked by a lock or a missing quest: name the best method this player can do right now.
       let altLine = "";
       if (locked.length || missingQuests(m, p).length) {
@@ -98,7 +116,7 @@ export function mount(root, [nameParam]) {
         const alt = doableAlt(rows, lvl, p, r.auto ? "auto" : r.prefer);
         altLine = alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${short(alt.xpHr)} XP/hr)</div>` : "";
       }
-      return `<li${missingQuests(m, p).length ? ` class="questneed"` : ""}>${head}: <b>${esc(m.name)}</b> until ${st.to} <span class="muted">· ${short(xpHr)} XP/hr · <span class="${cls(gpXp)}">${gpXp == null ? "–" : (gpXp > 0 ? "+" : "") + gpXp.toFixed(1)}</span> gp/XP</span>${locked.length ? ` <span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>` : ""}${(m.reqs?.quests || []).filter(q => group.questDone(p, q) !== true).map(q => ` <span class="pill warn">Needs ${esc(q)}${group.questDone(p, q) === null ? "?" : ""}</span>`).join("")}${altLine}</li>`;
+      return `<li${missingQuests(m, p).length ? ` class="questneed"` : ""}>${head}: <b>${esc(m.name)}</b> until ${st.to} <span class="muted">· ${short(xpHr)} XP/hr · <span class="${cls(gpXp)}">${gpXp == null ? "–" : (gpXp > 0 ? "+" : "") + gpXp.toFixed(1)}</span> gp/XP</span>${locked.length ? ` <span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>` : ""}${(m.reqs?.quests || []).filter(q => group.questDone(p, q) !== true).map(q => ` <span class="pill warn">Needs ${esc(q)}${group.questDone(p, q) === null ? "?" : ""}</span>`).join("")}${need}${altLine}</li>`;
     });
     return section("Training routes", `<ul class="plist">${items.join("")}</ul>`, { href: "#/training", text: "All skills" });
   }
