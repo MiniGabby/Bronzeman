@@ -144,7 +144,7 @@ export function mount(root, [nameParam]) {
   }
 
   function unlockSection(p) {
-    const list = (unlockGoals() || []).filter(g => g.reqs && (!Object.keys(g.reqs).length || g.who.some(w => w.p === p && w.gap === 0))).slice(0, 5);
+    const list = (unlockGoals() || []).filter(g => g.reqs && ((!Object.keys(g.reqs).length && !g.gate) || g.who.some(w => w.p === p && w.gap === 0))).slice(0, 5);
     return section("Unlocks you can get now", list.length
       ? `<ul class="plist">${list.map(g => {
         const open = openUnlocks.has(g.name);

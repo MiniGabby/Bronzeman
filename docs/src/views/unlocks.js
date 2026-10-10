@@ -124,12 +124,14 @@ export function mount(root) {
   // Who meets the skill levels to get one now, or who's closest.
   function whoCell(g) {
     if (!g.reqs) return `<span class="muted">Requirements not on the site yet</span>`;
-    if (!Object.keys(g.reqs).length) return `<span class="pill good">Anyone</span>`;
+    if (!Object.keys(g.reqs).length && !g.gate) return `<span class="pill good">Anyone</span>`;
     if (!g.who.length) return `<span class="muted">Loading stats…</span>`;
     const now = g.who.filter(w => w.gap === 0);
     if (now.length) return `<span class="pill good">Can do it now</span> ${esc(now.map(w => w.p.name).join(", "))}`;
     const c = g.who[0];
-    return `Closest: <b>${esc(c.p.name)}</b><div class="sub2">${esc(c.need.map(n => `${n.s} ${n.have}/${n.l}`).join(", "))}</div>`;
+    // Only a quest or diary is missing: nobody is "closest" in levels.
+    if (c.need.every(n => n.text)) return `<span class="muted">Nobody yet</span><div class="sub2">${esc(c.need.map(n => `Needs ${n.text}`).join(", "))}</div>`;
+    return `Closest: <b>${esc(c.p.name)}</b><div class="sub2">${esc(c.need.map(n => n.text ? `needs ${n.text}` : `${n.s} ${n.have}/${n.l}`).join(", "))}</div>`;
   }
 
   function render() { renderSummary(); renderGoals(); renderRows(); }

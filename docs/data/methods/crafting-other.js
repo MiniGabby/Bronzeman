@@ -38,7 +38,7 @@ const body = (colour, level, xp) => make(`${colour}-dhide-bodies`, `${colour} d'
   [{ name: `${colour[0].toUpperCase() + colour.slice(1)} dragon leather`, qty: 3 }, { name: "Thread", qty: 0.2 }], `${colour[0].toUpperCase() + colour.slice(1)} d'hide body`, xp, 1700, HIDE,
   { items: ["Needle"], tags: ["training"] });
 
-const STAFF = "Attach an orb to a battlestaff at any bank (14 of each). Fast and usually close to break-even. Battlestaves can be bought from Zaff in Varrock; orbs you charge yourself at an obelisk (see the tips).";
+const STAFF = "Attach an orb to a battlestaff at any bank (14 of each). Fast and usually close to break-even. Zaff in Varrock sells battlestaves if you have the easy Varrock Diary or have nearly finished What Lies Below; orbs you charge yourself at an obelisk (see the tips).";
 const staff = (el, level, xp) => make(`${el}-battlestaves`, `${el} battlestaves`, level,
   [{ name: "Battlestaff", qty: 1 }, { name: `${el[0].toUpperCase() + el.slice(1)} orb`, qty: 1 }], `${el[0].toUpperCase() + el.slice(1)} battlestaff`, xp, 2450, STAFF,
   { action: "staff", actionLabel: "Battlestaves per hour" });

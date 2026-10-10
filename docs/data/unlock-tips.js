@@ -61,7 +61,7 @@ export default {
   "Rune dart tip": "Smith one bar into 10 dart tips: Smithing 89 and The Tourist Trap, with a runite bar (see its tip if it's locked).",
 
   // Crafting
-  "Battlestaff": "Buy one from Zaff's Superior Staffs in Varrock: he sells battlestaves every day.",
+  "Battlestaff": "Buy one from Zaff's Superior Staffs in Varrock. You need the easy Varrock Diary for that (15 battlestaves a day from the barrel in his shop, 7,000 coins each), or most of the quest What Lies Below (then he has them in his normal stock).",
   "Unpowered orb": "Blow one yourself: a glassblowing pipe on molten glass (both unlocked), Crafting 46.",
   "Water orb": "Charge one yourself: blow an unpowered orb (Crafting 46), then cast Charge Water Orb on the Obelisk of Water (Taverley Dungeon) with Magic 56, 30 water runes and 3 cosmic runes.",
   "Earth orb": "Charge one yourself: blow an unpowered orb (Crafting 46), then cast Charge Earth Orb on the Obelisk of Earth (Edgeville Dungeon, in the Wilderness part) with Magic 60, 30 earth runes and 3 cosmic runes.",
@@ -93,6 +93,12 @@ export default {
 // Unfinished potions use their herb's entry (see src/core/unlockGoals.js).
 const DRUID_HERB = {};
 const SEED = farming => ({ Thieving: 38, Farming: farming });
+// Unlocks that need a quest or an achievement diary instead of (or on top of) skill levels:
+// the player needs ONE of `any` ("quest:<name>" or "diary:<Area> <Tier>"). `label` is shown when nobody has it.
+export const GATES = {
+  "Battlestaff": { any: ["diary:Varrock Easy", "quest:What Lies Below"], label: "the easy Varrock Diary or What Lies Below" }
+};
+
 export const REQS = {
   "Marrentill": DRUID_HERB, "Avantoe": DRUID_HERB, "Kwuarm": DRUID_HERB, "Cadantine": DRUID_HERB,
   "Lantadyme": DRUID_HERB, "Dwarf weed": DRUID_HERB,

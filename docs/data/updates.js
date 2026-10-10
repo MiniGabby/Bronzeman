@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Fixed: battlestaves need the easy Varrock Diary", link: "#/unlocked",
+    items: [
+      "The site said anyone can buy a battlestaff from Zaff in Varrock. That was wrong: you need the easy Varrock Diary (or most of the quest What Lies Below). The tip is corrected, and Battlestaff now only shows under \"Unlocks you can get now\" for players who have one of the two."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Player page: see which methods an unlock opens", link: "#/player",
     items: [
       "Under \"Unlocks you can get now\", click \"opens 4 methods\" to see which methods they are. Each one links to its skill page and shows whether you have the levels for it, and whether it still needs another locked item."

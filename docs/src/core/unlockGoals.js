@@ -2,12 +2,18 @@
 // One unlock opens GE buying for all six of us, so these are the best "first ones" to go and get.
 import METHODS from "../../data/methods/index.js";
 import GUIDES from "../../data/skill-guides.js";
-import { REQS } from "../../data/unlock-tips.js";
+import { REQS, GATES } from "../../data/unlock-tips.js";
 import { tipFor } from "./unlockTips.js";
 import * as unlocks from "./unlocks.js";
 import * as group from "./players.js";
 
 const reqsByName = Object.fromEntries(Object.entries(REQS).map(([k, v]) => [k.toLowerCase(), v]));
+const gatesByName = Object.fromEntries(Object.entries(GATES).map(([k, v]) => [k.toLowerCase(), v]));
+// Does the player have one of a gate's quests or diaries? Unknown (no WikiSync data) counts as no.
+const passes = (p, gate) => gate.any.some(x => {
+  const [kind, name] = [x.slice(0, x.indexOf(":")), x.slice(x.indexOf(":") + 1)];
+  return kind === "quest" ? group.questDone(p, name) === true : group.diaryDone(p, name) === true;
+});
 
 /** Skill levels needed to get one, or null when unknown. Unfinished potions use their herb. */
 export function reqsFor(name) {
@@ -45,11 +51,15 @@ export function goals() {
   }
   const list = [...byItem.values()].map(e => {
     const reqs = reqsFor(e.name);
+    const gate = gatesByName[e.name.toLowerCase()] || null;
     const who = reqs && group.loaded() ? group.all().filter(p => p.skills).map(p => {
       const need = Object.entries(reqs).filter(([s, l]) => group.level(p, s) < l).map(([s, l]) => ({ s, have: group.level(p, s), l }));
-      return { p, gap: Math.max(0, ...need.map(n => n.l - n.have)), need };
+      // A missing quest or diary counts as "not now": a gap of 1, with a text instead of levels.
+      const blocked = gate && !passes(p, gate);
+      if (blocked) need.push({ text: gate.label });
+      return { p, gap: Math.max(blocked ? 1 : 0, ...need.filter(n => !n.text).map(n => n.l - n.have)), need };
     }).sort((a, b) => a.gap - b.gap) : [];
-    return { ...e, tip: tipFor(e.name), reqs, who };
+    return { ...e, tip: tipFor(e.name), reqs, gate, who };
   });
   // Most methods first, then route steps, then the easiest to get.
   return list.sort((a, b) => (b.methods.length - a.methods.length) || (b.steps - a.steps) || ((a.who[0]?.gap ?? 99) - (b.who[0]?.gap ?? 99)));
