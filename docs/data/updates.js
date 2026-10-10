@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-11", title: "Blast Furnace: coal bag switch", link: "#/money",
+    items: [
+      "The Blast Furnace cards for steel, mithril, adamantite and runite bars have a \"Coal bag\" checkbox. Untick it if you don't have one: you then carry 28 items per trip instead of 54, so the card shows about half the bars per hour (2,590 steel or 1,810 mithril) with the profit, XP and cash needed for an hour to match.",
+      "The switch is shared: untick it on one card and all four follow, as do the Money makers list and the Smithing routes. The site remembers it in your browser. Without a coal bag steel bars still make about 730K an hour at today's prices."
+    ]
+  },
+  {
     date: "2026-10-11", title: "Method cards: what you need for one hour", link: "#/money",
     items: [
       "Every method card that costs something now has a block under the item table: what to have ready for one hour. For example Blast Furnace steel bars: \"To do this for one hour (5,000 bars) you need 1,147,000 gp\", with 5,000 iron ore, 5,000 coal and the 72,000 coins for the coffer listed underneath.",

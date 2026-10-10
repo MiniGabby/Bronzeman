@@ -44,7 +44,7 @@ export function createMethodCard(m) {
     <div class="mhead">
       <div>
         <h2><a href="${esc(m.guide || "#")}" target="_blank" rel="noopener">${esc(m.name)}</a></h2>
-        <div class="meta">${reqList(m).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+        <div class="meta" data-f="meta"></div>
       </div>
       <div class="hero"><span class="big num" data-f="hero"></span><span class="sub">profit per ${unit}</span></div>
     </div>
@@ -57,7 +57,8 @@ export function createMethodCard(m) {
         <div class="field">
           <label for="aph-${m.id}">${esc(m.actionLabel || "Actions per hour")}</label>
           <input id="aph-${m.id}" type="number" min="0" step="${H === 24 ? "any" : 10}" inputmode="${H === 24 ? "decimal" : "numeric"}">
-          <div class="presets">${(m.presets || []).map(([l, v]) => `<button type="button" data-v="${v}">${esc(l)} · ${nf.format(v)}</button>`).join("")}</div>
+          <div class="presets" data-f="presets"></div>
+          ${m.toggle ? `<label class="check cardtoggle"><input type="checkbox" data-f="toggle"> ${esc(m.toggle.label)}</label>` : ""}
         </div>
         <dl class="kv" data-f="kv"></dl>
         <div class="field"><span class="label">Group</span><div class="chips" data-f="group"></div></div>
@@ -69,10 +70,7 @@ export function createMethodCard(m) {
   const rateInput = el.querySelector(`#aph-${m.id}`);
   rateInput.value = calc.getRate(m);
   rateInput.addEventListener("input", () => calc.setRate(m, rateInput.value));
-  el.querySelectorAll(".presets button").forEach(b => b.addEventListener("click", () => {
-    rateInput.value = b.dataset.v;
-    calc.setRate(m, b.dataset.v);
-  }));
+  el.querySelector('[data-f="toggle"]')?.addEventListener("change", e => calc.setToggle(m, e.target.checked));
   el.addEventListener("change", e => {
     const t = e.target;
     if (!t.classList.contains("pin")) return;
@@ -81,6 +79,8 @@ export function createMethodCard(m) {
   });
   el.addEventListener("click", e => {
     const t = e.target;
+    const preset = t.closest(".presets button");
+    if (preset) { rateInput.value = preset.dataset.v; calc.setRate(m, preset.dataset.v); return; }
     if (t.classList.contains("reset")) prices.setOwn(t.dataset.id, t.dataset.side, 0);
   });
 
@@ -91,6 +91,13 @@ export function createMethodCard(m) {
     hero.className = "big num " + cls(profitP);
     hero.title = gp(profitP) + " gp";
     if (document.activeElement !== rateInput) rateInput.value = calc.getRate(m);
+    // The requirement tags, the preset buttons and the switch follow the switch's position.
+    const on = calc.toggleOn(m);
+    el.querySelector('[data-f="meta"]').innerHTML = reqList(m).filter(t => on || t !== m.toggle?.item).map(t => `<span class="tag">${esc(t)}</span>`).join("")
+      + (m.toggle && !on ? `<span class="tag off">No ${esc(m.toggle.label.toLowerCase())}</span>` : "");
+    el.querySelector('[data-f="presets"]').innerHTML = (m.presets || []).map(([l, v]) => `<button type="button" data-v="${calc.scaled(m, v)}">${esc(l)} · ${nf.format(calc.scaled(m, v))}</button>`).join("");
+    const tg = el.querySelector('[data-f="toggle"]');
+    if (tg) tg.checked = on;
 
     const mult = perHourTable ? c.perHour * H : 1;
     const row = (r, isOut) => {
@@ -179,6 +186,7 @@ export function createMethodCard(m) {
     }
     const thin = [...c.ins, ...c.outs].find(r => r.it.vol && r.qty * c.perHour > r.it.vol);
     if (thin) notes.push(`<div class="note warn">You need ${gp(thin.qty * c.perHour)} <b>${esc(thin.it.name)}</b> per hour, but only ${gp(thin.it.vol)} traded in the last hour. Expect slower fills.</div>`);
+    if (m.toggle && !calc.toggleOn(m) && m.toggle.note) notes.push(`<div class="note warn">${esc(m.toggle.note)}</div>`);
     if (m.note) notes.push(`<div class="note">${esc(m.note)}</div>`);
     el.querySelector('[data-f="notes"]').innerHTML = notes.join("");
   }

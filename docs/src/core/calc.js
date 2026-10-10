@@ -12,7 +12,27 @@ export const onChange = fn => (listeners.add(fn), () => listeners.delete(fn));
  * Actions per hour for a method: the viewer's own value, or the method's default.
  * Methods with per: "day" (farm runs) count per day instead: their default is actionsPerDay.
  */
-export const getRate = m => Number(rates[m.id] ?? (m.per === "day" ? m.actionsPerDay : m.actionsPerHour)) || 0;
+export const getRate = m => {
+  if (m.toggle) toggleIds.add(m.id);
+  return Number(rates[m.id] ?? scaled(m, m.per === "day" ? m.actionsPerDay : m.actionsPerHour)) || 0;
+};
+
+// A method can have an on/off switch for a piece of equipment that changes its pace, shared by every
+// method with the same key: toggle: { key: "coalBag", label: "Coal bag", factor: 28 / 54, item, note }.
+// Switched off, the default pace and the preset buttons are multiplied by `factor`.
+const toggles = store.get("toggles", {});
+const toggleIds = new Set();
+export const toggleOn = m => !m.toggle || (toggles[m.toggle.key] ?? true);
+/** A pace (the default or a preset) as it is with the method's switch in its current position. */
+export const scaled = (m, value) => (toggleOn(m) ? value : Math.round(value * m.toggle.factor / 10) * 10);
+export function setToggle(m, on) {
+  toggles[m.toggle.key] = !!on;
+  store.set("toggles", toggles);
+  // Paces typed in or picked before belong to the other position: go back to the default.
+  for (const id of toggleIds) delete rates[id];
+  store.set("aph", rates);
+  listeners.forEach(fn => fn());
+}
 /** 24 for methods counted per day, 1 for the rest: multiply per-hour numbers by it to show them. */
 export const periodHours = m => (m.per === "day" ? 24 : 1);
 export function setRate(m, value) {

@@ -24,6 +24,11 @@ const anvil = (id, name, level, bar, product, bars, xpPerBar, perHour, note) => 
   note: `Use the anvil next to Varrock west bank (or Prifddinas if you have it). ${note} The GE buys only a few of these per hour; whatever doesn't sell can be high alched (see the Alchemy tab).`
 });
 
+// Without a coal bag you carry 28 items per trip instead of 27 in the inventory plus 27 coal in the bag,
+// so the same number of trips gives 28/54 of the bars. Gold bars use no coal, so they have no switch.
+const COAL_BAG = { key: "coalBag", label: "Coal bag", factor: 28 / 54, item: "Coal bag",
+  note: "Without a coal bag: you carry 28 items per trip instead of 54, so you make about half the bars per hour. The coffer costs the same 72K per hour, so it weighs twice as heavily. The coal bag costs 100 golden nuggets at the Motherlode Mine (about 5 to 6 hours of mining there)." };
+
 const blast = (id, name, level, ores, bar, xp, perHour, extra = {}) => ({
   id: `bf-${id}`,
   name: `Blast Furnace ${name}`,
@@ -37,6 +42,7 @@ const blast = (id, name, level, ores, bar, xp, perHour, extra = {}) => ({
   inputs: ores,
   outputs: [{ name: bar, qty: 1 }],
   fees: BF_FEES,
+  ...(ores.some(o => o.name === "Coal") ? { toggle: COAL_BAG } : {}),
   xp: { Smithing: xp },
   note: `${extra.note ? extra.note + " " : ""}${BF_NOTE}`,
   ...(extra.routeAlt === false ? { routeAlt: false } : {})

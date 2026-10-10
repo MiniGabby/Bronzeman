@@ -78,6 +78,7 @@ Tips:
 - **Training-only methods:** for methods like "Burning maple logs" that you do for XP, not money, use `tags: ["training"]`. They show only on the skill training page, and their cost per XP shows as a negative gp/XP.
 - **Different levels:** when a method changes a lot with level (more XP per action, a better fish), add a separate method per level band, e.g. `aerial-fishing-43` and `aerial-fishing-56`, each with its own `reqs.skills` level.
 - **Runs you do once or twice a day** (farm runs): add `per: "day"` and give `actionsPerDay` instead of `actionsPerHour`. The card, the routes and the tables then show XP, cost and profit per day and the time in days. A fee per action is `fees: [{ label, each: 200 }]`. See `data/methods/farming.js`.
+- **A switch for a piece of equipment** (like the coal bag at the Blast Furnace): give the method `toggle: { key, label, factor, item, note }`. The card gets a checkbox; switched off, the default pace and the preset buttons are multiplied by `factor`. Methods with the same `key` share the switch. See `data/methods/smithing.js`.
 - **Rare drops:** use fractional quantities (`qty: 1/130`) and `ledger: "hour"` to show the item table per hour.
 
 ## Updating unlocked items
