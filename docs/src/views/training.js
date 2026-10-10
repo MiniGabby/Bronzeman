@@ -196,10 +196,17 @@ function mountSkill(root, skill) {
     let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true, anyDaily = false;
 
     const steps = steps0.map(st => {
-      // An alternative step (alternative: true) is another way through the same levels as the step above it:
-      // it gets its own row, but doesn't count towards the route's total and never carries the "You" mark.
-      const here = !st.alternative && lvlNow >= st.from && lvlNow < st.to;
-      const lv = `<td class="num">${st.from}–${st.to}${here ? ` <span class="pill good">You</span>` : ""}${st.alternative ? `<div><span class="pill">Alternative</span></div>` : ""}</td>`;
+      // An alternative step (alternative: true, or a label such as "Alongside") is another way through
+      // levels the route already covers: it gets its own row, but doesn't count towards the route's total
+      // and never carries the "You" mark. A tip step ({ tip, url, note }) is advice without a method.
+      const side = st.alternative || st.tip ? (typeof st.alternative === "string" ? st.alternative : st.tip ? "Alongside" : "Alternative") : "";
+      const here = !side && lvlNow >= st.from && lvlNow < st.to;
+      const lv = `<td class="num">${st.from}–${st.to}${here ? ` <span class="pill good">You</span>` : ""}${side ? `<div><span class="pill">${esc(side)}</span></div>` : ""}</td>`;
+      if (st.tip) {
+        return `<tr class="altrow">${lv}
+          <td class="wrapcell"><a href="${esc(st.url || "#")}" target="_blank" rel="noopener">${esc(st.tip)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
+          <td class="r muted">–</td><td class="r muted">–</td><td class="r muted">–</td><td class="wrapcell"><span class="muted">–</span></td></tr>`;
+      }
       if (st.quest) {
         return `<tr class="${here ? "here" : ""}">${lv}
           <td class="wrapcell"><a href="${esc(st.url || "#")}" target="_blank" rel="noopener">Quest: ${esc(st.quest)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>

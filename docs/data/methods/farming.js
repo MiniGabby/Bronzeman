@@ -34,8 +34,8 @@ const TREES = {
 };
 
 const WHERE = {
-  tree: "Tree patches (5 without any requirement): Lumbridge, Varrock, Falador Park, Taverley and the Tree Gnome Stronghold. A sixth is in the Farming Guild from 65.",
-  fruit: "Fruit tree patches (4 without any requirement): Tree Gnome Stronghold, Tree Gnome Village, Catherby and Brimhaven. More in Lletya, in Varlamore and in the Farming Guild (85).",
+  tree: "Tree patches: Lumbridge, Varrock, Falador Park, Taverley and the Tree Gnome Stronghold (no requirements), and from Farming 65 a sixth in the west wing of the Farming Guild.",
+  fruit: "Fruit tree patches: Tree Gnome Stronghold, Tree Gnome Village, Catherby and Brimhaven (no requirements), and from Farming 85 a fifth in the north wing of the Farming Guild. More in Lletya and Varlamore.",
   other: "The calquat patch is north of Tai Bwo Wannai on Karamja; the celastrus patch is in the Farming Guild (85)."
 };
 
@@ -149,12 +149,14 @@ export default [
   run("run-45", 45, 50, [[5, "maple"], [4, "curry"]]),
   run("run-51", 51, 56, [[5, "maple"], [4, "pineapple"]]),
   run("run-57", 57, 59, [[5, "maple"], [4, "papaya"]]),
-  run("run-60", 60, 67, [[5, "yew"], [4, "papaya"]]),
-  run("run-68", 68, 71, [[5, "yew"], [4, "palm"]]),
-  run("run-72", 72, 74, [[5, "yew"], [4, "palm"], [1, "calquat"]]),
-  run("run-75", 75, 80, [[5, "magic"], [4, "palm"], [1, "calquat"]]),
-  run("run-81", 81, 84, [[5, "magic"], [4, "dragonfruit"], [1, "calquat"]]),
-  run("run-85", 85, 99, [[5, "magic"], [4, "dragonfruit"], [1, "calquat"], [1, "celastrus"]],
+  run("run-60", 60, 64, [[5, "yew"], [4, "papaya"]]),
+  // From 65 the Farming Guild's tree patch is counted (6 trees), from 85 its fruit tree patch too (5 fruit trees).
+  run("run-65", 65, 67, [[6, "yew"], [4, "papaya"]]),
+  run("run-68", 68, 71, [[6, "yew"], [4, "palm"]]),
+  run("run-72", 72, 74, [[6, "yew"], [4, "palm"], [1, "calquat"]]),
+  run("run-75", 75, 80, [[6, "magic"], [4, "palm"], [1, "calquat"]]),
+  run("run-81", 81, 84, [[6, "magic"], [4, "dragonfruit"], [1, "calquat"]]),
+  run("run-85", 85, 99, [[6, "magic"], [5, "dragonfruit"], [1, "calquat"], [1, "celastrus"]],
     { note: "The celastrus bark you can harvest isn't counted. From 90 a redwood tree in the Farming Guild adds 22,680 XP every 4 to 5 days." }),
 
   run("fruit-27", 27, 32, [[4, "apple"]], { label: "Fruit tree run" }),
@@ -165,7 +167,8 @@ export default [
   run("fruit-57", 57, 67, [[4, "papaya"]], { label: "Fruit tree run" }),
   run("fruit-68", 68, 71, [[4, "palm"]], { label: "Fruit tree run" }),
   run("fruit-72", 72, 80, [[4, "palm"], [1, "calquat"]], { label: "Fruit tree run" }),
-  run("fruit-81", 81, 99, [[4, "dragonfruit"], [1, "calquat"]], { label: "Fruit tree run" }),
+  run("fruit-81", 81, 84, [[4, "dragonfruit"], [1, "calquat"]], { label: "Fruit tree run" }),
+  run("fruit-85", 85, 99, [[5, "dragonfruit"], [1, "calquat"]], { label: "Fruit tree run" }),
 
   hardwood("teak", 35, 0.96, "a little over 3 days"),
   hardwood("mahogany", 55, 0.84, "about 3.5 days"),
@@ -184,6 +187,23 @@ export default [
   herb("lantadyme", "lantadyme", 73, 134.5, 151.5, "Lantadyme seed", "Grimy lantadyme"),
   herb("dwarf-weed", "dwarf weed", 79, 170.5, 192, "Dwarf weed seed", "Grimy dwarf weed"),
   herb("torstol", "torstol", 85, 199.5, 224.5, "Torstol seed", "Grimy torstol"),
+
+  {
+    id: "farm-hespori",
+    name: "Hespori (Farming Guild)",
+    tags: ["training"],
+    guide: "https://oldschool.runescape.wiki/w/Hespori",
+    reqs: { skills: { Farming: 65 }, items: ["Hespori seed", "Spade, rake and seed dibber", "Slash weapon or fire spells"] },
+    per: "day",
+    action: "kill",
+    actionLabel: "Hespori per day",
+    actionsPerDay: 0.85,
+    presets: [["As soon as it's grown", 0.85], ["Every other day", 0.5], ["Once a week", 0.14]],
+    inputs: [],
+    outputs: [],
+    xp: { Farming: 12600 },
+    note: "A boss you grow yourself: plant a hespori seed in the cave in the west wing of the Farming Guild (Farming 65, a boost works), wait 22 to 32 hours, and fight it when you dig it up. It's a short solo fight: it's weak to slash weapons and to fire spells (double damage), and Protect from Missiles helps. Harvesting it afterwards gives 12,600 Farming XP for a couple of minutes of play, plus seeds: among them the anima seeds that make all your patches grow faster, yield more or get diseased less, and a 1 in 35 chance of the bottomless compost bucket. Hespori seeds can't be bought: you get them now and then while harvesting any patch, and from farming contracts. Nothing here costs coins, so do it whenever you have a seed."
+  },
 
   tithe(34, "34–53", "golovanova", 25000),
   tithe(54, "54–73", "bologano", 58000),

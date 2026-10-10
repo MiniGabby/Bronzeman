@@ -75,7 +75,7 @@ export function mount(root, [nameParam]) {
       const routes = g.routes || [{ key: "main", route: g.route }];
       // The route picked on the training page; otherwise the first route whose current step this
       // player can do (no quest that's missing or unknown, everything unlocked).
-      const stepFor = r => stepsOf(r, skill.name, p).find(s => lvl >= s.from && lvl < s.to);
+      const stepFor = r => stepsOf(r, skill.name, p).find(s => !s.alternative && !s.tip && lvl >= s.from && lvl < s.to);
       const doable = r => { const st = stepFor(r), m = st && METHODS.find(x => x.id === st.method);
         return !m || (!(m.reqs?.quests || []).some(q => group.questDone(p, q) !== true) && !(unlocks.lockedInputs(m) || []).length); };
       const picked = store.get("route:" + key, null);

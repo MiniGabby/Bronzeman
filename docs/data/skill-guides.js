@@ -3,8 +3,9 @@
 // GP/XP, time and cost, checks unlocks, and suggests the best unlocked alternative.
 // A skill has either one `route`, or several `routes` (shown as tabs), each { key, name, intro, route }.
 // A step is { from, to, method } or a quest step { from, to, quest, url, note }.
-// A method step with alternative: true is another way through the same levels as the step above it:
-// it gets its own row in the table and isn't counted in the route's total.
+// A method step with alternative: true (or a label, e.g. alternative: "Alongside") is another way through
+// levels the route already covers: it gets its own row in the table and isn't counted in the route's total.
+// A tip step { from, to, tip, url, note } is advice without a method, shown the same way.
 const KNIGHTS_SWORD = {
   from: 1, to: 29, quest: "The Knight's Sword", url: "https://oldschool.runescape.wiki/w/The_Knight%27s_Sword",
   note: "12,725 Smithing XP: level 1 to 29 in one go. Needs Mining 10, 2 iron bars, a redberry pie, and one blurite ore that you mine in the Asgarnian Ice Dungeon."
@@ -468,11 +469,11 @@ export default {
     ]
   },
   farming: {
-    intro: "Farming works differently from every other skill: you plant, go and do something else, and come back when it has grown. So the numbers here are per DAY, not per hour: a run takes 5 to 10 minutes of play, once a day. Tree runs give by far the most XP; herb runs earn money. Do both, plus hardwood trees on Fossil Island, and the XP adds up. Quests skip the start: the Goblin generals part of Recipe for Disaster, Fairytale I, Forgettable Tale, The Garden of Death, Garden of Tranquillity, Enlightened Journey and My Arm's Big Adventure together give 32,500 XP (level 38). Bronzeman: almost every sapling is still locked. You only need one of each: plant the seed in a filled plant pot, water it and wait a few minutes. Tree seeds come from bird nests (bird house runs), Wintertodt crates and farming contracts in the Farming Guild (45). The Tithe Farm (34) is the only way to train without waiting.",
+    intro: "Farming works differently from every other skill: you plant, go and do something else, and come back when it has grown. So the numbers here are per DAY, not per hour: a run takes 5 to 10 minutes of play, once a day. Tree runs give by far the most XP; herb runs earn money. Do both, plus hardwood trees on Fossil Island, and the XP adds up. Quests skip the start: the Goblin generals part of Recipe for Disaster, Fairytale I, Forgettable Tale, The Garden of Death, Garden of Tranquillity, Enlightened Journey and My Arm's Big Adventure together give 32,500 XP (level 38). Bronzeman: almost every sapling is still locked. You only need one of each: plant the seed in a filled plant pot, water it and wait a few minutes. Tree seeds come from bird nests (bird house runs), Wintertodt crates and farming contracts in the Farming Guild (45). The Tithe Farm (34) is the only way to train without waiting, and the Farming Guild adds a tree patch at 65, a fruit tree patch at 85 and the Hespori boss at 65: all three are on the routes below.",
     routes: [
       {
         key: "trees", name: "Tree runs",
-        intro: "The fastest route: once a day, plant the best tree in the 5 tree patches and the best fruit tree in the 4 fruit tree patches, and pay the farmers to look after them. About 15K XP per day at 33, 50K at 60 and 170K from 85. Yew and magic saplings are expensive; if that hurts, plant the fruit trees only (next tab).",
+        intro: "The fastest route: once a day, plant the best tree in the 5 tree patches (6 from 65, with the Farming Guild) and the best fruit tree in the 4 fruit tree patches (5 from 85), and pay the farmers to look after them. About 15K XP per day at 33, 50K at 60 and 170K from 85. Yew and magic saplings are expensive; if that hurts, plant the fruit trees only (next tab).",
         route: [
           { from: 1, to: 15, method: "farm-bagged-plants", note: "Or the quests: Fairytale I alone gives 3,500 XP (level 17)." },
           { from: 15, to: 27, method: "farm-run-15" },
@@ -484,12 +485,18 @@ export default {
           { from: 45, to: 51, method: "farm-run-45" },
           { from: 51, to: 57, method: "farm-run-51" },
           { from: 57, to: 60, method: "farm-run-57" },
-          { from: 60, to: 68, method: "farm-run-60" },
+          { from: 60, to: 65, method: "farm-run-60" },
+          { from: 65, to: 68, method: "farm-run-65", note: "From 65 the tree patch in the Farming Guild is counted too." },
           { from: 68, to: 72, method: "farm-run-68" },
           { from: 72, to: 75, method: "farm-run-72" },
           { from: 75, to: 81, method: "farm-run-75" },
           { from: 81, to: 85, method: "farm-run-81" },
-          { from: 85, to: 99, method: "farm-run-85" }
+          { from: 85, to: 99, method: "farm-run-85", note: "From 85 the fruit tree and celastrus patches in the Farming Guild are counted too." },
+          { from: 34, to: 54, method: "farm-tithe-34", alternative: "Between runs" },
+          { from: 54, to: 74, method: "farm-tithe-54", alternative: "Between runs" },
+          { from: 74, to: 99, method: "farm-tithe-74", alternative: "Between runs" },
+          { from: 45, to: 99, tip: "Farming contracts (Farming Guild)", url: "https://oldschool.runescape.wiki/w/Farming_contract", note: "Guildmaster Jane in the Farming Guild asks you to grow one crop in the guild's patches and pays with a seed pack: the best source of tree, fruit tree and herb seeds, and of hespori seeds. Easy contracts from 45, medium from 65, hard from 85. The XP is whatever the crop gives; take one every time you pass through." },
+          { from: 65, to: 99, method: "farm-hespori", alternative: "Alongside" }
         ]
       },
       {
@@ -506,7 +513,13 @@ export default {
           { from: 57, to: 68, method: "farm-fruit-57" },
           { from: 68, to: 72, method: "farm-fruit-68" },
           { from: 72, to: 81, method: "farm-fruit-72" },
-          { from: 81, to: 99, method: "farm-fruit-81" }
+          { from: 81, to: 85, method: "farm-fruit-81" },
+          { from: 85, to: 99, method: "farm-fruit-85", note: "From 85 the fruit tree patch in the Farming Guild is counted too." },
+          { from: 34, to: 54, method: "farm-tithe-34", alternative: "Between runs" },
+          { from: 54, to: 74, method: "farm-tithe-54", alternative: "Between runs" },
+          { from: 74, to: 99, method: "farm-tithe-74", alternative: "Between runs" },
+          { from: 45, to: 99, tip: "Farming contracts (Farming Guild)", url: "https://oldschool.runescape.wiki/w/Farming_contract", note: "Guildmaster Jane in the Farming Guild asks you to grow one crop in the guild's patches and pays with a seed pack: the best source of tree, fruit tree and herb seeds, and of hespori seeds. Easy contracts from 45, medium from 65, hard from 85. The XP is whatever the crop gives; take one every time you pass through." },
+          { from: 65, to: 99, method: "farm-hespori", alternative: "Alongside" }
         ]
       },
       {
@@ -520,7 +533,19 @@ export default {
           { from: 32, to: 38, method: "farm-herb-ranarr" },
           { from: 38, to: 62, method: "farm-herb-toadflax", note: "Ranarr, irit, avantoe and kwuarm are close: check the table." },
           { from: 62, to: 85, method: "farm-herb-snapdragon", note: "Only when the seed is cheap enough; otherwise toadflax, kwuarm or cadantine." },
-          { from: 85, to: 99, method: "farm-herb-torstol" }
+          { from: 85, to: 99, method: "farm-herb-torstol" },
+          { from: 45, to: 99, tip: "Farming contracts (Farming Guild)", url: "https://oldschool.runescape.wiki/w/Farming_contract", note: "Guildmaster Jane pays for each contract with a seed pack, which often holds herb seeds. Easy contracts from 45, medium from 65, hard from 85. The guild also has an extra herb patch from 65." }
+        ]
+      },
+      {
+        key: "tithe", name: "Tithe Farm (no waiting)",
+        intro: "For when you want to train Farming right now instead of waiting for trees: the Tithe Farm minigame in Hosidius, from 34. It costs nothing, and the points buy the farmer's outfit (2.5% more Farming XP), the seed box and the herb sack. Per day it's far slower than tree runs, so the best use is in between your runs. The time shown here is hours of play, not days.",
+        route: [
+          { from: 1, to: 15, method: "farm-bagged-plants", note: "Or the quests: Fairytale I alone gives 3,500 XP (level 17)." },
+          { from: 15, to: 34, method: "farm-bagged-plants", note: "Expensive this far. Cheaper: do tree runs or the Farming quests until 34." },
+          { from: 34, to: 54, method: "farm-tithe-34" },
+          { from: 54, to: 74, method: "farm-tithe-54" },
+          { from: 74, to: 99, method: "farm-tithe-74" }
         ]
       }
     ]

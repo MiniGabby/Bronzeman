@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Farming: the Farming Guild, Hespori and the Tithe Farm on the routes", link: "#/training/farming",
+    items: [
+      "The tree runs now count the Farming Guild's patches: a sixth tree from 65 and a fifth fruit tree from 85. That's about 7K more XP per day from 65 and 32K more from 85.",
+      "New method: Hespori, the boss you grow in the Farming Guild from 65. 12,600 Farming XP for a short fight every day or so, plus seeds. You need a hespori seed, which you get from harvesting and from farming contracts.",
+      "The Tree runs and Fruit trees routes now have extra rows under the main steps for what you do next to your runs: the Tithe Farm between runs (from 34), farming contracts (from 45) and Hespori (from 65). These rows aren't counted in the route's total.",
+      "There's also a new route tab, Tithe Farm (no waiting), for training Farming without waiting for anything to grow."
+    ]
+  },
+  {
     date: "2026-10-10", title: "75 new unlocks (756 in total)", link: "#/unlocked",
     items: [
       "Teak plank (Mini Gabby): adept Mahogany Homes contracts are now open, about 140K Construction XP per hour from level 50 at a third of the usual cost per XP.",
