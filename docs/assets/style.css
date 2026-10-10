@@ -39,6 +39,12 @@ h1 .coin{display:inline-block;width:.62em;height:.62em;border-radius:50%;backgro
 .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px}
 .seg button{font:600 13px var(--sans);border:0;background:transparent;color:var(--ink-2);padding:6px 10px;border-radius:6px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.catchsum{display:flex;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.catchsum .big{font-size:34px;font-weight:700;line-height:1}.catchsum>div:last-child{flex:1}
+.catchsum .bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin-top:8px}.catchsum .bar span{display:block;height:100%;background:var(--good)}
+.catchtable .sect td{background:var(--surface-2);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:6px 14px}
+.catchtable tr.crossed td{color:var(--ink-3)}.catchtable tr.crossed .skillname{text-decoration:line-through}.catchtable tr.crossed a{color:var(--ink-3);font-weight:500}
+.catchtable .total td{font-weight:600}
 .simplebtn{font:600 13px var(--sans);border:1px solid var(--line);background:var(--surface);color:var(--ink-2);padding:9px 12px;border-radius:8px;cursor:pointer}
 .simplebtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .simplehelp{margin:0;font-size:17px;color:var(--ink);max-width:60ch}

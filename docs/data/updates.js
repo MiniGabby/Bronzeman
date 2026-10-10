@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "New tab: Arcanekitten", link: "#/arcanekitten",
+    items: [
+      "lil oldkitty usually plays on arcanekitten, an account that already had levels before the group started. Once someone in the group is a higher level than arcanekitten in every skill, arcanekitten joins the group and lil oldkitty leaves.",
+      "The new tab shows arcanekitten's level in every skill next to the highest level in the group and who has it. A skill is crossed off as soon as the group is higher; the skills still to do are listed closest first, with how many levels to go."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Fixed: battlestaves need the easy Varrock Diary", link: "#/unlocked",
     items: [
       "The site said anyone can buy a battlestaff from Zaff in Varrock. That was wrong: you need the easy Varrock Diary (or most of the quest What Lies Below). The tip is corrected, and Battlestaff now only shows under \"Unlocks you can get now\" for players who have one of the two."
