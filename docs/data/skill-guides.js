@@ -165,7 +165,7 @@ export default {
     ]
   },
   cooking: {
-    intro: "Cooking is mostly cooking fish on a range next to a bank. Cooked fish usually sells for about what the raw fish costs, so it's cheap. Jugs of wine (from 35) are much faster. The numbers below don't count burnt food: expect to burn a fair share of each new fish until you're 10 to 20 levels above it.",
+    intro: "Cooking is mostly cooking fish on a range next to a bank. Cooked fish usually sells for about what the raw fish costs, so it's cheap. Jugs of wine (from 35) are much faster. Burnt food is counted in the numbers below, for the fire or range you pick at the top. On a range about 73% of sharks and anglerfish cook at the level you unlock them, and it's noticeably worse on a fire.",
     routes: [
       {
         key: "fastest", name: "Fastest",
@@ -181,7 +181,7 @@ export default {
       },
       {
         key: "cheapest", name: "Cheapest", prefer: "cheap",
-        intro: "Cook fish and sell them. Often this costs almost nothing or earns a bit, at 50K to 280K XP per hour. Burnt fish aren't counted, so the real cost is higher at the start of every fish.",
+        intro: "Cook fish and sell them. Often this costs almost nothing or earns a bit, at 50K to 280K XP per hour. Burnt fish are counted, so every fish gets cheaper as you level.",
         route: [
           { from: 1, to: 5, method: "cook-shrimps" },
           { from: 5, to: 15, method: "cook-herring" },

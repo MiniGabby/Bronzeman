@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-11", title: "Cooking: exact burn chances", link: "#/training/cooking",
+    items: [
+      "The Cooking page used an estimate for how much burns: 50% cooked at the level you unlock a fish, rising to 100%. It now uses the game's exact chance for every fish, on a fire, a range and with cooking gauntlets, from the wiki.",
+      "For most fish it changes little. For the high fish it changes a lot: sharks cook 73% of the time on a range at level 80 (64% on a fire, 87% with gauntlets), not 50%, and anglerfish 73% at 84. So sharks on a range break even within a few levels of 80 at today's prices (the exact level moves with the prices of raw and cooked sharks), instead of losing a lot of money for many levels as the page showed.",
+      "The \"Show per level\" tables, the routes, Best of both and the Player page all use the new numbers. For sharks and anglerfish without gauntlets the page now says how many cook at 99 (91% and 86% on a range)."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Player page: exactly what each training step takes", link: "#/player",
     items: [
       "Under every skill in \"Training routes\" there's now a line with exactly what it takes to reach the step's goal from your own XP: how many actions, every item to buy and how many, what it costs or earns, and how long it takes. For example: \"To reach 55 (93,211 XP to go): 933 potions · buy 933 Irit potion (unf), 933 Eye of newt · costs 300,426 gp · 22 min\".",

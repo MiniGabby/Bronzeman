@@ -95,7 +95,7 @@ function mountSkill(root, skill) {
       <label class="check"><input type="checkbox" id="t-gauntlets"> Cooking gauntlets</label>` : ""}
       <div class="goal" data-f="goal"></div>
     </form>
-    ${methods.some(m => m.burn) ? `<p class="fine">Burnt food is counted: the success chance rises from about 50% at a fish's level requirement to 100% at its stop-burn level (from the wiki). Route steps use the average over their levels, the table and cards use your current level. Gauntlets only help with lobsters, swordfish, monkfish, sharks and anglerfish.</p>` : ""}
+    ${methods.some(m => m.burn) ? `<p class="fine">Burnt food is counted, with the game's exact chance to cook each fish at each level, on a fire or a range (from the wiki). Route steps use the average over their levels, the table and cards use your current level. Gauntlets help with lobsters, monkfish, sharks and anglerfish, and on a fire with swordfish.</p>` : ""}
     <section class="section" data-f="route" hidden></section>
     <h2 class="pagetitle small">All ${esc(skill.name)} methods</h2>
     <section class="board"><table>

@@ -2,36 +2,36 @@
 // and where they cook (fire or range, with or without cooking gauntlets). The chosen setting is stored
 // in the visitor's browser.
 //
-// m.burn = { fire, range, gauntletsFire, gauntletsRange, at99 }: the level where you stop burning on
-// each source (null = you never stop), and for "never" the success chance at level 99.
-// Between the requirement level and the stop-burn level the chance rises in a straight line (that's
-// how the game works); the chance AT the requirement level isn't published per fish, so we use
-// START below, an estimate.
+// m.burn = { fire: [low, high], range: [low, high], gauntlets: [low, high] }: the game's own numbers for
+// each fish, from the "cooking chance" chart on the fish's wiki page (gauntlets only where they help).
+// The chance at a level is the game's formula:
+//   (1 + floor(low × (99 − level) / 98 + high × (level − 1) / 98 + 0.5)) / 256, at most 100%.
 import { store } from "./store.js";
 import { xpForLevel } from "./osrs.js";
-
-const START = 0.5;   // estimated success chance at the level requirement
 
 export const source = () => ({ where: "range", gauntlets: false, ...store.get("cookSource", {}) });
 export function setSource(v) { store.set("cookSource", { ...source(), ...v }); }
 export const label = s => `${s.where === "fire" ? "a fire" : "a range"}${s.gauntlets ? " with cooking gauntlets" : ""}`;
 
-/** Level where this method stops burning with the current setting; null = never. */
-export function stopLevel(m, s = source()) {
-  const b = m.burn;
-  const g = s.gauntlets ? (s.where === "fire" ? b.gauntletsFire : b.gauntletsRange) : undefined;
-  return g !== undefined ? g : (s.where === "fire" ? b.fire : b.range);
+// The [low, high] pair for a setting. Gauntlets replace the fire or range numbers when they're better.
+function pair(m, s) {
+  const base = m.burn[s.where === "fire" ? "fire" : "range"], g = s.gauntlets ? m.burn.gauntlets : null;
+  return g && g[1] >= base[1] ? g : base;
 }
+const chance = ([low, high], level) => Math.min(1, (1 + Math.floor(low * (99 - level) / 98 + high * (level - 1) / 98 + 0.5)) / 256);
 
 /** Chance (0–1) that one attempt at this level gives cooked food. */
 export function success(m, level, s = source()) {
   if (!m.burn) return 1;
   const req = m.reqs?.skills?.Cooking || 1;
-  const L = Math.max(req, Math.min(99, level));
-  const stop = stopLevel(m, s);
-  if (stop != null) return stop <= req ? 1 : Math.min(1, START + (1 - START) * (L - req) / (stop - req));
-  const end = m.burn.at99?.[s.where] ?? 0.9;
-  return 99 <= req ? end : START + (end - START) * (L - req) / (99 - req);
+  return chance(pair(m, s), Math.max(req, Math.min(99, level)));
+}
+
+/** Level where this method stops burning with the current setting; null = never. */
+export function stopLevel(m, s = source()) {
+  const req = m.reqs?.skills?.Cooking || 1;
+  for (let l = req; l <= 99; l++) if (success(m, l, s) >= 1) return l;
+  return null;
 }
 
 /**
@@ -53,8 +53,8 @@ export function stopText(m, s = source()) {
   if (!m.burn) return "";
   const stop = stopLevel(m, s);
   const req = m.reqs?.skills?.Cooking || 1;
-  const g = s.where === "fire" ? m.burn.gauntletsFire : m.burn.gauntletsRange;
-  const withG = !s.gauntlets && g != null && (stop == null || g < stop) ? ` (with gauntlets: ${g})` : "";
+  const g = !s.gauntlets && m.burn.gauntlets ? stopLevel(m, { ...s, gauntlets: true }) : null;
+  const withG = g != null && (stop == null || g < stop) ? ` (with gauntlets: ${g})` : "";
   if (stop != null) return stop <= req ? "never burns" : `stops burning at ${stop}${withG}`;
-  return `never stops burning${withG}`;
+  return `never stops burning: ${Math.round(success(m, 99, s) * 100)}% cooked at 99${withG}`;
 }

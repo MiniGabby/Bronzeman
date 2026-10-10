@@ -1,13 +1,12 @@
 // Cooking training methods used by the Cooking routes (data/skill-guides.js).
 // Levels and XP checked on the wiki's Cooking page, 3 Oct 2026. Items by exact GE name.
 // Fish: about 1,350 per hour on a range next to a bank (Rogues' Den or Hosidius kitchen).
-// Burnt food IS counted (see src/core/burn.js): `burn` gives the stop-burn levels from the wiki's
-// Cooking/Burn level and Cooking gauntlets pages (4 Oct 2026). Gauntlets only work on lobsters,
-// swordfish, monkfish, sharks and anglerfish. The gauntlets level is the same on a fire or a normal
-// range (the wiki's lower gauntlets levels, e.g. 89 for sharks, are for the Hosidius kitchen range,
-// which needs Kourend favour tasks; Nick confirmed sharks stop at 94). The low fish have no separate
-// range value on the wiki, so the range uses the fire level for them.
-const B = (fire, range = fire, g = null, at99 = null) => ({ fire, range, ...(g ? { gauntletsFire: g, gauntletsRange: Math.min(g, range ?? g) } : {}), ...(at99 ? { at99 } : {}) });
+// Burnt food IS counted (see src/core/burn.js): `burn` holds the game's own numbers for the chance to
+// cook each fish, taken from the "cooking chance" chart on every fish's wiki page (10 Oct 2026):
+// [low, high] on a fire, on a range, and with cooking gauntlets where they make a difference
+// (lobsters, monkfish, sharks, anglerfish; for swordfish gauntlets equal a range).
+// The Hosidius kitchen and Lumbridge ranges burn a little less and aren't options here.
+const B = (fire, range = fire, gauntlets = null) => ({ fire, range, ...(gauntlets ? { gauntlets } : {}) });
 
 const GUIDE = "https://oldschool.runescape.wiki/w/Pay-to-play_Cooking_training";
 const RANGE = "Cook on the fire in the Rogues' Den (Burthorpe), next to the banker, or on a range, which burns less for the higher fish: the Hosidius kitchen range burns even less. Cooking gauntlets (Family Crest) burn fewer lobsters, swordfish, monkfish, sharks and anglerfish. Pick fire, range and gauntlets at the top of the Cooking page: burnt fish are counted in the numbers.";
@@ -30,27 +29,27 @@ const fish = (id, name, level, raw, cooked, xp, extra = {}) => ({
 });
 
 export default [
-  fish("shrimps", "shrimps", 1, "Raw shrimps", "Shrimps", 30, { burn: B(34) }),
-  fish("sardines", "sardines", 1, "Raw sardine", "Sardine", 40, { burn: B(38) }),
-  fish("herring", "herring", 5, "Raw herring", "Herring", 50, { burn: B(41) }),
-  fish("trout", "trout", 15, "Raw trout", "Trout", 70, { burn: B(49) }),
-  fish("pike", "pike", 20, "Raw pike", "Pike", 80, { burn: B(54) }),
-  fish("salmon", "salmon", 25, "Raw salmon", "Salmon", 90, { burn: B(58) }),
-  fish("tuna", "tuna", 30, "Raw tuna", "Tuna", 100, { burn: B(63) }),
-  fish("lobsters", "lobsters", 40, "Raw lobster", "Lobster", 120, { burn: B(74, 74, 64) }),
-  fish("bass", "bass", 43, "Raw bass", "Bass", 130, { burn: B(79) }),
-  fish("swordfish", "swordfish", 45, "Raw swordfish", "Swordfish", 140, { burn: B(86, 80, 80) }),
-  fish("monkfish", "monkfish", 62, "Raw monkfish", "Monkfish", 150, { burn: B(92, 90, 86) }),
+  fish("shrimps", "shrimps", 1, "Raw shrimps", "Shrimps", 30, { burn: B([128, 512]) }),
+  fish("sardines", "sardines", 1, "Raw sardine", "Sardine", 40, { burn: B([118, 492]) }),
+  fish("herring", "herring", 5, "Raw herring", "Herring", 50, { burn: B([108, 472]) }),
+  fish("trout", "trout", 15, "Raw trout", "Trout", 70, { burn: B([88, 432]) }),
+  fish("pike", "pike", 20, "Raw pike", "Pike", 80, { burn: B([78, 412]) }),
+  fish("salmon", "salmon", 25, "Raw salmon", "Salmon", 90, { burn: B([68, 392]) }),
+  fish("tuna", "tuna", 30, "Raw tuna", "Tuna", 100, { burn: B([58, 372]) }),
+  fish("lobsters", "lobsters", 40, "Raw lobster", "Lobster", 120, { burn: B([38, 332], [38, 332], [55, 368]) }),
+  fish("bass", "bass", 43, "Raw bass", "Bass", 130, { burn: B([33, 312]) }),
+  fish("swordfish", "swordfish", 45, "Raw swordfish", "Swordfish", 140, { burn: B([18, 292], [30, 310], [30, 310]) }),
+  fish("monkfish", "monkfish", 62, "Raw monkfish", "Monkfish", 150, { burn: B([11, 275], [13, 280], [24, 290]) }),
   fish("karambwans", "karambwans", 30, "Raw karambwan", "Cooked karambwan", 190, {
     quests: ["Tai Bwo Wannai Trio"],
-    burn: B(99),
+    burn: B([70, 255]),
     perHour: 1350,
     presets: [["Normal", 1350], ["1-tick (hard)", 4000]],
     note: "You need Tai Bwo Wannai Trio to cook them properly. With 1-tick cooking (cook one, drop to the next in the same tick) you can do about 4,000 an hour, the fastest Cooking XP there is."
   }),
-  fish("sharks", "sharks", 80, "Raw shark", "Shark", 210, { burn: B(null, null, 94, { fire: 0.9, range: 0.94 }),
+  fish("sharks", "sharks", 80, "Raw shark", "Shark", 210, { burn: B([1, 202], [1, 232], [15, 270]),
     note: "Without cooking gauntlets you keep burning some sharks even at 99." }),
-  fish("anglerfish", "anglerfish", 84, "Raw anglerfish", "Anglerfish", 230, { burn: B(null, null, 97, { fire: 0.9, range: 0.93 }) }),
+  fish("anglerfish", "anglerfish", 84, "Raw anglerfish", "Anglerfish", 230, { burn: B([1, 200], [1, 220], [12, 260]) }),
 
   {
     id: "cook-jugs-of-wine",
