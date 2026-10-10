@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-11", title: "Method cards: what you need for one hour", link: "#/money",
+    items: [
+      "Every method card that costs something now has a block under the item table: what to have ready for one hour. For example Blast Furnace steel bars: \"To do this for one hour (5,000 bars) you need 1,147,000 gp\", with 5,000 iron ore, 5,000 coal and the 72,000 coins for the coffer listed underneath.",
+      "It also says what selling the result brings back and what you end the hour with, and warns when an item goes over its Grand Exchange buy limit. It follows the actions per hour you set on the card. Farm runs and bird houses show one day instead of one hour."
+    ]
+  },
+  {
     date: "2026-10-11", title: "Cooking: exact burn chances", link: "#/training/cooking",
     items: [
       "The Cooking page used an estimate for how much burns: 50% cooked at the level you unlock a fish, rising to 100%. It now uses the game's exact chance for every fish, on a fire, a range and with cooking gauntlets, from the wiki.",

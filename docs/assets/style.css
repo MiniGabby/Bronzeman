@@ -108,6 +108,9 @@ td.r,th.r{text-align:right}
 .presets{display:flex;flex-wrap:wrap;gap:6px}
 .presets button{font:500 12px var(--sans);border:1px solid var(--line);background:transparent;color:var(--ink-2);padding:4px 8px;border-radius:6px;cursor:pointer}
 .presets button:hover{border-color:var(--gold);color:var(--gold)}
+.invest{border-top:1px solid var(--line);padding:12px 14px;font-size:14px;background:var(--surface-2)}
+.invest .investhead{font-weight:600}.invest .investhead b{color:var(--gold)}
+.invest ul{margin:6px 0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
 .kv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:14px;margin:0}
 .kv dt{color:var(--ink-2)} .kv dd{margin:0;text-align:right}
 .notes{display:flex;flex-direction:column;gap:8px}

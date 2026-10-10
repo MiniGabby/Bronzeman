@@ -37,3 +37,6 @@ export const cls = n => (n > 0 ? "pos" : n < 0 ? "neg" : "");
 
 // Grand Exchange tax: 2% per item, rounded down, max 5M; items under 50 gp are exempt.
 export const geTax = price => (price < 50 ? 0 : Math.min(Math.floor(price * 0.02), 5_000_000));
+
+/** The plural of a method's action word: "catch" → "catches", "fish" stays "fish". */
+export const plural = (word, n) => n === 1 || /(fish|essence|pay-dirt|granite|amethyst)$/.test(word) ? word : /(ch|sh|s|x)$/.test(word) ? word + "es" : word + "s";

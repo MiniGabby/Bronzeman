@@ -18,12 +18,9 @@ import { stepsOf, missingQuests, doableAlt } from "../core/autoRoute.js";
 import { skillByKey, skillByName, xpForLevel } from "../core/osrs.js";
 import { store } from "../core/store.js";
 import * as me from "../core/me.js";
-import { esc, gp, short, signed, cls, nf, duration } from "../core/format.js";
+import { esc, gp, short, signed, cls, nf, duration, plural } from "../core/format.js";
 
 export const title = "Player";
-
-// "catch" → "catches", "fish" stays "fish": the plural of a method's action word.
-const plural = (word, n) => n === 1 || /(fish|essence|pay-dirt|granite|amethyst)$/.test(word) ? word : /(ch|sh|s|x)$/.test(word) ? word + "es" : word + "s";
 
 const NEAR = 5;   // "almost there" = within this many levels
 

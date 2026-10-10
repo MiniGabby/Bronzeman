@@ -1,6 +1,6 @@
 // The detailed card for one method: item table, actions-per-hour input, totals, notes.
 // Used on the Money makers page and the Skill training page.
-import { esc, gp, short, signed, cls, qty, nf } from "../core/format.js";
+import { esc, gp, short, signed, cls, qty, nf, plural } from "../core/format.js";
 import * as prices from "../core/prices.js";
 import * as calc from "../core/calc.js";
 import * as burn from "../core/burn.js";
@@ -52,7 +52,7 @@ export function createMethodCard(m) {
       <div class="ledger"><table>
         <thead><tr><th>Item</th><th class="r">${perHourTable ? "Per " + unit : "Per " + esc(m.action)}</th><th class="r">Price</th><th class="r simple-hide">GE tax</th><th class="r">Total</th><th class="r simple-hide">Traded / hr</th><th class="r simple-hide">Buy limit</th></tr></thead>
         <tbody data-f="ledger"></tbody>
-      </table></div>
+      </table><div class="invest" data-f="invest" hidden></div></div>
       <div class="side">
         <div class="field">
           <label for="aph-${m.id}">${esc(m.actionLabel || "Actions per hour")}</label>
@@ -125,6 +125,22 @@ export function createMethodCard(m) {
       const [id, side] = focused.split(":");
       ledger.querySelector(`.pin[data-id="${id}"][data-side="${side}"]`)?.focus();
     }
+
+    // What to have ready for one hour (or one day): every item to buy with its amount, fees, and the coins in total.
+    const inv = el.querySelector('[data-f="invest"]');
+    const n = c.perHour * H, missing = c.ins.some(r => r.total == null);
+    if (n > 0 && c.cost > 0 && !missing) {
+      const parts = [
+        ...c.ins.map(r => `<li><b class="num">${nf.format(Math.ceil(r.qty * n))}</b> ${esc(r.it.name)} <span class="muted">· ${gp(r.total * n)} gp</span>${
+          r.it.limit && r.qty * n > r.it.limit ? ` <span class="pill warn" title="You can buy ${gp(r.it.limit)} per 4 hours">over the buy limit of ${gp(r.it.limit)}</span>` : ""}</li>`),
+        ...c.fees.map(f => `<li>${esc(f.label)} <span class="muted">· ${gp(f.each * n)} gp</span></li>`)
+      ];
+      const back = c.revenue * n;
+      inv.hidden = false;
+      inv.innerHTML = `<div class="investhead">To do this for one ${unit} (${nf.format(Math.round(n * 100) / 100)} ${esc(plural(m.action, n))}) you need <b class="num">${gp(c.cost * n)} gp</b></div>
+        <ul>${parts.join("")}</ul>
+        ${back > 0 ? `<div class="sub2">Selling what you make brings back about <span class="num">${gp(back)}</span> gp after tax, so you end the ${unit} with <span class="num ${cls(profitP)}">${signed(profitP, gp)}</span> gp. You can start with less and buy again as your sales come in.</div>` : ""}`;
+    } else inv.hidden = true;
 
     el.querySelector('[data-f="kv"]').innerHTML = [
       [`Profit ${per}`, `<span class="num ${cls(profitP)}">${gp(profitP)}</span>`],
