@@ -224,6 +224,12 @@ function mountSkill(root, skill) {
       const alt = doableAlt(rows, st.from, p, active.auto ? "auto" : active.prefer);
       const cost = r => r && r.xpHr ? { h: xp / r.xpHr, gp: (xp / r.xpHr) * (r.c.profitHr ?? 0) } : null;
       const cr = cost(rec), ca = cost(blocked ? alt : rec);
+      // A named alternative for this step (st.alt: a method id), shown with its own numbers under the method.
+      const opt = st.alt ? byId[st.alt] : null, co = cost(opt);
+      const optLocked = opt ? unlocks.lockedInputs(opt.m) : null;
+      const altLine = opt ? `<div class="sub2 altstep">Alternative: <a href="#/training/${skill.key}" data-jump="${opt.m.id}">${esc(opt.m.name)}</a> · <span class="num">${rateOf(opt.m, opt.xpHr)}</span> XP${isDaily(opt.m) ? "" : "/hr"} · <span class="num ${cls(opt.gpXp)}">${fmtGpXp(opt.gpXp)}</span> gp/XP${
+        co ? ` · <b class="num ${cls(co.gp)}">${signed(co.gp)}</b> over ${timeOf(opt.m, co.h)} for these levels` : ""}${
+        optLocked?.length ? ` <span class="pill bad">Missing ${esc(optLocked.map(x => x.name).join(", "))}</span>` : ""}</div>` : "";
       const lvKey = `${active.key}:${st.from}`;
       // What to buy for this level range: actions needed (failed ones included, e.g. burnt fish) × inputs per action.
       const buy = (r => {
@@ -270,7 +276,7 @@ function mountSkill(root, skill) {
         ...unkQ.map(q => `<span class="sub2" title="Not known if ${esc(p.name)} has done it">Needs ${esc(q)} (done?)</span>`)
       ].filter(Boolean);
       return `<tr class="${[here ? "here" : "", needQ.length ? "questneed" : ""].join(" ").trim()}">${lv}
-        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
+        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}${altLine}</td>
         <td class="r num">${rec ? rateOf(rec.m, rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
         <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? timeOf(rec.m, cr.h) : ""}</div></td>

@@ -7,6 +7,7 @@ export default [
     items: [
       "The Construction guide now has Mahogany Homes: contracts for homeowners in Falador, Varrock, East Ardougne and Hosidius. Four tiers: beginner (level 1, planks), novice (20, oak planks), adept (50, teak planks) and expert (70, mahogany planks).",
       "You use about a third of the planks per XP compared with building in your own house, and you don't need a house or a demon butler. About 33K XP per hour on beginner contracts, 70K on novice, 140K on adept and 180K on expert.",
+      "On the Mahogany Homes route, the 70 to 99 step also shows adept contracts (teak planks) as an alternative to expert contracts, with its own XP per hour, cost and time, so you can compare the two.",
       "There's a new Mahogany Homes route tab, and Best of both now considers the contracts too. Oak planks are unlocked, so novice contracts are open now; teak planks take one log and 500 coins at the sawmill to unlock."
     ]
   },
