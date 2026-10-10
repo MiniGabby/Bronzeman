@@ -40,7 +40,8 @@ const pageHelp = document.getElementById("pageHelp");
 
 function route() {
   const [name, ...params] = location.hash.replace(/^#\/?/, "").split("/");
-  const page = ROUTES[name] ? name : "money";
+  // Without a page in the link: your own page if you've picked your name in the "You" menu, else Money makers.
+  const page = ROUTES[name] ? name : (!name && PLAYERS.includes(me.get()) ? "player" : "money");
   if (typeof cleanup === "function") cleanup();
   view.innerHTML = "";
   cleanup = ROUTES[page].mount(view, params);

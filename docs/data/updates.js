@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Tabs in a new order",
+    items: [
+      "The tabs at the top are regrouped: Player and Skill training first, then the three money pages together (Money makers, Alchemy, Merching), then the group pages (Group, Unlocked, Arcanekitten), then Updates and Requests.",
+      "If you've picked your name in the \"You\" menu, the site now opens on your own Player page instead of Money makers."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Farming: the Farming Guild, Hespori and the Tithe Farm on the routes", link: "#/training/farming",
     items: [
       "The tree runs now count the Farming Guild's patches: a sixth tree from 65 and a fifth fruit tree from 85. That's about 7K more XP per day from 65 and 32K more from 85.",
