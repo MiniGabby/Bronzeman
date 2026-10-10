@@ -196,8 +196,10 @@ function mountSkill(root, skill) {
     let totalRec = 0, totalRecH = 0, totalBest = 0, totalBestH = 0, recComplete = true, anyDaily = false;
 
     const steps = steps0.map(st => {
-      const here = lvlNow >= st.from && lvlNow < st.to;
-      const lv = `<td class="num">${st.from}–${st.to}${here ? ` <span class="pill good">You</span>` : ""}</td>`;
+      // An alternative step (alternative: true) is another way through the same levels as the step above it:
+      // it gets its own row, but doesn't count towards the route's total and never carries the "You" mark.
+      const here = !st.alternative && lvlNow >= st.from && lvlNow < st.to;
+      const lv = `<td class="num">${st.from}–${st.to}${here ? ` <span class="pill good">You</span>` : ""}${st.alternative ? `<div><span class="pill">Alternative</span></div>` : ""}</td>`;
       if (st.quest) {
         return `<tr class="${here ? "here" : ""}">${lv}
           <td class="wrapcell"><a href="${esc(st.url || "#")}" target="_blank" rel="noopener">Quest: ${esc(st.quest)}</a>${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
@@ -224,12 +226,6 @@ function mountSkill(root, skill) {
       const alt = doableAlt(rows, st.from, p, active.auto ? "auto" : active.prefer);
       const cost = r => r && r.xpHr ? { h: xp / r.xpHr, gp: (xp / r.xpHr) * (r.c.profitHr ?? 0) } : null;
       const cr = cost(rec), ca = cost(blocked ? alt : rec);
-      // A named alternative for this step (st.alt: a method id), shown with its own numbers under the method.
-      const opt = st.alt ? byId[st.alt] : null, co = cost(opt);
-      const optLocked = opt ? unlocks.lockedInputs(opt.m) : null;
-      const altLine = opt ? `<div class="sub2 altstep">Alternative: <a href="#/training/${skill.key}" data-jump="${opt.m.id}">${esc(opt.m.name)}</a> · <span class="num">${rateOf(opt.m, opt.xpHr)}</span> XP${isDaily(opt.m) ? "" : "/hr"} · <span class="num ${cls(opt.gpXp)}">${fmtGpXp(opt.gpXp)}</span> gp/XP${
-        co ? ` · <b class="num ${cls(co.gp)}">${signed(co.gp)}</b> over ${timeOf(opt.m, co.h)} for these levels` : ""}${
-        optLocked?.length ? ` <span class="pill bad">Missing ${esc(optLocked.map(x => x.name).join(", "))}</span>` : ""}</div>` : "";
       const lvKey = `${active.key}:${st.from}`;
       // What to buy for this level range: actions needed (failed ones included, e.g. burnt fish) × inputs per action.
       const buy = (r => {
@@ -267,16 +263,17 @@ function mountSkill(root, skill) {
         };
         return (r.c.ins || []).map(x => line(x, "buy")).join("") + outs.map(x => line(x, "sell")).join("");
       })(rec);
-      if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
+      if (st.alternative) { /* shown, not added up */ }
+      else if (cr) { totalRec += cr.gp; totalRecH += cr.h; } else recComplete = false;
       if (isDaily(rec?.m)) anyDaily = true;
-      if (ca) { totalBest += ca.gp; totalBestH += ca.h; }
+      if (ca && !st.alternative) { totalBest += ca.gp; totalBestH += ca.h; }
       const status = [
         locked == null ? "…" : locked.length ? `<span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>` : "",
         ...needQ.map(q => `<span class="pill warn" title="${esc(p.name)} hasn't done this quest yet">Needs quest: ${esc(q)}</span>`),
         ...unkQ.map(q => `<span class="sub2" title="Not known if ${esc(p.name)} has done it">Needs ${esc(q)} (done?)</span>`)
       ].filter(Boolean);
-      return `<tr class="${[here ? "here" : "", needQ.length ? "questneed" : ""].join(" ").trim()}">${lv}
-        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}${altLine}</td>
+      return `<tr class="${[here ? "here" : "", needQ.length ? "questneed" : "", st.alternative ? "altrow" : ""].join(" ").trim()}">${lv}
+        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
         <td class="r num">${rec ? rateOf(rec.m, rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
         <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? timeOf(rec.m, cr.h) : ""}</div></td>
@@ -288,7 +285,7 @@ function mountSkill(root, skill) {
     // Price history for the items on screen, at most 40 requests (cached for an hour).
     history.want([...histIds].slice(0, 40));
 
-    const first = steps0[0].from, last = steps0[steps0.length - 1].to;
+    const first = steps0[0].from, last = Math.max(...steps0.map(st => st.to));
     const tabs = routes.length > 1 ? `<div class="seg routetabs" role="group" aria-label="Route">${routes.map(r =>
       `<button type="button" data-route="${esc(r.key)}" aria-pressed="${r.key === active.key}">${esc(r.name)}</button>`).join("")}</div>` : "";
     host.innerHTML = `

@@ -3,7 +3,8 @@
 // GP/XP, time and cost, checks unlocks, and suggests the best unlocked alternative.
 // A skill has either one `route`, or several `routes` (shown as tabs), each { key, name, intro, route }.
 // A step is { from, to, method } or a quest step { from, to, quest, url, note }.
-// A method step can name an alternative (alt: "<method id>"): it's shown under the step with its own numbers.
+// A method step with alternative: true is another way through the same levels as the step above it:
+// it gets its own row in the table and isn't counted in the route's total.
 const KNIGHTS_SWORD = {
   from: 1, to: 29, quest: "The Knight's Sword", url: "https://oldschool.runescape.wiki/w/The_Knight%27s_Sword",
   note: "12,725 Smithing XP: level 1 to 29 in one go. Needs Mining 10, 2 iron bars, a redberry pie, and one blurite ore that you mine in the Asgarnian Ice Dungeon."
@@ -358,7 +359,8 @@ export default {
           { from: 1, to: 20, method: "con-homes-beginner" },
           { from: 20, to: 50, method: "con-homes-novice" },
           { from: 50, to: 70, method: "con-homes-adept", note: "Until teak planks are unlocked: stay on novice contracts." },
-          { from: 70, to: 99, method: "con-homes-expert", alt: "con-homes-adept" }
+          { from: 70, to: 99, method: "con-homes-expert" },
+          { from: 70, to: 99, method: "con-homes-adept", alternative: true, note: "Slower than expert contracts, but teak planks cost much less per XP." }
         ]
       },
       {
