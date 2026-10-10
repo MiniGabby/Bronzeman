@@ -1,5 +1,5 @@
 // Arcanekitten tab: the levels of an account outside the group next to the group's best level per
-// skill. A skill is crossed off once someone in the group is a higher level than that account.
+// skill. A skill is crossed off once someone in the group is at least the same level as that account.
 // Who the account is: data/catchup.js. Its stats come from Wise Old Man, remembered for 15 minutes.
 import CATCHUP from "../../data/catchup.js";
 import * as group from "../core/players.js";
@@ -30,7 +30,7 @@ export function mount(root) {
     </div>
     <div data-f="summary"></div>
     <div data-f="table"></div>
-    <p class="fine">A skill is crossed off when the highest level in the group is higher than ${esc(CATCHUP.account)}'s; the same level doesn't count yet. The group's levels come from the Group page (press Update stats there after a session).</p>`;
+    <p class="fine">A skill is crossed off when the highest level in the group is the same as ${esc(CATCHUP.account)}'s or higher. The group's levels come from the Group page (press Update stats there after a session).</p>`;
   const $ = s => root.querySelector(s);
 
   const apply = j => {
@@ -61,7 +61,7 @@ export function mount(root) {
 
   function render() {
     const name = data?.name || CATCHUP.account;
-    $('[data-f="lead"]').innerHTML = `<b>${esc(name)}</b> is the account ${esc(CATCHUP.replaces)} usually plays on. It already had levels before the group started, so it can't join yet. Once someone in the group is a higher level than ${esc(name)} in <b>every</b> skill, ${esc(name)} joins the group and ${esc(CATCHUP.replaces)} leaves.`;
+    $('[data-f="lead"]').innerHTML = `<b>${esc(name)}</b> is the account ${esc(CATCHUP.replaces)} usually plays on. It already had levels before the group started, so it can't join yet. Once someone in the group is at least the same level as ${esc(name)} in <b>every</b> skill, ${esc(name)} joins the group and ${esc(CATCHUP.replaces)} leaves.`;
     const btn = $('[data-f="update"]');
     const left = data?.updatedAt ? Math.max(0, new Date(data.updatedAt).getTime() + COOLDOWN_MS - Date.now()) : 0;
     btn.disabled = busy || left > 0;
@@ -85,7 +85,7 @@ export function mount(root) {
       const theirs = data.levels[s.key] ?? 1;
       const best = Math.max(...ps.map(p => group.level(p, s.name)));
       const who = ps.filter(p => group.level(p, s.name) === best).map(p => p.name);
-      return { s, theirs, best, who, done: best > theirs, gap: theirs + 1 - best };
+      return { s, theirs, best, who, done: best >= theirs, gap: theirs - best };
     });
     const done = rows.filter(r => r.done), todo = rows.filter(r => !r.done).sort((a, b) => a.gap - b.gap || a.s.name.localeCompare(b.s.name));
     const levelsToGo = todo.reduce((a, r) => a + r.gap, 0);

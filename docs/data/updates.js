@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Arcanekitten: the same level is enough", link: "#/arcanekitten",
+    items: [
+      "A skill on the Arcanekitten tab is now crossed off as soon as someone in the group has the same level as arcanekitten; it doesn't have to be higher. Every skill that's still open needs one level less than the page said before."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Tabs in a new order",
     items: [
       "The tabs at the top are regrouped: Player and Skill training first, then the three money pages together (Money makers, Alchemy, Merching), then the group pages (Group, Unlocked, Arcanekitten), then Updates and Requests.",

@@ -31,7 +31,7 @@ const PAGE_HELP = {
   alchemy: "Items you can turn into coins with the High Level Alchemy spell, and how much each one earns.",
   merch: "Buying items cheaply and selling them for more. This page shows what to buy, and when.",
   group: "Everyone's levels side by side, and who has gained XP lately.",
-  arcanekitten: "The levels the group still has to beat before arcanekitten can join.",
+  arcanekitten: "The levels the group still has to reach before arcanekitten can join.",
   unlocked: "Every item the group can already buy on the Grand Exchange.",
   requests: "Ask here for a new guide on the site.",
   updates: "What's new on the site, newest first."
