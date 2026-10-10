@@ -49,9 +49,9 @@ export default [
   homes("beginner", "Beginner", 1, "Plank", 10.06, 0.40, 879.3, 32500, 37500,
     "Plain planks, which are already unlocked: a cheap way through the first 20 levels."),
   homes("novice", "Novice", 20, "Oak plank", 10.09, 0.40, 1894.1, 70000, 80000,
-    "Oak planks are already unlocked, so this is the tier the group can do right now. You can stay on novice contracts after 50 if teak planks are still locked or too expensive."),
+    "Oak planks are unlocked and cheap. You can stay on novice contracts after 50 if teak planks cost too much."),
   homes("adept", "Adept", 50, "Teak plank", 11.63, 0.49, 3260.2, 140000, 177500,
-    "Teak planks: nobody has unlocked them yet (see the tip)."),
+    "Teak planks are unlocked (Mini Gabby, 10 Oct), so you can buy them on the GE."),
   homes("expert", "Expert", 70, "Mahogany plank", 12.85, 0.52, 4378.8, 177500, 230000,
     "Mahogany planks: nobody has unlocked them yet (see the tip)."),
 

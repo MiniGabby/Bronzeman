@@ -354,11 +354,11 @@ export default {
       },
       {
         key: "homes", name: "Mahogany Homes", prefer: "cheap",
-        intro: "Contracts for homeowners instead of building in your own house. You use about a third of the planks per XP, you don't need a house or a demon butler, and it works the same at every level: about 33K XP per hour on beginner contracts, 70K on novice, 140K on adept and 180K on expert. Slower than mahogany tables with a butler, but far cheaper. Oak planks are unlocked, so novice contracts are open to everyone now; teak and mahogany planks aren't yet.",
+        intro: "Contracts for homeowners instead of building in your own house. You use about a third of the planks per XP, you don't need a house or a demon butler, and it works the same at every level: about 33K XP per hour on beginner contracts, 70K on novice, 140K on adept and 180K on expert. Slower than mahogany tables with a butler, but far cheaper. Plain, oak and teak planks are unlocked, so beginner, novice and adept contracts are open; mahogany planks aren't yet.",
         route: [
           { from: 1, to: 20, method: "con-homes-beginner" },
           { from: 20, to: 50, method: "con-homes-novice" },
-          { from: 50, to: 70, method: "con-homes-adept", note: "Until teak planks are unlocked: stay on novice contracts." },
+          { from: 50, to: 70, method: "con-homes-adept" },
           { from: 70, to: 99, method: "con-homes-expert" },
           { from: 70, to: 99, method: "con-homes-adept", alternative: true, note: "Slower than expert contracts, but teak planks cost much less per XP." }
         ]

@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "75 new unlocks (756 in total)", link: "#/unlocked",
+    items: [
+      "Teak plank (Mini Gabby): adept Mahogany Homes contracts are now open, about 140K Construction XP per hour from level 50 at a third of the usual cost per XP.",
+      "Supercompost and compost (Key Kode), guam seed and a row of allotment and hops seeds (dreammancer), and a gardening trowel (Mini Gabby): herb runs no longer miss anything, and the trowel is what you need to turn tree seeds into saplings.",
+      "Toadflax, grimy toadflax and toadflax potion (unf) (Key Kode) and snapdragon (Mini Gabby) for Herblore; fish offcuts (Mini Gabby) for aerial fishing; lead ore and lead bar (Mini Gabby) for superheating lead.",
+      "Also shark, rune axe, jangerberries, a willow blackjack, mithril knife and javelin tips, and the pizza line. Most unlocks this time by Lil Fool (32), then Mini Gabby (15), dreammancer (13), Key Kode (10) and lil oldkitty (5)."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Construction: Mahogany Homes", link: "#/training/construction",
     items: [
       "The Construction guide now has Mahogany Homes: contracts for homeowners in Falador, Varrock, East Ardougne and Hosidius. Four tiers: beginner (level 1, planks), novice (20, oak planks), adept (50, teak planks) and expert (70, mahogany planks).",
