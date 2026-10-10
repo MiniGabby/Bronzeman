@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Player page: what to do next", link: "#/player",
+    items: [
+      "Every player's page now starts with \"What to do next\": the next quest in the Optimal Ironman order of the Quest Helper plugin for RuneLite, based on the quests you've done according to WikiSync.",
+      "If you don't have the levels or the quests for it yet, it says what to train or finish first, and shows the first quest on the list you can do right now. Below that: the skills you'll need for the next 30 steps, and the six quests that follow.",
+      "Achievement diaries are part of the order too, with how many tasks you've done. Pick \"Optimal (Ironman)\" as the order in the Quest Helper plugin and it walks you through each quest. Quest points, combat levels and items aren't checked."
+    ]
+  },
+  {
     date: "2026-10-10", title: "New tab: Arcanekitten", link: "#/arcanekitten",
     items: [
       "lil oldkitty usually plays on arcanekitten, an account that already had levels before the group started. Once someone in the group is a higher level than arcanekitten in every skill, arcanekitten joins the group and lil oldkitty leaves.",

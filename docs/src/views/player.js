@@ -11,6 +11,7 @@ import * as unlocks from "../core/unlocks.js";
 import * as history from "../core/history.js";
 import { plans as flipPlans } from "../core/flips.js";
 import { goals as unlockGoals } from "../core/unlockGoals.js";
+import { plan as questPlan } from "../core/questPlan.js";
 import { goalCard } from "./group.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, missingQuests, doableAlt } from "../core/autoRoute.js";
@@ -143,6 +144,42 @@ export function mount(root, [nameParam]) {
     }).join("")}</ul>`;
   }
 
+  // What to do next: the Quest Helper plugin's Optimal Ironman order, against this player's quests and levels.
+  function todoSection(p) {
+    const title = "What to do next";
+    const pl = questPlan(p);
+    if (!pl) return section(title, `<p class="muted">The site doesn't know which quests ${esc(p.name)} has done. Turn on the WikiSync plugin in RuneLite and log in; the site picks it up within 3 hours.</p>`);
+    if (!pl.steps.length) return section(title, `<p class="pos">Every quest and diary on the list is done.</p>`);
+    const wiki = n => `https://oldschool.runescape.wiki/w/${encodeURIComponent(n.replace(/^Recipe for Disaster - .*/, "Recipe for Disaster").replace(/ /g, "_"))}`;
+    const kind = it => it.type === "diary" ? "Achievement diary" : it.type === "miniquest" ? "Miniquest" : "Quest";
+    const skillLink = s => `<a href="#/training/${skillByName(s.skill)?.key}">${esc(s.skill)} ${s.need}</a> <span class="muted">(you're ${s.have}${s.boostable ? ", a boost works" : ""})</span>`;
+    const progress = st => {
+      if (st.item.type !== "diary") return st.state === 1 ? ` <span class="pill warn">Started</span>` : "";
+      const m = st.item.diary.match(/^(.+) (\w+)$/), v = group.diaryProgress(p, m[1], m[2]);
+      return v ? ` <span class="pill${v[0] ? " warn" : ""}">${v[0]}/${v[1]} tasks</span>` : "";
+    };
+    const first = (st, lead) => `<div class="todo ${st.ready ? "ready" : "blocked"}">
+      <div class="sub2">${lead} · ${kind(st.item)}</div>
+      <div class="todoname"><a href="${wiki(st.item.name)}" target="_blank" rel="noopener">${esc(st.item.name)}</a>${progress(st)}</div>
+      ${st.ready ? `<div class="sub2">You have everything it needs${st.item.qp ? ` (check that you have ${st.item.qp} quest points)` : ""}.</div>` : `
+        ${st.skills.length ? `<div>Train first: ${st.skills.map(skillLink).join(", ")}</div>` : ""}
+        ${st.quests.length ? `<div>Finish first: ${st.quests.map(q => `<a href="${wiki(q.replace(/ \(started\)$/, ""))}" target="_blank" rel="noopener">${esc(q)}</a>`).join(", ")}</div>` : ""}`}
+    </div>`;
+    const next = pl.steps[0], doable = pl.steps.find(s => s.ready);
+    const after = pl.steps.filter(s => s !== next && s !== doable).slice(0, 6);
+    const pct = pl.total ? (pl.done / pl.total) * 100 : 0;
+    return section(title, `
+      <div class="todobar"><div class="bar" role="progressbar" aria-valuenow="${Math.round(pct)}" aria-valuemin="0" aria-valuemax="100" aria-label="Steps done"><span style="width:${pct.toFixed(1)}%"></span></div>
+        <span class="sub2"><b class="num">${pl.done}</b> of ${pl.total} quests and diaries done</span></div>
+      ${first(next, "Next on the list")}
+      ${!next.ready && doable ? first(doable, "You can do this one right now") : ""}
+      ${pl.train.length ? `<h3 class="reqgroup">Skills to train for the next 30 steps</h3><ul class="plist">${pl.train.map(s =>
+        `<li>${skillLink(s)} <span class="muted">· ${s.need - s.have} level${s.need - s.have === 1 ? "" : "s"} · first needed for ${esc(s.for)}</span></li>`).join("")}</ul>` : ""}
+      ${after.length ? `<h3 class="reqgroup">After that</h3><ol class="plist todolist">${after.map(st => `<li><a href="${wiki(st.item.name)}" target="_blank" rel="noopener">${esc(st.item.name)}</a>${progress(st)}
+        ${st.ready ? "" : `<span class="muted">· needs ${esc([...st.skills.map(s => `${s.skill} ${s.need}`), ...st.quests].join(", "))}</span>`}</li>`).join("")}</ol>` : ""}
+      <p class="fine">The order is the "Optimal Ironman" list of the <a href="https://github.com/Zoinkwiz/quest-helper" target="_blank" rel="noopener">Quest Helper</a> RuneLite plugin: pick the same order in the plugin and it walks you through each quest. Requirements are from the wiki; quest points, combat and items aren't checked.${pl.untracked ? ` ${pl.untracked} small steps the site can't see (balloon routes, the Stronghold of Security) are left out.` : ""}</p>`);
+  }
+
   function unlockSection(p) {
     const list = (unlockGoals() || []).filter(g => g.reqs && ((!Object.keys(g.reqs).length && !g.gate) || g.who.some(w => w.p === p && w.gap === 0))).slice(0, 5);
     return section("Unlocks you can get now", list.length
@@ -172,7 +209,7 @@ export function mount(root, [nameParam]) {
     $('[data-f="sub"]').innerHTML = `<a href="${group.profileUrl(p)}" target="_blank" rel="noopener">Wise Old Man profile</a> · stats ${esc(new Date(p.updatedAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}`;
     if (!prices.ready() || !unlocks.loaded()) { $('[data-f="body"]').innerHTML = `<p class="muted">Loading prices and unlocks…</p>`; return; }
     $('[data-f="body"]').innerHTML = `<div class="pgrid">
-      <div>${moneySection(p)}${trainingSection(p)}</div>
+      <div>${todoSection(p)}${moneySection(p)}${trainingSection(p)}</div>
       <div>${flipsSection()}${goalsSection(p)}${unlockSection(p)}${questSection(p)}</div>
     </div>`;
   }

@@ -300,6 +300,10 @@ tr.detailrow > td{background:var(--surface-2);white-space:normal;padding:16px 18
 /* Player page */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:8px 28px;align-items:start}
 .psec{margin-bottom:14px}
+.todo{border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:var(--surface)}
+.todo.ready{border-left-color:var(--good)}.todoname{font-size:17px;font-weight:600;margin:2px 0}.todoname a{color:var(--ink)}
+.todobar{display:flex;align-items:center;gap:10px;margin-bottom:10px}.todobar .bar{flex:1;height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden}.todobar .bar span{display:block;height:100%;background:var(--good)}
+.todolist{padding-left:22px}
 .plist{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .plist li{line-height:1.45}
 .opens{margin:6px 0 4px;padding:8px 12px 8px 28px;display:flex;flex-direction:column;gap:5px;background:var(--surface-2);border-radius:8px;font-size:14px}
