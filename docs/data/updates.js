@@ -3,6 +3,16 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-10", title: "Four new guides: Mining, Fishing, Woodcutting and Prayer", link: "#/training",
+    items: [
+      "Mining: power mining iron to 70 and the Volcanic Mine after that (Fastest), or the Motherlode Mine and amethyst (Relaxed, earns money). Also gem rocks, crashed stars, calcified rocks and 3-tick granite.",
+      "Fishing: the Sea Slug quest takes you to 24, then fly fishing and the Tempoross from 35 (Fastest), fly and barbarian fishing (Relaxed), or monkfish, karambwans and minnows from 62 (Earn money).",
+      "Woodcutting: teak trees and sulliusceps (Fastest), or willows, maples, yews, magic trees and redwoods next to a bank (Keep the logs). Yew, magic and redwood logs aren't unlocked yet: cutting the first one unlocks them for Firemaking and Fletching.",
+      "Prayer: every bone, buried, on a gilded altar and at the Chaos Temple in the Wilderness. Best of both picks the bone and altar for your time value from live prices.",
+      "All rates are without tick manipulation. Where the wiki gives no rate for your level (low-level trees, the Tempoross between 50 and 70, the Volcanic Mine below 99, karambwans) the number is my estimate and the card says so."
+    ]
+  },
+  {
     date: "2026-10-10", title: "Cooking: burn rate and coins per level", link: "#/training/cooking",
     items: [
       "Every fish on a Cooking route now has a \"Show per level\" button. It opens a table with one row per level: how much burns at that level, how many fish you need to cook, XP per hour, coins per hour and what that one level costs or earns.",

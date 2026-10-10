@@ -573,5 +573,152 @@ export default {
         ]
       }
     ]
+  },
+  mining: {
+    intro: "Mining costs nothing but time. Quests skip the start: Doric's Quest, The Dig Site, Plague City, The Giant Dwarf, The Lost Tribe and Another Slice of H.A.M. give 27,525 XP together, level 1 to 37. After that you choose between fast (drop everything you mine) and useful (the Motherlode Mine, gems, amethyst: slower, but you keep what you mine, and it feeds Smithing). The numbers here are without tick manipulation, except 3-tick granite, which is listed for anyone who wants to learn it. Always use the best pickaxe you can; a celestial ring from crashed stars gives an invisible +4.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Copper and tin for a few minutes, then iron all the way to 70: three rocks in a triangle, drop the ore, 45K to 55K XP per hour, and 70K to 80K in the Mining Guild from 60. From 70 the Volcanic Mine on Fossil Island, which is also something to do as a group. This is the wiki's route for players who don't use tick manipulation.",
+        route: [
+          { from: 1, to: 15, method: "mine-copper-tin", note: "Or the quests: Doric's Quest alone gives 1,300 XP (level 10)." },
+          { from: 15, to: 70, method: "mine-iron", note: "Move to the Mining Guild at 60." },
+          { from: 70, to: 99, method: "mine-volcanic-mine", note: "Without Bone Voyage: stay on iron in the Mining Guild." }
+        ]
+      },
+      {
+        key: "relaxed", name: "Relaxed (money)", prefer: "cheap",
+        intro: "The low-effort route that pays: the Motherlode Mine from 30 (coal at first, then gold, mithril, adamantite and runite as you level, plus golden nuggets for the prospector outfit and the coal bag), and amethyst from 92. Slower than power mining, but you barely have to click and everything you mine is yours.",
+        route: [
+          { from: 1, to: 15, method: "mine-copper-tin" },
+          { from: 15, to: 30, method: "mine-iron" },
+          { from: 30, to: 92, method: "motherlode-mine", note: "Use the buttons on the card for your level: the default is for 35 to 38. Gem rocks (40) pay better if you have the medium Karamja Diary." },
+          { from: 92, to: 99, method: "mine-amethyst" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live: for every level range it picks the method with the lowest total cost, counting what it earns or costs and the time it takes, valued at what you say your time is worth below. With a high value it picks the fastest XP, with a low value the best money.",
+        from: 1, to: 99,
+        candidates: ["mine-copper-tin", "mine-iron", "motherlode-mine", "mine-gem-rocks", "mine-calcified-rocks", "mine-crashed-stars", "mine-volcanic-mine", "mine-amethyst"]   // no 3-tick granite: tick manipulation
+      }
+    ]
+  },
+  fishing: {
+    intro: "Fishing is slow but cheap: a rod, a net or a harpoon and some bait. The start can be skipped with one quest: Sea Slug gives 7,175 XP, level 1 to 24 (it needs Firemaking 30). The numbers here are all without tick manipulation. Fly and barbarian fishing drop the fish for speed; if you want the fish for Cooking, bank them and count on fewer per hour. With Hunter 44 and Fishing 47, drift net fishing trains both skills at once and is faster than anything here.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Sea Slug, a few levels of fly fishing, and from 35 the Tempoross: a boss you fish against with other players, 30K XP per hour at 35 and over 60K from 70, for free, with a reward pool on top. This is the fastest Fishing without tick manipulation unless you also train Hunter with drift nets.",
+        route: [
+          { from: 1, to: 24, quest: "Sea Slug", url: "https://oldschool.runescape.wiki/w/Sea_Slug", note: "7,175 Fishing XP: level 1 to 24 in one go. Needs Firemaking 30. Without it: net shrimps at Draynor until 20, then fly fish." },
+          { from: 24, to: 30, method: "fish-fly-20" },
+          { from: 30, to: 35, method: "fish-fly-30" },
+          { from: 35, to: 50, method: "fish-tempoross-35" },
+          { from: 50, to: 70, method: "fish-tempoross-50" },
+          { from: 70, to: 99, method: "fish-tempoross-70" }
+        ]
+      },
+      {
+        key: "relaxed", name: "Relaxed",
+        intro: "Click a spot, wait, drop: fly fishing until 48 and barbarian fishing after that, which also trickles Agility and Strength XP. Slower than the Tempoross, but you can do it while watching something else.",
+        route: [
+          { from: 1, to: 24, quest: "Sea Slug", url: "https://oldschool.runescape.wiki/w/Sea_Slug", note: "7,175 Fishing XP: level 1 to 24 in one go. Needs Firemaking 30. Without it: net shrimps at Draynor until 20, then fly fish." },
+          { from: 24, to: 30, method: "fish-fly-20" },
+          { from: 30, to: 40, method: "fish-fly-30" },
+          { from: 40, to: 48, method: "fish-fly-40" },
+          { from: 48, to: 58, method: "fish-barbarian-48" },
+          { from: 58, to: 70, method: "fish-barbarian-58" },
+          { from: 70, to: 99, method: "fish-barbarian-70" }
+        ]
+      },
+      {
+        key: "money", name: "Earn money", prefer: "cheap",
+        intro: "Fishing only starts to pay at 62: monkfish (Swan Song), karambwans from 65 (Tai Bwo Wannai Trio) and minnows from 82, which you trade for raw sharks. Get to 62 the fast way first. Aerial fishing (Fishing 43, Hunter 35) also earns money on the way.",
+        route: [
+          { from: 1, to: 24, quest: "Sea Slug", url: "https://oldschool.runescape.wiki/w/Sea_Slug", note: "7,175 Fishing XP: level 1 to 24 in one go. Needs Firemaking 30." },
+          { from: 24, to: 30, method: "fish-fly-20" },
+          { from: 30, to: 35, method: "fish-fly-30" },
+          { from: 35, to: 50, method: "fish-tempoross-35" },
+          { from: 50, to: 62, method: "fish-tempoross-50" },
+          { from: 62, to: 82, method: "fish-monkfish", note: "Karambwans (65) pay about the same: check the table." },
+          { from: 82, to: 99, method: "fish-minnows", note: "You need the full angler's outfit to get on the platform." }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live: for every level range it picks the method with the lowest total cost, counting what it earns or costs and the time it takes, valued at what you say your time is worth below. With a high value it picks the fastest XP, with a low value the best money.",
+        from: 20, to: 99,
+        candidates: ["fish-fly-20", "fish-fly-30", "fish-fly-40", "fish-tempoross-35", "fish-tempoross-50", "fish-tempoross-70", "fish-barbarian-48", "fish-barbarian-58", "fish-barbarian-70",
+          "aerial-fishing", "hunt-drift-nets-44", "hunt-drift-nets-55", "hunt-drift-nets-70", "fish-monkfish", "fish-karambwans", "fish-minnows", "fish-anglerfish"]
+      }
+    ]
+  },
+  woodcutting: {
+    intro: "Woodcutting costs nothing, and the logs are what the group needs for Firemaking, Fletching and bird houses: several kinds aren't unlocked yet, and cutting the first one unlocks it for everyone. You can chop fast and drop the logs, or chop slower trees next to a bank and keep them. Quests can skip the first levels: Monk's Friend, Enlightened Journey, Icthlarin's Little Helper and one part of Recipe for Disaster give 9,000 XP (level 26). The numbers here are without tick manipulation. From 60 the Woodcutting Guild gives an invisible +7.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Regular trees and oaks to 35, then teak trees (drop the logs) to 65, then the sulliuscep mushrooms on Fossil Island: over 80K XP per hour from 65. Sulliusceps need Bone Voyage; without it, stay on teaks.",
+        route: [
+          { from: 1, to: 15, method: "wc-regular" },
+          { from: 15, to: 35, method: "wc-oak" },
+          { from: 35, to: 50, method: "wc-teak-35" },
+          { from: 50, to: 61, method: "wc-teak-50" },
+          { from: 61, to: 65, method: "wc-teak-61" },
+          { from: 65, to: 80, method: "wc-sulliuscep-65" },
+          { from: 80, to: 90, method: "wc-sulliuscep-80" },
+          { from: 90, to: 99, method: "wc-sulliuscep-90" }
+        ]
+      },
+      {
+        key: "logs", name: "Keep the logs", prefer: "cheap",
+        intro: "The classic route next to a bank: willows, maples, yews, magic trees and redwoods, keeping every log to sell or to use. Slower, relaxed, and it unlocks yew, magic and redwood logs for the group. Only the level-99 rates come from the wiki; the starting pace per tree is my estimate.",
+        route: [
+          { from: 1, to: 15, method: "wc-regular" },
+          { from: 15, to: 30, method: "wc-oak" },
+          { from: 30, to: 45, method: "wc-willow" },
+          { from: 45, to: 60, method: "wc-maple" },
+          { from: 60, to: 75, method: "wc-yew" },
+          { from: 75, to: 90, method: "wc-magic", note: "Very slow XP. Yews stay better per hour; magic logs are worth more each." },
+          { from: 90, to: 99, method: "wc-redwood" }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live: for every level range it picks the method with the lowest total cost, counting what it earns or costs and the time it takes, valued at what you say your time is worth below. With a high value it picks the fastest XP, with a low value the best money.",
+        from: 1, to: 99,
+        candidates: ["wc-regular", "wc-oak", "wc-teak-35", "wc-teak-50", "wc-teak-61", "wc-blisterwood", "wc-sulliuscep-65", "wc-sulliuscep-80", "wc-sulliuscep-90",
+          "wc-willow", "wc-maple", "wc-yew", "wc-magic", "wc-redwood"]
+      }
+    ]
+  },
+  prayer: {
+    intro: "Prayer is coins in, XP out: you buy bones and offer them. Where you offer them matters most. Burying gives the plain XP; a gilded altar gives three and a half times as much; the Chaos Temple altar in the Wilderness gives the same and also saves half your bones. Quests give the first levels for free: The Restless Ghost, Priest in Peril, Recruitment Drive and Holy Grail are 14,531 XP together (level 30). Level 43 unlocks all three protection prayers. Bronzeman: bones, big bones, babydragon bones and dragon bones are unlocked; for the others someone has to get one as a drop first.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Dragon bones on a gilded altar: about 640K XP per hour, the fastest thing on the whole site. You don't need your own altar: world 330 at the Rimmington house portal always has open houses. Superior dragon bones are faster still from Prayer 70, but nobody has unlocked them.",
+        route: [
+          { from: 1, to: 70, method: "pray-altar-dragon-bones" },
+          { from: 70, to: 99, method: "pray-altar-superior-dragon-bones" }
+        ]
+      },
+      {
+        key: "cheapest", name: "Cheapest", prefer: "cheap",
+        intro: "The same dragon bones at the Chaos Temple altar in level 38 Wilderness: half of them aren't used up, so every level costs half as much. Player killers come by often, so you only ever carry one inventory of bones, and losing some now and then is part of the price. Not keen on the Wilderness? Big bones on a gilded altar are the budget choice.",
+        route: [
+          { from: 1, to: 99, method: "pray-chaos-dragon-bones", note: "Safe and still cheap: big bones on a gilded altar." }
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: it picks the bone and the altar with the lowest total cost, counting the bones you buy and the time it takes, valued at what you say your time is worth below. With a low value it picks cheap bones at the Chaos Temple, with a high value expensive bones on a gilded altar. Bones nobody has unlocked are only picked when nothing else fits.",
+        from: 1, to: 99,
+        candidates: ["pray-bury-bones", "pray-bury-big-bones",
+          "pray-altar-big-bones", "pray-altar-babydragon-bones", "pray-altar-wyrm-bones", "pray-altar-dragon-bones", "pray-altar-wyvern-bones", "pray-altar-drake-bones", "pray-altar-lava-dragon-bones", "pray-altar-hydra-bones", "pray-altar-dagannoth-bones", "pray-altar-superior-dragon-bones",
+          "pray-chaos-big-bones", "pray-chaos-babydragon-bones", "pray-chaos-wyrm-bones", "pray-chaos-dragon-bones", "pray-chaos-wyvern-bones", "pray-chaos-drake-bones", "pray-chaos-lava-dragon-bones", "pray-chaos-hydra-bones", "pray-chaos-dagannoth-bones", "pray-chaos-superior-dragon-bones"]
+      }
+    ]
   }
 };

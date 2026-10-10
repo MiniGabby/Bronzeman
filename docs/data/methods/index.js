@@ -25,6 +25,10 @@ import runecraft from "./runecraft.js";
 import agility from "./agility.js";
 import farming from "./farming.js";
 import hunter from "./hunter.js";
+import mining from "./mining.js";
+import fishing from "./fishing.js";
+import woodcutting from "./woodcutting.js";
+import prayer from "./prayer.js";
 
 export default [
   sapphireRings,
@@ -52,5 +56,9 @@ export default [
   ...runecraft,         // runes, Ourania and Guardians of the Rift for the Runecraft routes
   ...farming,           // tree runs, fruit trees, herb runs and the Tithe Farm (counted per day)
   ...hunter,            // bird house runs (per day), tracking, falconry, salamanders, chinchompas and rumours
+  ...mining,            // iron, gem rocks, granite, crashed stars, Volcanic Mine and amethyst
+  ...fishing,           // fly and barbarian fishing, Tempoross, monkfish, karambwans, minnows
+  ...woodcutting,       // teak, sulliusceps, blisterwood and banked willow to redwood
+  ...prayer,            // every bone: buried, on a gilded altar and at the Chaos Temple
   ...agility            // rooftops, Brimhaven, the Agility Pyramid, Wilderness course and Hallowed Sepulchre
 ];

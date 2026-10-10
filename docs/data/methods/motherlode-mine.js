@@ -1,6 +1,6 @@
 export default {
   id: "motherlode-mine",
-  name: "Motherlode Mine (Mining 30–39)",
+  name: "Motherlode Mine",
   tags: ["money", "training"],
   guide: "https://oldschool.runescape.wiki/w/Motherlode_Mine",
   reqs: { skills: { Mining: 30 } },
@@ -8,7 +8,7 @@ export default {
   actionLabel: "Pay-dirt per hour",
   actionsPerHour: 380,
   // Wiki XP rates: about 13K/hr at Mining 30, 26K at 40, 33K at 50 (60 XP per pay-dirt).
-  presets: [["Mining 30", 217], ["Mining 35–38", 380], ["Mining 40", 433], ["Mining 50", 550]],
+  presets: [["Mining 30", 217], ["Mining 35–38", 380], ["Mining 40", 433], ["Mining 50", 550], ["Mining 90, all upgrades", 1030]],
   inputs: [],
   // Below Mining 40, cleaned pay-dirt is about 97% coal; the other ~3% are golden nuggets (not tradeable).
   outputs: [{ id: 453, qty: 0.969 }],   // Coal
