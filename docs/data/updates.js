@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-11", title: "Goal: Key Kode to Farming 40", link: "#/group",
+    items: [
+      "Key Kode is going for Farming 40 by Sunday 18 October. From level 26 that's about 28,500 XP, or about 3,600 a day counting today. The progress bar is on the Group page and on Key Kode's Player page."
+    ]
+  },
+  {
     date: "2026-10-11", title: "Blast Furnace: coal bag switch", link: "#/money",
     items: [
       "The Blast Furnace cards for steel, mithril, adamantite and runite bars have a \"Coal bag\" checkbox. Untick it if you don't have one: you then carry 28 items per trip instead of 54, so the card shows about half the bars per hour (2,590 steel or 1,810 mithril) with the profit, XP and cash needed for an hour to match.",

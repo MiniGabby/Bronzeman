@@ -3,4 +3,5 @@
 //   { player: "Mini Gabby", skill: "Herblore", level: 45, by: "2026-10-11" },
 // player = RuneScape name, skill = in-game skill name, by = last day (YYYY-MM-DD). Old goals can stay; they show as done or missed.
 export default [
+  { player: "Key Kode", skill: "Farming", level: 40, by: "2026-10-18" }
 ];
