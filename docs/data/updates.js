@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-11", title: "58 new unlocks (814 in total)", link: "#/unlocked",
+    items: [
+      "Oak sapling and tomatoes(5) (Key Kode): the first tree run is fully unlocked. Five oak trees a day from Farming 15 give about 2,400 XP a day, which helps with Key Kode's Farming 40 goal. Key Kode also unlocked the basket and the empty plant pot, the two things you need to make more saplings and farmer payments.",
+      "Unicorn horn dust and marrentill potion (unf) (Key Kode) for Herblore; willow longbow (u) and maple shortbow (u) (Key Kode) for Fletching; papaya fruit and cooking apple (Mini Gabby), which farmers take as payment for fruit trees.",
+      "Also mist, mud and steam runes, a water talisman, rings of dueling, frog-leather armour, superantipoisons and the first Slayer gear (facemask, nose peg, mirror shield, rock hammer). Most unlocks this time by Mini Gabby (19), Lil Fool (18) and Key Kode (14), then lil oldkitty (5) and dreammancer (2)."
+    ]
+  },
+  {
     date: "2026-10-11", title: "Goal: Key Kode to Farming 40", link: "#/group",
     items: [
       "Key Kode is going for Farming 40 by Sunday 18 October. From level 26 that's about 28,500 XP, or about 3,600 a day counting today. The progress bar is on the Group page and on Key Kode's Player page."
