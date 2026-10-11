@@ -230,7 +230,7 @@ function mountSkill(root, skill) {
       const blocked = (locked?.length || 0) + needQ.length > 0;
       // Best method that works right now for this range (level ok, everything unlocked, no missing quest),
       // picked the same way as the route: by gold + time on auto routes, cheapest on prefer: "cheap", else fastest.
-      const alt = doableAlt(rows, st.from, p, active.auto ? "auto" : active.prefer);
+      const alt = doableAlt(rows, st.from, p, active.auto && active.timeValue == null ? "auto" : active.prefer);
       const cost = r => r && r.xpHr ? { h: xp / r.xpHr, gp: (xp / r.xpHr) * (r.c.profitHr ?? 0) } : null;
       const cr = cost(rec), ca = cost(blocked ? alt : rec);
       const lvKey = `${active.key}:${st.from}`;
@@ -300,7 +300,7 @@ function mountSkill(root, skill) {
         <div class="routeopts"><label class="check simple-hide" title="Show the usual price range over a day, and the best hour to buy or sell, under every step"><input type="checkbox" id="t-daily"${showDaily ? " checked" : ""}> Daily prices</label>${tabs}</div></div>
       ${guide.intro ? `<p class="lead">${esc(ui.simple() ? ui.firstSentences(guide.intro) : guide.intro)}</p>` : ""}
       ${active.intro ? `<p class="lead">${esc(ui.simple() ? ui.firstSentences(active.intro) : active.intro)}</p>` : ""}
-      ${active.auto ? `<div class="toolbar timevalue">
+      ${active.auto && active.timeValue == null ? `<div class="toolbar timevalue">
         <div class="field"><label for="t-timevalue">Your time is worth (gp per hour)</label>
           <input id="t-timevalue" type="number" min="0" step="100000" inputmode="numeric" value="${timeValue()}"></div>
         <div class="presets">${[0, 250_000, 500_000, 1_000_000, 2_000_000, 5_000_000].map(v => `<button type="button" data-tv="${v}">${v ? short(v) : "Only cost"}</button>`).join("")}</div>

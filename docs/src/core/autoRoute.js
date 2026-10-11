@@ -14,7 +14,8 @@ export const setTimeValue = v => store.set("timeValue", Math.max(0, Number(v) ||
 
 /** Concrete steps [{ from, to, method }] (plus the route's fixed `before` steps) for an auto route. */
 export function autoSteps(active, skillName, player = null) {
-  const V = timeValue();
+  // A route can fix its own time value (timeValue: 0 = only the coins count), instead of the visitor's.
+  const V = active.timeValue ?? timeValue();
   const stat = (m, opts) => {
     const c = calc.compute(m, opts);
     const xpHr = c.xpHr[skillName] || 0;

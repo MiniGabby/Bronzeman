@@ -110,7 +110,7 @@ export function mount(root, [nameParam]) {
           const cx = calc.compute(x, { level: lvl }), xh = cx.xpHr[skill.name] || 0;
           return { m: x, xpHr: xh, req: x.reqs?.skills?.[skill.name] || 1, gpXp: cx.profitHr != null && xh ? cx.profitHr / xh : null };
         });
-        const alt = doableAlt(rows, lvl, p, r.auto ? "auto" : r.prefer);
+        const alt = doableAlt(rows, lvl, p, r.auto && r.timeValue == null ? "auto" : r.prefer);
         altLine = alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${short(alt.xpHr)} XP/hr)</div>` : "";
       }
       return `<li${missingQuests(m, p).length ? ` class="questneed"` : ""}>${head}: <b>${esc(m.name)}</b> until ${st.to} <span class="muted">· ${short(xpHr)} XP/hr · <span class="${cls(gpXp)}">${gpXp == null ? "–" : (gpXp > 0 ? "+" : "") + gpXp.toFixed(1)}</span> gp/XP</span>${locked.length ? ` <span class="pill bad">Missing ${esc(locked.map(x => x.name).join(", "))}</span>` : ""}${(m.reqs?.quests || []).filter(q => group.questDone(p, q) !== true).map(q => ` <span class="pill warn">Needs ${esc(q)}${group.questDone(p, q) === null ? "?" : ""}</span>`).join("")}${need}${altLine}</li>`;

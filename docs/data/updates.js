@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-11", title: "Herblore: Fastest, Cheapest and Best of both", link: "#/training/herblore",
+    items: [
+      "Herblore was the only guide with a single route. It now has the same three tabs as the other skills.",
+      "Fastest: always the potion with the most XP for your level, 19 steps from attack potions to Saradomin brews. Cheapest: worked out live, the potion that costs the least per XP for every level range; today that's super attacks from 45 all the way. Best of both: picked from your time value.",
+      "The Fastest route needs several potions nobody has unlocked yet; it shows the best one you can make now for each of those steps."
+    ]
+  },
+  {
     date: "2026-10-11", title: "58 new unlocks (814 in total)", link: "#/unlocked",
     items: [
       "Oak sapling and tomatoes(5) (Key Kode): the first tree run is fully unlocked. Five oak trees a day from Farming 15 give about 2,400 XP a day, which helps with Key Kode's Farming 40 goal. Key Kode also unlocked the basket and the empty plant pot, the two things you need to make more saplings and farmer payments.",

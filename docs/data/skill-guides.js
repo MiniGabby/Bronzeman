@@ -2,6 +2,7 @@
 // Each step names the recommended method for a level range; the page adds live XP/hr,
 // GP/XP, time and cost, checks unlocks, and suggests the best unlocked alternative.
 // A skill has either one `route`, or several `routes` (shown as tabs), each { key, name, intro, route }.
+// An automatic route (auto: true, with candidates) is worked out live; with timeValue: 0 it only looks at the coins.
 // A step is { from, to, method } or a quest step { from, to, quest, url, note }.
 // A method step with alternative: true (or a label, e.g. alternative: "Alongside") is another way through
 // levels the route already covers: it gets its own row in the table and isn't counted in the route's total.
@@ -14,17 +15,52 @@ const KNIGHTS_SWORD = {
 export default {
   herblore: {
     intro: "Herblore starts with the Druidic Ritual quest (250 XP, level 3). Quests are the cheapest way through the first levels: Jungle Potion (775 XP), Recruitment Drive (1,000 XP) and The Dig Site (2,000 XP) together take you to about level 19. After that, making potions is the main method. Costs below are for 2,500 potions per hour.",
-    route: [
-      { from: 3,  to: 12, method: "herb-attack" },
-      { from: 12, to: 22, method: "herb-strength" },
-      { from: 22, to: 38, method: "herb-restore", note: "Energy potions (level 26) are a close alternative." },
-      { from: 38, to: 45, method: "herb-prayer" },
-      { from: 45, to: 55, method: "herb-super-attack" },
-      { from: 55, to: 66, method: "herb-super-strength" },
-      { from: 66, to: 72, method: "herb-super-defence" },
-      { from: 72, to: 77, method: "herb-ranging" },
-      { from: 77, to: 81, method: "herb-stamina" },
-      { from: 81, to: 99, method: "herb-saradomin-brew" }
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Always the potion that gives the most XP for your level. Every potion is made at the same speed (about 2,500 an hour), so the higher the potion, the faster you level: 60K XP per hour at level 3, 250K at 45 and 450K from 81. It costs whatever those potions cost; several need herbs or secondaries nobody has unlocked yet, and the route then shows the best one you can make now.",
+        route: [
+          { from: 3,  to: 5,  method: "herb-attack" },
+          { from: 5,  to: 12, method: "herb-antipoison" },
+          { from: 12, to: 22, method: "herb-strength" },
+          { from: 22, to: 26, method: "herb-restore" },
+          { from: 26, to: 30, method: "herb-energy" },
+          { from: 30, to: 38, method: "herb-defence" },
+          { from: 38, to: 45, method: "herb-prayer" },
+          { from: 45, to: 48, method: "herb-super-attack" },
+          { from: 48, to: 50, method: "herb-superantipoison" },
+          { from: 50, to: 52, method: "herb-fishing" },
+          { from: 52, to: 55, method: "herb-super-energy" },
+          { from: 55, to: 63, method: "herb-super-strength" },
+          { from: 63, to: 66, method: "herb-super-restore" },
+          { from: 66, to: 69, method: "herb-super-defence" },
+          { from: 69, to: 72, method: "herb-antifire" },
+          { from: 72, to: 76, method: "herb-ranging" },
+          { from: 76, to: 78, method: "herb-magic" },
+          { from: 78, to: 81, method: "herb-zamorak-brew" },
+          { from: 81, to: 99, method: "herb-saradomin-brew" }
+        ]
+      },
+      {
+        key: "cheapest", name: "Cheapest", prefer: "cheap", auto: true, timeValue: 0,
+        intro: "Worked out live from GE prices: for every level range the potion that costs the least per XP (or earns the most), whatever its speed. Prices of herbs and potions move a lot, so this route changes from day to day. Potions that need something nobody has unlocked are only picked when nothing else fits.",
+        from: 3, to: 99,
+        candidates: [
+          "herb-attack", "herb-antipoison", "herb-strength", "herb-restore", "herb-energy", "herb-defence", "herb-prayer", "herb-super-attack", "herb-superantipoison",
+          "herb-fishing", "herb-super-energy", "herb-super-strength", "herb-super-restore", "herb-super-defence", "herb-antifire", "herb-ranging", "herb-magic",
+          "herb-stamina", "herb-zamorak-brew", "herb-saradomin-brew"
+        ]
+      },
+      {
+        key: "balanced", name: "Best of both", auto: true,
+        intro: "Worked out live from GE prices: for every level range it picks the potion with the lowest total cost, counting both the gold you spend and the time it takes, valued at what you say your time is worth below. Raise the value to train faster, lower it to save money.",
+        from: 3, to: 99,
+        candidates: [
+          "herb-attack", "herb-antipoison", "herb-strength", "herb-restore", "herb-energy", "herb-defence", "herb-prayer", "herb-super-attack", "herb-superantipoison",
+          "herb-fishing", "herb-super-energy", "herb-super-strength", "herb-super-restore", "herb-super-defence", "herb-antifire", "herb-ranging", "herb-magic",
+          "herb-stamina", "herb-zamorak-brew", "herb-saradomin-brew"
+        ]
+      }
     ]
   },
   smithing: {
