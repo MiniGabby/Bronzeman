@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-12", title: "Player page: what you gained per day", link: "#/player",
+    items: [
+      "The Gained block on the Player page has a fourth button, \"Per day\": every day with the XP and levels you gained and the skills you trained, for example \"Mon 12 Oct: +230,603 XP, 29 levels: Herblore 46 → 55, Smithing 61 → 63, …\". It shows the last 10 days, with a button for all of them.",
+      "From now on the site saves everyone's XP once a day and keeps it for good. The days before 12 October were filled in from Wise Old Man's records, back to the start on 25 September; some of those cover two days, where nobody pressed Update stats in between.",
+      "A day runs until the last check of the evening, around 23:00, so late-night XP counts for the next day."
+    ]
+  },
+  {
     date: "2026-10-12", title: "Stats and XP gains refresh by themselves", link: "#/group",
     items: [
       "The site used to ask Wise Old Man for everyone's stats and XP gains from your own browser, every time, and ran into its limit when you clicked around. Now the site itself refreshes everyone on Wise Old Man every 3 hours and keeps the result, so pages load at once and nobody has to press Update stats for the numbers to move.",

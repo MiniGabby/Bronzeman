@@ -2,6 +2,7 @@
 # because the website itself isn't allowed to read WikiSync from the browser.
 # Also refreshes everyone on Wise Old Man and saves their levels, XP and XP gains to docs/data/wom.json,
 # so the website doesn't have to ask Wise Old Man from every visitor's browser.
+# The same step keeps docs/data/xp-history.json: one snapshot of everyone's XP per day, kept forever.
 name: Sync WikiSync quests
 
 on:
@@ -36,13 +37,13 @@ jobs:
 
       - name: Commit if changed
         run: |
-          if git diff --quiet -- docs/data/wikisync.json docs/data/wom.json && ! git ls-files --others --exclude-standard -- docs/data/wikisync.json docs/data/wom.json | grep -q .; then
+          if git diff --quiet -- docs/data/wikisync.json docs/data/wom.json docs/data/xp-history.json && ! git ls-files --others --exclude-standard -- docs/data/wikisync.json docs/data/wom.json docs/data/xp-history.json | grep -q .; then
             echo "No changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/wikisync.json docs/data/wom.json
+          git add docs/data/wikisync.json docs/data/wom.json docs/data/xp-history.json
           git commit -m "Update WikiSync quests and Wise Old Man stats"
           git pull --rebase
           git push

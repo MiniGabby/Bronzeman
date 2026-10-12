@@ -12,6 +12,7 @@ import * as history from "../core/history.js";
 import { plans as flipPlans } from "../core/flips.js";
 import { goals as unlockGoals } from "../core/unlockGoals.js";
 import { plan as questPlan } from "../core/questPlan.js";
+import * as xpHistory from "../core/xpHistory.js";
 import { goalCard } from "./group.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, missingQuests, doableAlt } from "../core/autoRoute.js";
@@ -41,9 +42,16 @@ export function mount(root, [nameParam]) {
   const PERIODS = { day: "Today", week: "This week", month: "This month" };
   let period = store.get("gainsPeriod", "week");
   if (!PERIODS[period]) period = "week";
+  // "Per day" is a fourth view of the same block, from the site's own daily history.
+  let perDay = !!store.get("gainsPerDay", false), allDays = false;
   root.addEventListener("click", e => {
     const pb = e.target.closest("[data-gp]");
-    if (pb) { period = pb.dataset.gp; store.set("gainsPeriod", period); group.loadGains(period); render(); return; }
+    if (pb) {
+      perDay = pb.dataset.gp === "perday"; store.set("gainsPerDay", perDay);
+      if (!perDay) { period = pb.dataset.gp; store.set("gainsPeriod", period); group.loadGains(period); }
+      render(); return;
+    }
+    if (e.target.closest("[data-alldays]")) { allDays = !allDays; render(); return; }
     const b = e.target.closest("[data-opens]");
     if (!b) return;
     openUnlocks.has(b.dataset.opens) ? openUnlocks.delete(b.dataset.opens) : openUnlocks.add(b.dataset.opens);
@@ -137,10 +145,28 @@ export function mount(root, [nameParam]) {
     return section("Flips to buy right now", body + `<p class="fine">Usually or reliable patterns only, with ${short(opts.cash)} cash (change it on the Merching tab).</p>`, { href: "#/merch", text: "Merching" });
   }
 
+  // Every day this player has a snapshot for, newest first: XP and levels gained that day, per skill.
+  function perDayBody(p) {
+    const list = xpHistory.days(p.id);
+    if (!list) return `<p class="muted">Loading the daily history…</p>`;
+    if (!list.length) return `<p class="muted">No daily history for ${esc(p.name)} yet. The site saves a snapshot every day from now on.</p>`;
+    const SHOWN = 10, shown = allDays ? list : list.slice(0, SHOWN);
+    const fmt = d => new Date(d + "T12:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+    const gap = d => Math.round((new Date(d.date) - new Date(d.since)) / 86_400_000);
+    return `<ul class="daylist">${shown.map(d => `<li>
+        <div class="dayhead"><b>${esc(fmt(d.date))}</b>${gap(d) > 1 ? ` <span class="muted" title="No snapshot in between: this covers everything since ${esc(fmt(d.since))}">(${gap(d)} days)</span>` : ""}
+          <span>${d.total ? `<b class="num pos">+${nf.format(d.total)}</b> XP${d.levels ? ` · <b class="num">${d.levels}</b> level${d.levels === 1 ? "" : "s"}` : ""}` : `<span class="muted">nothing gained</span>`}</span></div>
+        ${d.skills.length ? `<div class="dayskills">${d.skills.map(r => `<span class="tag" title="+${nf.format(r.xp)} XP">${esc(r.skill.name)} ${r.to > r.from ? `<b>${r.from} → ${r.to}</b>` : r.to} <span class="muted">+${short(r.xp)}</span></span>`).join("")}</div>` : ""}
+      </li>`).join("")}</ul>
+      ${list.length > SHOWN ? `<button type="button" class="linkbtn" data-alldays>${allDays ? "Show only the last " + SHOWN : `Show all ${list.length} days`}</button>` : ""}
+      <p class="fine">From the site's own history: one snapshot of everyone's XP per day, kept for good. A day runs until the last check of the evening (around 23:00), so late-night XP counts for the next day. Days before 12 October come from Wise Old Man's records, which only exist for days someone pressed Update stats.</p>`;
+  }
+
   // XP and levels this player gained today, this week or this month (from Wise Old Man).
   function gainedSection(p) {
     const seg = `<div class="seg gainseg" role="group" aria-label="Period">${Object.entries(PERIODS).map(([k, l]) =>
-      `<button type="button" data-gp="${k}" aria-pressed="${k === period}">${l}</button>`).join("")}</div>`;
+      `<button type="button" data-gp="${k}" aria-pressed="${!perDay && k === period}">${l}</button>`).join("")}<button type="button" data-gp="perday" aria-pressed="${perDay}">Per day</button></div>`;
+    if (perDay) return section("Gained", seg + perDayBody(p), { href: "#/group", text: "Whole group" });
     const when = PERIODS[period].toLowerCase();
     let body;
     if (!group.gains(period)) body = `<p class="muted">${group.gainsLoading(period) ? "Loading from Wise Old Man…" : "No data yet."}</p>`;
@@ -262,7 +288,8 @@ export function mount(root, [nameParam]) {
 
   if (GOALS.length) group.loadGains("week");
   group.loadGains(period);
-  const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render), history.onChange(render),
+  xpHistory.load();
+  const offs = [xpHistory.onChange(render), prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render), history.onChange(render),
     me.onChange(() => { if (me.get()) { chosen = me.get(); render(); } })];
   render();
   return () => offs.forEach(off => off());

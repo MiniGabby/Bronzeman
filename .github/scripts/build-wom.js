@@ -3,10 +3,18 @@
 // they gained today, this week and this month to docs/data/wom.json. The website reads that file
 // instead of asking Wise Old Man from every visitor's browser, which ran into its request limit
 // (20 per minute). The "Update stats" button on the site still talks to Wise Old Man directly.
+//
+// It also keeps docs/data/xp-history.json: one snapshot of everyone's XP per skill per day (the last
+// sync of that day, Dutch time), forever. The site works out what each player gained per day from it.
+//   { skills: ["overall", "attack", ...], days: { "2026-10-12": { "mini gabby": [xp, xp, ...] } } }
+// Run once with --backfill to fill in the days before this existed from Wise Old Man's own snapshots.
 const fs = require('fs');
 
 const API = 'https://api.wiseoldman.net/v2/players/';
 const OUT = 'docs/data/wom.json';
+const HISTORY = 'docs/data/xp-history.json';
+// The calendar day in the Netherlands, as YYYY-MM-DD.
+const dayOf = date => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam' }).format(new Date(date));
 const PERIODS = ['day', 'week', 'month'];
 const UA = { 'User-Agent': 'Bronzeman group site (github.com/MiniGabby/Bronzeman)' };
 const PAUSE_MS = 3500;   // about 17 requests a minute: under Wise Old Man's limit of 20
@@ -45,7 +53,44 @@ async function fetchPlayer(name) {
   return out;
 }
 
+// ---- daily XP history ----
+function readHistory() {
+  try { const h = JSON.parse(fs.readFileSync(HISTORY, 'utf8')); if (h.skills && h.days) return h; } catch {}
+  return { skills: [], days: {} };
+}
+// Puts one player's XP per skill into a day, adding skills the file hasn't seen yet to the end of the list.
+function record(history, day, id, skills) {
+  if (!skills) return;
+  for (const k of Object.keys(skills)) if (!history.skills.includes(k)) history.skills.push(k);
+  (history.days[day] ||= {})[id] = history.skills.map(k => skills[k]?.experience ?? -1).map(x => Math.max(0, x));
+}
+function writeHistory(history) {
+  const days = Object.fromEntries(Object.keys(history.days).sort().map(d => [d, history.days[d]]));
+  // One day per line, so the file stays readable and changes show up as one changed line.
+  fs.writeFileSync(HISTORY, `{"skills":${JSON.stringify(history.skills)},"days":{\n${
+    Object.entries(days).map(([d, v]) => `${JSON.stringify(d)}:${JSON.stringify(v)}`).join(',\n')}\n}}\n`);
+}
+
+// One-off: every snapshot Wise Old Man has kept, the last one of each day.
+async function backfill() {
+  const history = readHistory();
+  for (const name of names) {
+    const id = name.toLowerCase();
+    try {
+      const snaps = await call(`${encodeURIComponent(id)}/snapshots?period=year&limit=50`);
+      let all = snaps, offset = 50;
+      while (snaps.length && all.length === offset) { all = all.concat(await call(`${encodeURIComponent(id)}/snapshots?period=year&limit=50&offset=${offset}`)); offset += 50; }
+      const lastOfDay = {};
+      for (const s of all) { const d = dayOf(s.createdAt); if (!lastOfDay[d] || s.createdAt > lastOfDay[d].createdAt) lastOfDay[d] = s; }
+      for (const [d, s] of Object.entries(lastOfDay)) record(history, d, id, s.data?.skills);
+      console.log(`${name}: ${all.length} snapshots, ${Object.keys(lastOfDay).length} days`);
+    } catch (e) { console.log(`${name}: ${e.message}`); }
+  }
+  writeHistory(history);
+}
+
 (async () => {
+  if (process.argv.includes('--backfill')) return backfill();
   let old = {};
   try { old = JSON.parse(fs.readFileSync(OUT, 'utf8')).players || {}; } catch {}
   const players = {};
@@ -59,4 +104,9 @@ async function fetchPlayer(name) {
   }
   if (!Object.keys(players).length) { console.log('Nothing fetched; keeping the old file.'); return; }
   fs.writeFileSync(OUT, JSON.stringify({ generatedAt: new Date().toISOString(), players }) + '\n');
+
+  // Today's snapshot (overwrites an earlier one from today, so the day ends with its last sync).
+  const history = readHistory();
+  for (const [id, p] of Object.entries(players)) if (p.updatedAt) record(history, dayOf(p.updatedAt), id, p.skills);
+  writeHistory(history);
 })();
