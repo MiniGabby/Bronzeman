@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-12", title: "Stats and XP gains refresh by themselves", link: "#/group",
+    items: [
+      "The site used to ask Wise Old Man for everyone's stats and XP gains from your own browser, every time, and ran into its limit when you clicked around. Now the site itself refreshes everyone on Wise Old Man every 3 hours and keeps the result, so pages load at once and nobody has to press Update stats for the numbers to move.",
+      "The Update stats button is still there for when you want your latest levels right after a session. The Gained block on the Player page, the XP gained table on the Group page and the Arcanekitten tab all use the stored numbers."
+    ]
+  },
+  {
     date: "2026-10-12", title: "Player page: what you gained", link: "#/player",
     items: [
       "Every Player page has a new block, \"Gained\": the XP and levels that player gained today, this week or this month, per skill, with the level before and after. For example: \"Cooking 67 → 80, +13 levels, +1,392,050 XP\".",

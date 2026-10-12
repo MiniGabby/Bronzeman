@@ -1,8 +1,12 @@
 // Group members' stats from Wise Old Man (https://wiseoldman.net), which tracks the OSRS hiscores.
 //
-// Wise Old Man allows 20 requests per minute. To stay well under that, everything fetched is
-// remembered in the browser (localStorage) and reused for CACHE_MS: a page refresh shows the
-// remembered stats instantly and only asks Wise Old Man again once they are older than that.
+// Wise Old Man allows 20 requests per minute, so the site asks it as little as possible:
+//   1. A GitHub Action (.github/scripts/build-wom.js) refreshes everyone on Wise Old Man every 3 hours
+//      and saves their levels, XP and XP gains to data/wom.json. The site reads that file first.
+//   2. Only when that file is missing or more than SYNC_STALE_MS old does the site ask Wise Old Man
+//      itself, and then everything fetched is remembered in the browser for CACHE_MS.
+//   3. The "Update stats" button always asks Wise Old Man directly; until the next sync the site then
+//      keeps using what that update returned.
 import PLAYERS from "../../data/players.js";
 import QUESTS, { INFERRED, ALL_QUESTS } from "../../data/quests.js";
 import { skillByName, xpForLevel } from "./osrs.js";
@@ -11,6 +15,7 @@ import { store } from "./store.js";
 const WOM = "https://api.wiseoldman.net/v2/players/";
 const CACHE_KEY = "wom";
 const CACHE_MS = 15 * 60_000;
+const SYNC_STALE_MS = 8 * 3600_000;   // the Action runs every 3 hours; older than this means it's stuck
 
 const idOf = name => name.toLowerCase();
 const state = {
@@ -61,9 +66,44 @@ for (const p of state.players) {
 }
 if (state.players.some(p => p.skills)) state.loaded = true;
 
-/** Loads levels; uses the browser cache unless it's older than 15 minutes (or force is set). */
+// ---- data/wom.json, written by the GitHub Action ----
+let synced = null, syncedLoading = null;
+// One fetch per page load, shared by everything that asks for it at the same time.
+function loadSynced() {
+  syncedLoading ||= (async () => {
+    try {
+      const r = await fetch("data/wom.json", { cache: "no-cache" });
+      if (r.ok) synced = await r.json();
+    } catch { /* no file yet: fall back to asking Wise Old Man */ }
+    return synced;
+  })();
+  return syncedLoading;
+}
+const syncedFresh = () => !!synced?.generatedAt && Date.now() - new Date(synced.generatedAt).getTime() < SYNC_STALE_MS;
+/** The saved stats of any account in data/wom.json (also the one on the Arcanekitten tab), or null. */
+export async function syncedPlayer(name) {
+  await loadSynced();
+  return synced?.players?.[idOf(name)] || null;
+}
+/** When data/wom.json was written, or null. */
+export const syncedAt = () => synced?.generatedAt || null;
+// True when this browser pressed Update stats after the last sync: then its own data is newer.
+const updatedSinceSync = () => !!cache.manualAt && (!synced?.generatedAt || cache.manualAt > new Date(synced.generatedAt).getTime());
+
+/** Loads levels: from data/wom.json when it's there and recent, otherwise from Wise Old Man (cached 15 minutes). */
 export async function load({ force = false } = {}) {
-  const todo = state.players.filter(p => force || !fresh(cache.players[p.id]?.fetchedAt));
+  await loadSynced();
+  if (synced?.players) {
+    for (const p of state.players) {
+      const s = synced.players[p.id];
+      // Take the synced stats unless this browser already holds a newer update.
+      if (s?.skills && (!p.updatedAt || new Date(s.updatedAt) >= new Date(p.updatedAt))) {
+        Object.assign(p, { name: s.name || p.name, updatedAt: s.updatedAt, skills: s.skills, error: null });
+        cache.players[p.id] = { name: p.name, updatedAt: p.updatedAt, skills: p.skills, fetchedAt: Date.now() };
+      }
+    }
+  }
+  const todo = state.players.filter(p => force || (!fresh(cache.players[p.id]?.fetchedAt) && !(syncedFresh() && p.skills)));
   if (todo.length) {
     await Promise.all(todo.map(async p => {
       try {
@@ -103,6 +143,7 @@ export async function updateAll() {
   // XP gains changed too: forget them so they're fetched fresh.
   state.gains = {};
   cache.gains = {};
+  cache.manualAt = Date.now();
   saveCache();
   state.updating = false;
   state.loaded = true;
@@ -224,6 +265,13 @@ for (const [period, c] of Object.entries(cache.gains || {})) if (c?.data) state.
 
 export async function loadGains(period) {
   if (state.gainsLoading[period]) return;
+  // The synced file has everyone's gains: use it, unless this browser updated the stats after the sync.
+  await loadSynced();
+  if (syncedFresh() && !updatedSinceSync() && state.players.some(p => synced.players?.[p.id]?.gains?.[period])) {
+    state.gains[period] = Object.fromEntries(state.players.map(p => [p.id, synced.players[p.id]?.gains?.[period] ?? null]));
+    emit();
+    return;
+  }
   if (state.gains[period] && fresh(cache.gains[period]?.fetchedAt)) return;
   state.gainsLoading[period] = true;
   emit();

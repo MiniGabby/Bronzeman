@@ -1,6 +1,7 @@
 // Arcanekitten tab: the levels of an account outside the group next to the group's best level per
 // skill. A skill is crossed off once someone in the group is at least the same level as that account.
-// Who the account is: data/catchup.js. Its stats come from Wise Old Man, remembered for 15 minutes.
+// Who the account is: data/catchup.js. Its stats come from data/wom.json (synced every 3 hours by the
+// GitHub Action); the Update button asks Wise Old Man directly.
 import CATCHUP from "../../data/catchup.js";
 import * as group from "../core/players.js";
 import { SKILLS } from "../core/osrs.js";
@@ -118,6 +119,17 @@ export function mount(root) {
 
   const off = group.onChange(render);
   render();
-  if (!data || Date.now() - data.fetchedAt > CACHE_MS) load("GET");
-  return () => off();
+  // The synced file (data/wom.json) has this account too: use it when it's newer than what this browser
+  // remembers, and only ask Wise Old Man when the file doesn't have it.
+  let gone = false;
+  group.syncedPlayer(CATCHUP.account).then(s => {
+    if (gone) return;
+    if (s?.skills && (!data?.updatedAt || new Date(s.updatedAt) >= new Date(data.updatedAt))) {
+      data = { id, name: s.name || CATCHUP.account, updatedAt: s.updatedAt, fetchedAt: Date.now(),
+        levels: Object.fromEntries(Object.entries(s.skills).map(([k, v]) => [k, v.level])) };
+      store.set(CACHE_KEY, data);
+      render();
+    } else if (!s && (!data || Date.now() - data.fetchedAt > CACHE_MS)) load("GET");
+  });
+  return () => { gone = true; off(); };
 }

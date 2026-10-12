@@ -47,7 +47,7 @@ export function mount(root) {
   let message = "";
 
   root.innerHTML = `
-    <p class="lead">Stats come from <a href="https://wiseoldman.net" target="_blank" rel="noopener">Wise Old Man</a>, which reads the OSRS hiscores. Press <b>Update stats</b> after a session to pull in everyone's latest levels. It can be pressed once an hour.</p>
+    <p class="lead">Stats come from <a href="https://wiseoldman.net" target="_blank" rel="noopener">Wise Old Man</a>, which reads the OSRS hiscores. The site refreshes everyone automatically every 3 hours. Press <b>Update stats</b> if you want your latest levels right after a session; it can be pressed once an hour.</p>
     <div class="toolbar">
       <button type="button" class="btn primary" data-f="update">Update stats</button>
       <span class="updmsg" data-f="last"></span>

@@ -1,5 +1,7 @@
 # Copies everyone's quest progress, levels and achievement diaries from the OSRS Wiki's WikiSync into docs/data/wikisync.json,
 # because the website itself isn't allowed to read WikiSync from the browser.
+# Also refreshes everyone on Wise Old Man and saves their levels, XP and XP gains to docs/data/wom.json,
+# so the website doesn't have to ask Wise Old Man from every visitor's browser.
 name: Sync WikiSync quests
 
 on:
@@ -7,7 +9,7 @@ on:
     - cron: "17 */3 * * *"   # every 3 hours
   workflow_dispatch:          # "Run workflow" button on the Actions tab
   push:
-    paths: ["docs/data/players.js"]
+    paths: ["docs/data/players.js", "docs/data/catchup.js"]
 
 permissions:
   contents: write
@@ -29,15 +31,18 @@ jobs:
       - name: Fetch quests, levels and diaries from WikiSync
         run: node .github/scripts/build-wikisync.js
 
+      - name: Refresh Wise Old Man and save levels, XP and gains
+        run: node .github/scripts/build-wom.js
+
       - name: Commit if changed
         run: |
-          if git diff --quiet -- docs/data/wikisync.json && ! git ls-files --others --exclude-standard -- docs/data/wikisync.json | grep -q .; then
+          if git diff --quiet -- docs/data/wikisync.json docs/data/wom.json && ! git ls-files --others --exclude-standard -- docs/data/wikisync.json docs/data/wom.json | grep -q .; then
             echo "No changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/wikisync.json
-          git commit -m "Update WikiSync quests"
+          git add docs/data/wikisync.json docs/data/wom.json
+          git commit -m "Update WikiSync quests and Wise Old Man stats"
           git pull --rebase
           git push
