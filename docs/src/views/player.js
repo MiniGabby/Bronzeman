@@ -15,7 +15,7 @@ import { plan as questPlan } from "../core/questPlan.js";
 import { goalCard } from "./group.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, missingQuests, doableAlt } from "../core/autoRoute.js";
-import { skillByKey, skillByName, xpForLevel } from "../core/osrs.js";
+import { SKILLS, skillByKey, skillByName, xpForLevel } from "../core/osrs.js";
 import { store } from "../core/store.js";
 import * as me from "../core/me.js";
 import { esc, gp, short, signed, cls, nf, duration, plural } from "../core/format.js";
@@ -37,7 +37,13 @@ export function mount(root, [nameParam]) {
   const $ = s => root.querySelector(s);
   const sel = $("#pl-name");
   const openUnlocks = new Set();   // unlocks whose list of methods is open
+  // Which period the "Gained" block shows; shared with the Group page.
+  const PERIODS = { day: "Today", week: "This week", month: "This month" };
+  let period = store.get("gainsPeriod", "week");
+  if (!PERIODS[period]) period = "week";
   root.addEventListener("click", e => {
+    const pb = e.target.closest("[data-gp]");
+    if (pb) { period = pb.dataset.gp; store.set("gainsPeriod", period); group.loadGains(period); render(); return; }
     const b = e.target.closest("[data-opens]");
     if (!b) return;
     openUnlocks.has(b.dataset.opens) ? openUnlocks.delete(b.dataset.opens) : openUnlocks.add(b.dataset.opens);
@@ -129,6 +135,31 @@ export function mount(root, [nameParam]) {
       : buyNow.length ? `<ul class="plist">${buyNow.map(x => `<li><b>${esc(x.it.name)}</b>: buy at <b class="num">${gp(x.buy)} gp</b> until ${history.hourLabel(history.cheapNow(x.t, now))}, sell at <b class="num">${gp(x.sell)} gp</b> around ${history.hourLabel(x.t.sellHour)}${x.nextDay ? " (+1 day)" : ""} <span class="muted">· <span class="pos">${signed(x.total)}</span> per buy limit</span></li>`).join("")}</ul>`
       : `<p class="muted">No reliable flip is in its cheap part of the day right now (${history.hourLabel(now.getHours())}).</p>`;
     return section("Flips to buy right now", body + `<p class="fine">Usually or reliable patterns only, with ${short(opts.cash)} cash (change it on the Merching tab).</p>`, { href: "#/merch", text: "Merching" });
+  }
+
+  // XP and levels this player gained today, this week or this month (from Wise Old Man).
+  function gainedSection(p) {
+    const seg = `<div class="seg gainseg" role="group" aria-label="Period">${Object.entries(PERIODS).map(([k, l]) =>
+      `<button type="button" data-gp="${k}" aria-pressed="${k === period}">${l}</button>`).join("")}</div>`;
+    const when = PERIODS[period].toLowerCase();
+    let body;
+    if (!group.gains(period)) body = `<p class="muted">${group.gainsLoading(period) ? "Loading from Wise Old Man…" : "No data yet."}</p>`;
+    else {
+      const total = group.gained(period, p, "overall");
+      const rows = SKILLS.map(s => ({ s, g: group.gained(period, p, s.name) })).filter(r => r.g && r.g.xp > 0).sort((a, b) => b.g.xp - a.g.xp);
+      if (!total) body = `<p class="muted">Couldn't load ${esc(p.name)}'s gains from Wise Old Man just now (it allows a limited number of requests per minute). Try again in a minute.</p>`;
+      else if (!rows.length) body = `<p class="muted">Nothing gained ${when} yet, or the stats haven't been updated since. Press Update stats on the Group page after playing.</p>`;
+      else {
+        const levels = rows.reduce((a, r) => a + (r.g.levels || 0), 0);
+        body = `<p class="gainsum"><b class="num">+${nf.format(total.xp)}</b> XP${levels ? ` and <b class="num">${levels}</b> level${levels === 1 ? "" : "s"}` : ""} ${when}</p>
+          <ul class="plist gainlist">${rows.map(r => {
+            const now = group.level(p, r.s.name), was = now - (r.g.levels || 0);
+            return `<li><a href="#/training/${r.s.key}"><b>${esc(r.s.name)}</b></a> ${r.g.levels ? `<span class="num">${was} → ${now}</span> <span class="pill good">+${r.g.levels} level${r.g.levels === 1 ? "" : "s"}</span>` : `<span class="num muted">${now}</span>`}
+              <span class="muted">· +${nf.format(r.g.xp)} XP</span></li>`;
+          }).join("")}</ul>`;
+      }
+    }
+    return section("Gained", seg + body + `<p class="fine">From Wise Old Man, counted from the first stats update in the period to the last one (stats ${p.updatedAt ? esc(new Date(p.updatedAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })) : "not updated yet"}).</p>`, { href: "#/group", text: "Whole group" });
   }
 
   function goalsSection(p) {
@@ -225,11 +256,12 @@ export function mount(root, [nameParam]) {
     if (!prices.ready() || !unlocks.loaded()) { $('[data-f="body"]').innerHTML = `<p class="muted">Loading prices and unlocks…</p>`; return; }
     $('[data-f="body"]').innerHTML = `<div class="pgrid">
       <div>${todoSection(p)}${moneySection(p)}${trainingSection(p)}</div>
-      <div>${flipsSection()}${goalsSection(p)}${unlockSection(p)}${questSection(p)}</div>
+      <div>${gainedSection(p)}${goalsSection(p)}${flipsSection()}${unlockSection(p)}${questSection(p)}</div>
     </div>`;
   }
 
   if (GOALS.length) group.loadGains("week");
+  group.loadGains(period);
   const offs = [prices.onChange(render), calc.onChange(render), group.onChange(render), unlocks.onChange(render), history.onChange(render),
     me.onChange(() => { if (me.get()) { chosen = me.get(); render(); } })];
   render();

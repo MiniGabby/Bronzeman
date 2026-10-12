@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-12", title: "Player page: what you gained", link: "#/player",
+    items: [
+      "Every Player page has a new block, \"Gained\": the XP and levels that player gained today, this week or this month, per skill, with the level before and after. For example: \"Cooking 67 → 80, +13 levels, +1,392,050 XP\".",
+      "The numbers come from Wise Old Man, so they're as fresh as the last time someone pressed Update stats on the Group page. The Group page still has the same gains for everyone side by side."
+    ]
+  },
+  {
     date: "2026-10-11", title: "Herblore: Fastest, Cheapest and Best of both", link: "#/training/herblore",
     items: [
       "Herblore was the only guide with a single route. It now has the same three tabs as the other skills.",
