@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-13", title: "65 new unlocks (879 in total)", link: "#/unlocked",
+    items: [
+      "Apple sapling, willow sapling, apples(5) and sweetcorn (Key Kode): the tree runs for Farming 27 and 30 are now fully unlocked. Five oaks and four apple trees give about 7,500 XP a day, five willows and four apple trees about 12,500.",
+      "Yew logs and a yew seed (dreammancer): yew logs open up for Firemaking (60), Fletching yew bows and yew bird houses.",
+      "Ultracompost and volcanic ash (Mini Gabby), plus snapdragon, cadantine and lantadyme seeds: better herb runs, and three more herbs to plant. Kwuarm and super attack(4) (Mini Gabby) for Herblore, and an agility potion(4) (Lil Fool).",
+      "Also the whole gnome cocktail bar, weapon poisons, a granite body and ironwood and camphor seeds. Most unlocks this time by Mini Gabby (40), then lil oldkitty (8), Lil Fool (7), Key Kode (6) and dreammancer (4)."
+    ]
+  },
+  {
     date: "2026-10-13", title: "Goal: Mini Gabby to Ranged 62", link: "#/group",
     items: [
       "Mini Gabby is going for Ranged 62 by Sunday 18 October. From level 47 that's about 253,000 XP, a little over 42,000 a day counting today. Ranged 62 is also what the group needs to match arcanekitten in that skill. The progress bar is on the Group page and on Mini Gabby's Player page."

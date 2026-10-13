@@ -63,7 +63,7 @@ export default [
 
   banked("willow", "willow trees", 30, "Willow logs", 67.5, 74000, "Willows stand next to water: south of the Draynor bank is the classic spot, right next to a bank."),
   banked("maple", "maple trees", 45, "Maple logs", 100, 50000, "Maple trees north of the Seers' Village bank."),
-  banked("yew", "yew trees", 60, "Yew logs", 175, 47000, "Yews at the Seers' Village church, south of Falador, or in the Woodcutting Guild (Woodcutting 60, which also gives an invisible +7). Yew logs aren't unlocked yet: cutting the first one unlocks them for everyone."),
+  banked("yew", "yew trees", 60, "Yew logs", 175, 47000, "Yews at the Seers' Village church, south of Falador, or in the Woodcutting Guild (Woodcutting 60, which also gives an invisible +7). Yew logs are unlocked (dreammancer, 13 Oct)."),
   banked("magic", "magic trees", 75, "Magic logs", 250, 27500, "Magic trees south of the Hosidius bank, in the Woodcutting Guild, or at the Myths' Guild. Slow, but very little clicking. Magic logs aren't unlocked yet: cutting the first one unlocks them for everyone."),
   banked("redwood", "redwood trees", 90, "Redwood logs", 380, 70000, "Redwood trees in the Woodcutting Guild, with a bank chest close by. Very little attention needed. Redwood logs aren't unlocked yet: cutting the first one unlocks them.")
 ];

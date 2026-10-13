@@ -748,7 +748,7 @@ export default {
       },
       {
         key: "logs", name: "Keep the logs", prefer: "cheap",
-        intro: "The classic route next to a bank: willows, maples, yews, magic trees and redwoods, keeping every log to sell or to use. Slower, relaxed, and it unlocks yew, magic and redwood logs for the group. Only the level-99 rates come from the wiki; the starting pace per tree is my estimate.",
+        intro: "The classic route next to a bank: willows, maples, yews, magic trees and redwoods, keeping every log to sell or to use. Slower, relaxed, and it unlocks magic and redwood logs for the group (yew logs are unlocked already). Only the level-99 rates come from the wiki; the starting pace per tree is my estimate.",
         route: [
           { from: 1, to: 15, method: "wc-regular" },
           { from: 15, to: 30, method: "wc-oak" },
