@@ -3,6 +3,12 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-13", title: "Goal: Mini Gabby to Ranged 62", link: "#/group",
+    items: [
+      "Mini Gabby is going for Ranged 62 by Sunday 18 October. From level 47 that's about 253,000 XP, a little over 42,000 a day counting today. Ranged 62 is also what the group needs to match arcanekitten in that skill. The progress bar is on the Group page and on Mini Gabby's Player page."
+    ]
+  },
+  {
     date: "2026-10-12", title: "Player page: what you gained per day", link: "#/player",
     items: [
       "The Gained block on the Player page has a fourth button, \"Per day\": every day with the XP and levels you gained and the skills you trained, for example \"Mon 12 Oct: +230,603 XP, 29 levels: Herblore 46 → 55, Smithing 61 → 63, …\". It shows the last 10 days, with a button for all of them.",
