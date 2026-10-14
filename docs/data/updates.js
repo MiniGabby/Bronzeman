@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-14", title: "7 new unlocks (886 in total), including torstol", link: "#/unlocked",
+    items: [
+      "Torstol, grimy torstol and a torstol seed (Mini Gabby). Clean torstol can now be bought on the GE, so anyone can carry one for Dr Jekyll, who gives a stamina potion(4) for it. Torstol also opens Zamorak brews on the Herblore guide and torstol herb runs from Farming 85.",
+      "Bananas(5) (Key Kode): the payment for curry trees, so the Farming 42 fruit tree run only waits on the curry sapling now. Also a pat of butter, a pot of cream and steel boots."
+    ]
+  },
+  {
     date: "2026-10-13", title: "65 new unlocks (879 in total)", link: "#/unlocked",
     items: [
       "Apple sapling, willow sapling, apples(5) and sweetcorn (Key Kode): the tree runs for Farming 27 and 30 are now fully unlocked. Five oaks and four apple trees give about 7,500 XP a day, five willows and four apple trees about 12,500.",
