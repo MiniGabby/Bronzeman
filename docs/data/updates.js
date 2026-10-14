@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-14", title: "New tab: Together", link: "#/together",
+    items: [
+      "\"Up next, together\": quests that are among the next 15 in two or more players' own Optimal Ironman order and that they can all do right now, so you can do them as a group without leaving the order. Right now that's for example Sheep Herder (Key Kode, lil oldkitty, dreammancer and Medi Uso), Rag and Bone Man I and The Queen of Thieves (four of you each).",
+      "\"The big quests\": a card for each quest you want to do together, from Lost City and Dragon Slayer I to Song of the Elves and Desert Treasure II, in the order they come in the list. Each card shows who has done it, who's ready, and what everyone else still needs, counting every quest down the chain. Monkey Madness I is ready for three of you today.",
+      "Everything comes from WikiSync, so it updates by itself. The tabs at the top now wrap onto a second line on narrower screens instead of hiding the last ones."
+    ]
+  },
+  {
     date: "2026-10-14", title: "7 new unlocks (886 in total), including torstol", link: "#/unlocked",
     items: [
       "Torstol, grimy torstol and a torstol seed (Mini Gabby). Clean torstol can now be bought on the GE, so anyone can carry one for Dr Jekyll, who gives a stamina potion(4) for it. Torstol also opens Zamorak brews on the Herblore guide and torstol herb runs from Farming 85.",

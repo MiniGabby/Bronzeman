@@ -4,7 +4,7 @@ import ORDER from "../../data/quest-order.js";
 import * as group from "./players.js";
 
 /** 2 = done, 1 = started, 0 = not started, null = the site can't tell. */
-function stateOf(p, item) {
+export function stateOf(p, item) {
   if (item.type === "diary") {
     const v = group.diaryDone(p, item.diary);
     if (v == null) return null;
@@ -17,7 +17,7 @@ function stateOf(p, item) {
 }
 
 /** What still stands between the player and a step: skill levels and quests. */
-function blockers(p, item) {
+export function blockers(p, item) {
   const skills = Object.entries(item.skills || {}).filter(([s, l]) => group.level(p, s) < l)
     .map(([s, l]) => ({ skill: s, need: l, have: group.level(p, s), boostable: (item.boostable || []).includes(s) }));
   const quests = (item.quests || []).filter(q => group.questDone(p, q) === false);
@@ -45,4 +45,14 @@ export function plan(p, ahead = 30) {
     else if (s.need > cur.need) train.set(s.skill, { ...cur, need: s.need });
   }
   return { total: all.length - untracked, done: all.filter(x => x.state === 2).length, steps, untracked, train: [...train.values()] };
+}
+
+/** Every quest a quest needs, also through its own requirements (for "4 quests still to do first"). */
+export function allPrereqs(name, seen = new Set()) {
+  const item = ORDER.find(x => x.name === name);
+  for (const q of item?.quests || []) {
+    const base = q.replace(/ \(started\)$/, "");
+    if (!seen.has(base)) { seen.add(base); allPrereqs(base, seen); }
+  }
+  return seen;
 }
