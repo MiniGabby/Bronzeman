@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-15", title: "16 new unlocks (902 in total)", link: "#/unlocked",
+    items: [
+      "Potato cactus (lil oldkitty): the secondary for magic potions (Herblore 76), and what the farmer takes to look after a celastrus tree.",
+      "A maple seed (Lil Fool), the first step towards maple saplings for the Farming 45 tree run. Broad arrowheads (Mini Gabby), a slayer bell and spiny helmet, adamant and mithril shields, a sapphire amulet, necklaces of passage and a few lower potion doses.",
+      "The group is past 900 unlocked items. Most unlocks this time by Mini Gabby (6), then lil oldkitty (5), Lil Fool (4) and Key Kode (1)."
+    ]
+  },
+  {
     date: "2026-10-14", title: "New tab: Together", link: "#/together",
     items: [
       "\"Up next, together\": quests that are among the next 15 in two or more players' own Optimal Ironman order and that they can all do right now, so you can do them as a group without leaving the order. Right now that's for example Sheep Herder (Key Kode, lil oldkitty, dreammancer and Medi Uso), Rag and Bone Man I and The Queen of Thieves (four of you each).",
