@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-10-18T20:55:01Z",
- "newestUnlockAt": "2026-10-18T19:57:46Z",
+ "generatedAt": "2026-10-18T21:37:58Z",
+ "newestUnlockAt": "2026-10-18T21:30:53Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,12 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 4587,
+   "name": "Dragon scimitar",
+   "at": "2026-10-18T21:30:53Z",
+   "by": "Mini Gabby"
+  },
   {
    "id": 3183,
    "name": "Monkey bones",
