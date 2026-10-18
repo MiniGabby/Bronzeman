@@ -3,6 +3,21 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-18", title: "Unlocked items now update by themselves", link: "#/unlocked",
+    items: [
+      "The Unlocked list now reads the bronzeman plugin's database every 3 hours, together with the quests and stats. New unlocks show up on the site within a few hours, without waiting for an export.",
+      "Only the item, who unlocked it and when are published, same as before."
+    ]
+  },
+  {
+    date: "2026-10-18", title: "45 new unlocks (947 in total)", link: "#/unlocked",
+    items: [
+      "Curry leaf (Key Kode), marigolds, a mystic fire and a mystic air staff, and all four Fremennik helms: archer, berserker, warrior and farseer (Lil Fool).",
+      "Rune spear, Defence potion(3), a muddy key and ensouled dog and minotaur heads (Mini Gabby).",
+      "Most unlocks this time by Mini Gabby (20), then Key Kode (11), Lil Fool (11), lil oldkitty (2) and Dreammancer (1)."
+    ]
+  },
+  {
     date: "2026-10-15", title: "16 new unlocks (902 in total)", link: "#/unlocked",
     items: [
       "Potato cactus (lil oldkitty): the secondary for magic potions (Herblore 76), and what the farmer takes to look after a celastrus tree.",

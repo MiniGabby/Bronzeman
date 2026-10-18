@@ -10,6 +10,7 @@ A small website for our Old School RuneScape bronzeman group. It shows money mak
 - **Unlocked:** every item the group has unlocked (bronzeman), with who unlocked it, when and the GE price. The Money makers page also flags methods whose inputs nobody has unlocked yet.
 - **Simple view:** a button in the header for larger text, plain labels and fewer columns (`src/core/ui.js`). In a view, use `ui.t("GP / XP", "Coins per XP")` for a label with a plain version, and give cells that only traders need the class `simple-hide`.
 - **Wise Old Man:** the GitHub Action also refreshes every player on Wise Old Man every 3 hours and writes their levels, XP and XP gains (today, this week, this month) to `data/wom.json` (`.github/scripts/build-wom.js`). The site reads that file first and only asks Wise Old Man itself when the file is missing or more than 8 hours old, or when someone presses Update stats. Don't edit the file by hand.
+- **Unlocked items sync:** the same Action reads the bronzeman plugin's database every 3 hours and adds new unlocks to `data/unlocks.json` (`.github/scripts/build-unlocks.js`). The database address is the repository secret `BRONZEMAN_DB_URL`; never put it in this folder or call the database from the site, because anyone with the address can change it.
 - **Daily XP history:** the same Action step adds one snapshot of everyone's XP per skill per day to `data/xp-history.json` and never removes any. `src/core/xpHistory.js` turns it into gains per day (the "Per day" button in the Gained block on the Player page). Don't edit the file by hand.
 - **WikiSync:** besides quests, `data/wikisync.json` holds each player's levels and achievement diaries. Levels are used when they're ahead of Wise Old Man (`core/players.js`). Diaries that improve a method go in `data/diary-perks.js`, keyed by method id; the card then shows who has them.
 - **Together:** quests two or more players can do together without leaving the Optimal Ironman order, and a card per big group quest (`data/big-quests.js`: add or remove quests there, by their name in `data/quest-order.js`).
@@ -35,7 +36,7 @@ data/
   skill-guides.js        Training routes per skill (recommended method per level range)
   updates.js             What's new on the site (Updates tab), newest first
   requests.json          Guide requests, written by the GitHub Action (don't edit by hand)
-  unlocks.json           Unlocked items, built from the plugin exports (don't edit by hand)
+  unlocks.json           Unlocked items, synced from the plugin's database by the GitHub Action (don't edit by hand)
   methods/
     index.js             List of all methods (one import line each)
     _template.js         Copy this to add a method; explains every field

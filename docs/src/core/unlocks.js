@@ -1,6 +1,6 @@
 // Items the group has unlocked (bronzeman: you can only buy an item on the GE after
-// someone in the group obtained it). Data: data/unlocks.json, built from the group
-// bronzeman plugin's exports by workspace/tools/build-unlocks.py.
+// someone in the group obtained it). Data: data/unlocks.json, synced from the group bronzeman
+// plugin's database by .github/scripts/build-unlocks.js (and from exports by workspace/tools/build-unlocks.py).
 import * as prices from "./prices.js";
 
 const state = { data: null, ids: null, names: null, error: null };
