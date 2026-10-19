@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-10-18T21:37:58Z",
- "newestUnlockAt": "2026-10-18T21:30:53Z",
+ "generatedAt": "2026-10-19T00:56:01Z",
+ "newestUnlockAt": "2026-10-18T22:29:51Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,18 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 6470,
+   "name": "Compost potion(4)",
+   "at": "2026-10-18T22:29:51Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 2448,
+   "name": "Superantipoison(4)",
+   "at": "2026-10-18T21:39:54Z",
+   "by": "Lil Fool"
+  },
   {
    "id": 4587,
    "name": "Dragon scimitar",
