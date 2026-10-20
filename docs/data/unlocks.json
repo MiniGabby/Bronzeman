@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-10-20T00:54:05Z",
- "newestUnlockAt": "2026-10-19T21:48:45Z",
+ "generatedAt": "2026-10-20T09:42:10Z",
+ "newestUnlockAt": "2026-10-20T09:12:50Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,42 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 2876,
+   "name": "Raw chompy",
+   "at": "2026-10-20T09:12:50Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 2866,
+   "name": "Ogre arrow",
+   "at": "2026-10-20T09:08:35Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 2861,
+   "name": "Wolfbone arrowtips",
+   "at": "2026-10-20T09:08:27Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 2865,
+   "name": "Flighted ogre arrow",
+   "at": "2026-10-20T09:08:19Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 2864,
+   "name": "Ogre arrow shaft",
+   "at": "2026-10-20T09:08:08Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 2862,
+   "name": "Achey tree logs",
+   "at": "2026-10-20T09:07:56Z",
+   "by": "Lil Fool"
+  },
   {
    "id": 1743,
    "name": "Hard leather",
