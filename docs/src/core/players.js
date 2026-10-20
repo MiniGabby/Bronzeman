@@ -9,6 +9,7 @@
 //      keeps using what that update returned.
 import PLAYERS from "../../data/players.js";
 import QUESTS, { INFERRED, ALL_QUESTS } from "../../data/quests.js";
+import SKILL_LOCKS from "../../data/skill-locks.js";
 import { skillByName, xpForLevel } from "./osrs.js";
 import { store } from "./store.js";
 
@@ -157,7 +158,24 @@ const womLevel = (p, skillName) => skillData(p, skillName)?.level ?? 1;
 // Wise Old Man until someone presses Update stats. It has no XP: a level that's ahead counts as
 // the XP that level starts at.
 const wikiLevel = (p, skillName) => p.wikiLevels?.[skillByName(skillName)?.name] ?? 0;
-export const level = (p, skillName) => Math.max(1, womLevel(p, skillName), wikiLevel(p, skillName));
+/** The level on the account, also when the player may not use it yet (see data/skill-locks.js). */
+export const realLevel = (p, skillName) => Math.max(1, womLevel(p, skillName), wikiLevel(p, skillName));
+/**
+ * The lock on this skill for this player while it's still on, as { skill, until, best, bestBy }
+ * (best = the highest level among the others, by whom), or null.
+ */
+export function skillLock(p, skillName) {
+  const name = skillByName(skillName)?.name;
+  const lock = SKILL_LOCKS.find(l => idOf(l.player) === p.id && skillByName(l.skill)?.name === name);
+  if (!lock) return null;
+  const others = state.players.filter(x => x !== p && x.skills);
+  const best = Math.max(1, ...others.map(x => realLevel(x, name)));
+  if (best >= lock.until) return null;
+  return { skill: name, until: lock.until, best, bestBy: others.filter(x => realLevel(x, name) === best).map(x => x.name) };
+}
+export const skillLocks = p => SKILL_LOCKS.filter(l => idOf(l.player) === p.id).map(l => skillLock(p, l.skill)).filter(Boolean);
+/** The level that counts: a locked skill counts as 1. */
+export const level = (p, skillName) => (skillLock(p, skillName) ? 1 : realLevel(p, skillName));
 export const xp = (p, skillName) => Math.max(0, skillData(p, skillName)?.experience ?? 0,
   wikiLevel(p, skillName) > womLevel(p, skillName) ? xpForLevel(wikiLevel(p, skillName)) : 0);
 /** True when this level comes from WikiSync because Wise Old Man is behind. */
@@ -220,7 +238,7 @@ export function questState(p, quest) {
   if (v === true) return 2;
   if (v === false) return 0;
   const inf = INFERRED[quest];
-  if (inf && p.skills && level(p, inf.skill) >= inf.level) return 2;
+  if (inf && p.skills && realLevel(p, inf.skill) >= inf.level) return 2;
   return null;
 }
 

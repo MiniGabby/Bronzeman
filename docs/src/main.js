@@ -14,12 +14,11 @@ import * as alchemy from "./views/alchemy.js";
 import * as merch from "./views/merch.js";
 import * as updates from "./views/updates.js";
 import * as player from "./views/player.js";
-import * as catchup from "./views/catchup.js";
 import * as together from "./views/together.js";
 
 // To add a page: create src/views/<name>.js exporting mount(root, params) and title,
 // add it here, and add a link with href="#/<name>" to the nav in index.html.
-const ROUTES = { player, money, training, alchemy, merch, group: groupView, together, arcanekitten: catchup, unlocked, requests, updates };
+const ROUTES = { player, money, training, alchemy, merch, group: groupView, together, unlocked, requests, updates };
 
 const view = document.getElementById("view");
 let cleanup = null;
@@ -33,7 +32,6 @@ const PAGE_HELP = {
   merch: "Buying items cheaply and selling them for more. This page shows what to buy, and when.",
   group: "Everyone's levels side by side, and who has gained XP lately.",
   together: "Quests you can do together, and how close everyone is to the big group quests.",
-  arcanekitten: "The levels the group still has to reach before arcanekitten can join.",
   unlocked: "Every item the group can already buy on the Grand Exchange.",
   requests: "Ask here for a new guide on the site.",
   updates: "What's new on the site, newest first."

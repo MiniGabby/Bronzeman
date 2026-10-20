@@ -22,10 +22,8 @@ const PAUSE_MS = 3500;   // about 17 requests a minute: under Wise Old Man's lim
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const quoted = file => [...fs.readFileSync(file, 'utf8').matchAll(/^\s*"([^"]+)",?\s*$/gm)].map(m => m[1]);
 
-// Group members (docs/data/players.js) plus the account on the Arcanekitten tab (docs/data/catchup.js).
-const members = quoted('docs/data/players.js');
-const extra = (fs.readFileSync('docs/data/catchup.js', 'utf8').match(/account:\s*"([^"]+)"/) || [])[1];
-const names = [...members, ...(extra ? [extra] : [])];
+// Group members (docs/data/players.js).
+const names = quoted('docs/data/players.js');
 
 async function call(path, method = 'GET') {
   await sleep(PAUSE_MS);

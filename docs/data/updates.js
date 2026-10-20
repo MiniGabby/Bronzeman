@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-20", title: "arcanekitten joins the group", link: "#/group",
+    items: [
+      "arcanekitten has taken lil oldkitty's place: on the Group page, the Player page and everywhere the site checks who can do what. Everything lil oldkitty unlocked stays unlocked, still with her name on it.",
+      "One rule: arcanekitten can't use Slayer until someone else in the group has Slayer 58 (now: Mini Gabby with 43). Until then the site counts her Slayer as 1, and the Group page shows her 58 with a lock. The lock comes off by itself.",
+      "The Arcanekitten tab is gone, because it was only there to count down to this."
+    ]
+  },
+  {
     date: "2026-10-18", title: "Unlocked items now update by themselves", link: "#/unlocked",
     items: [
       "The Unlocked list now reads the bronzeman plugin's database every 3 hours, together with the quests and stats. New unlocks show up on the site within a few hours, without waiting for an export.",

@@ -170,21 +170,27 @@ export function mount(root) {
     const host = $('[data-f="levels"]');
     if (!group.loaded()) { host.innerHTML = `<p class="muted">Loading stats from Wise Old Man…</p>`; return; }
     const ps = group.all();
-    const total = p => p.skills ? SKILLS.reduce((a, s) => a + group.level(p, s.name), 0) : null;
+    const total = p => p.skills ? SKILLS.reduce((a, s) => a + group.realLevel(p, s.name), 0) : null;
+    // A locked skill (data/skill-locks.js) shows its real level with a lock, and never counts as the highest.
+    const lockOf = (i, label) => ps[i].skills && SKILLS.some(s => s.name === label) ? group.skillLock(ps[i], label) : null;
     const row = (label, vals, link) => {
-      const max = Math.max(...vals.filter(v => v != null));
-      return `<tr><td>${link ? `<a href="${link}">${esc(label)}</a>` : `<b>${esc(label)}</b>`}</td>${vals.map((v, i) =>
-        `<td class="r num${v != null && v === max && max > 1 ? " top" : ""}">${v == null ? "–" : nf.format(v)}${link && group.levelFromWiki(ps[i], label) ? `<span class="muted" title="From WikiSync: newer than the last Wise Old Man update">*</span>` : ""}</td>`).join("")}</tr>`;
+      const max = Math.max(...vals.filter((v, i) => v != null && !lockOf(i, label)));
+      return `<tr><td>${link ? `<a href="${link}">${esc(label)}</a>` : `<b>${esc(label)}</b>`}</td>${vals.map((v, i) => {
+        const lock = lockOf(i, label);
+        return `<td class="r num${v != null && !lock && v === max && max > 1 ? " top" : ""}">${lock
+          ? `<span class="muted" title="${esc(`Can't be used yet: unlocks when someone else in the group has ${label} ${lock.until}`)}">🔒 ${nf.format(v)}</span>`
+          : v == null ? "–" : nf.format(v)}${link && group.levelFromWiki(ps[i], label) ? `<span class="muted" title="From WikiSync: newer than the last Wise Old Man update">*</span>` : ""}</td>`;
+      }).join("")}</tr>`;
     };
     host.innerHTML = `<div class="board"><table>
       <thead><tr><th>Skill</th>${ps.map(p => `<th class="r"><a href="#/player/${encodeURIComponent(p.name)}" title="What ${esc(p.name)} can do now">${esc(p.name)}</a></th>`).join("")}</tr></thead>
       <tbody>
         ${row("Total level", ps.map(total))}
-        ${SKILLS.map(s => row(s.name, ps.map(p => p.skills ? group.level(p, s.name) : null), `#/training/${s.key}`)).join("")}
+        ${SKILLS.map(s => row(s.name, ps.map(p => p.skills ? group.realLevel(p, s.name) : null), `#/training/${s.key}`)).join("")}
         <tr><td class="muted">Last updated</td>${ps.map(p => `<td class="r muted" title="${esc(p.error || "")}">${p.skills ? ago(p.updatedAt) : "No stats"}</td>`).join("")}</tr>
       </tbody>
     </table></div>
-    <p class="fine">The highest level in each skill is highlighted. Click a skill to see its training methods. Levels marked * are newer than the last Wise Old Man update: they come from WikiSync, which follows along while you play (checked every 3 hours).</p>`;
+    <p class="fine">The highest level in each skill is highlighted. Click a skill to see its training methods. Levels marked * are newer than the last Wise Old Man update: they come from WikiSync, which follows along while you play (checked every 3 hours).${ps.some(p => p.skills && group.skillLocks(p).length) ? ` Levels marked 🔒 are on the account but can't be used yet, so the site counts them as 1: ${esc(ps.flatMap(p => p.skills ? group.skillLocks(p).map(l => `${p.name}'s ${l.skill} until someone else has ${l.until}`) : []).join(", "))}.` : ""}</p>`;
   }
 
   function renderGoals() {

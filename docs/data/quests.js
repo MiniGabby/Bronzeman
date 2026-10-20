@@ -6,7 +6,7 @@
 export default {
   "Mini Gabby": {},
   "Key Kode": {},
-  "lil oldkitty": {},
+  "arcanekitten": {},
   "dreammancer": {},
   "Lil Fool": {},
   "Medi Uso": {}

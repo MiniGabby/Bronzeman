@@ -280,7 +280,8 @@ export function mount(root, [nameParam]) {
     if (!p.skills) { $('[data-f="body"]').innerHTML = `<p class="muted">No stats for ${esc(p.name)} on Wise Old Man yet.</p>`; return; }
     $('[data-f="sub"]').innerHTML = `<a href="${group.profileUrl(p)}" target="_blank" rel="noopener">Wise Old Man profile</a> · stats ${esc(new Date(p.updatedAt).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}`;
     if (!prices.ready() || !unlocks.loaded()) { $('[data-f="body"]').innerHTML = `<p class="muted">Loading prices and unlocks…</p>`; return; }
-    $('[data-f="body"]').innerHTML = `<div class="pgrid">
+    const locks = group.skillLocks(p);
+    $('[data-f="body"]').innerHTML = (locks.length ? `<p class="banner">${locks.map(l => `${esc(l.skill)} can't be used yet: it unlocks when someone else in the group has ${esc(l.skill)} ${l.until} (highest now: ${esc(l.bestBy.join(", "))} with ${l.best}). Until then the site counts your ${esc(l.skill)} as 1.`).join("<br>")}</p>` : "") + `<div class="pgrid">
       <div>${todoSection(p)}${moneySection(p)}${trainingSection(p)}</div>
       <div>${gainedSection(p)}${goalsSection(p)}${flipsSection()}${unlockSection(p)}${questSection(p)}</div>
     </div>`;
