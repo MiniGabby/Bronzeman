@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-10-20T21:42:01Z",
- "newestUnlockAt": "2026-10-20T20:45:25Z",
+ "generatedAt": "2026-10-21T12:51:54Z",
+ "newestUnlockAt": "2026-10-21T11:21:10Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,24 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 6667,
+   "name": "Empty fishbowl",
+   "at": "2026-10-21T11:21:10Z",
+   "by": "Dreammancer"
+  },
+  {
+   "id": 4542,
+   "name": "Lantern lens",
+   "at": "2026-10-21T11:18:50Z",
+   "by": "Dreammancer"
+  },
+  {
+   "id": 567,
+   "name": "Unpowered orb",
+   "at": "2026-10-21T11:17:38Z",
+   "by": "Dreammancer"
+  },
   {
    "id": 7159,
    "name": "Insulated boots",
