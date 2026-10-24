@@ -1,5 +1,5 @@
 // Used by .github/workflows/sync-wikisync.yml.
-// Fetches every player's quest progress, skill levels and achievement diaries from the OSRS Wiki's
+// Fetches every player's quest progress, skill levels, achievement diaries and combat achievements from the OSRS Wiki's
 // WikiSync (players who use the WikiSync plugin in RuneLite) and writes docs/data/wikisync.json. The website can't fetch this itself:
 // the wiki doesn't allow requests from other websites, so GitHub fetches it on a schedule.
 const fs = require('fs');
@@ -28,7 +28,7 @@ async function fetchPlayer(name) {
   try {
     const r = await fetch(url, { headers: { 'User-Agent': 'Bronzeman group site (github.com/MiniGabby/Bronzeman)' } });
     const j = await r.json().catch(() => ({}));
-    if (j.quests) return { status: 'ok', timestamp: j.timestamp || null, quests: j.quests, levels: j.levels || {}, diaries: diaries(j.achievement_diaries) };
+    if (j.quests) return { status: 'ok', timestamp: j.timestamp || null, quests: j.quests, levels: j.levels || {}, diaries: diaries(j.achievement_diaries), combatAchievements: Array.isArray(j.combat_achievements) ? j.combat_achievements : [] };
     if (j.code === 'NO_USER_DATA') return { status: 'none' };
     return { status: 'error', error: j.error || `HTTP ${r.status}` };
   } catch (e) {

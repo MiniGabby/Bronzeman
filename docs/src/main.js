@@ -15,10 +15,11 @@ import * as merch from "./views/merch.js";
 import * as updates from "./views/updates.js";
 import * as player from "./views/player.js";
 import * as together from "./views/together.js";
+import * as combat from "./views/combat.js";
 
 // To add a page: create src/views/<name>.js exporting mount(root, params) and title,
 // add it here, and add a link with href="#/<name>" to the nav in index.html.
-const ROUTES = { player, money, training, alchemy, merch, group: groupView, together, unlocked, requests, updates };
+const ROUTES = { player, money, training, alchemy, merch, group: groupView, together, combat, unlocked, requests, updates };
 
 const view = document.getElementById("view");
 let cleanup = null;
@@ -32,6 +33,7 @@ const PAGE_HELP = {
   merch: "Buying items cheaply and selling them for more. This page shows what to buy, and when.",
   group: "Everyone's levels side by side, and who has gained XP lately.",
   together: "Quests you can do together, and how close everyone is to the big group quests.",
+  combat: "Every combat achievement task, and who in the group has done it.",
   unlocked: "Every item the group can already buy on the Grand Exchange.",
   requests: "Ask here for a new guide on the site.",
   updates: "What's new on the site, newest first."

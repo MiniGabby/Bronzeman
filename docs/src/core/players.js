@@ -188,7 +188,8 @@ const questsByPlayer = Object.fromEntries(Object.entries(QUESTS).map(([n, q]) =>
 // The wiki doesn't let other websites read WikiSync from the browser, so a GitHub Action
 // (.github/workflows/sync-wikisync.yml) fetches it every 3 hours into data/wikisync.json:
 // { generatedAt, players: { "<RuneScape name>": { status: "ok"|"none"|"error", timestamp, quests: { "Quest": 0|1|2 },
-//   levels: { "Cooking": 77 }, diaries: { "Ardougne": { "Easy": [tasks done, tasks in total] } } } } }
+//   levels: { "Cooking": 77 }, diaries: { "Ardougne": { "Easy": [tasks done, tasks in total] } },
+//   combatAchievements: [ids of completed Combat Achievement tasks] } } }
 // 0 = not started, 1 = started, 2 = done; "none" = no WikiSync data (plugin not used).
 let syncGeneratedAt = null;
 export const questsSyncedAt = () => syncGeneratedAt;
@@ -205,6 +206,7 @@ export async function loadQuests() {
       const v = byId[p.id];
       const ok = v?.status === "ok";
       Object.assign(p, { wikiQuests: ok ? v.quests : null, wikiLevels: ok ? v.levels || null : null, wikiDiaries: ok ? v.diaries || null : null,
+        wikiCA: ok && Array.isArray(v.combatAchievements) ? new Set(v.combatAchievements) : null,
         wikiAt: v?.timestamp || null, wikiStatus: v ? v.status : "none" });
     }
   } catch {

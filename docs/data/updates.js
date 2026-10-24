@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-24", title: "New tab: Combat achievements", link: "#/combat",
+    items: [
+      "A list of all 655 Combat Achievement tasks, with a tick for everyone who has done each one. Filter by tier (easy to grandmaster), show only the tasks nobody or not everyone has done, or search for a boss, e.g. \"Giant Mole\".",
+      "At the top: everyone's points and how far they are from the next reward tier at Ghommal. Nobody has the easy rewards (41 points) yet; Lil Fool is closest with 16 points.",
+      "It comes from the WikiSync plugin, like the quests, so it updates by itself every 3 hours. The first data arrives with the next check after this update."
+    ]
+  },
+  {
     date: "2026-10-20", title: "arcanekitten joins the group", link: "#/group",
     items: [
       "arcanekitten has taken lil oldkitty's place: on the Group page, the Player page and everywhere the site checks who can do what. Everything lil oldkitty unlocked stays unlocked, still with her name on it.",
