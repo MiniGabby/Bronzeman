@@ -44,7 +44,7 @@ h1 .coin{display:inline-block;width:.62em;height:.62em;border-radius:50%;backgro
 .cahead{display:flex;justify-content:space-between;align-items:center;gap:8px}.cabig{font-size:15px}.cabig b{font-size:20px}
 .cacard .bar{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden}.cacard .bar span{display:block;height:100%;background:var(--good)}
 .toolbar .field.grow{flex:1;min-width:200px}
-.catable td{vertical-align:top}.catier{white-space:nowrap}
+.catable td{vertical-align:top}.caopenmark{color:var(--good);font-weight:700}.calock{font-size:12px;opacity:.55;cursor:help}.caopen{margin-top:2px;text-align:left;font-size:13px}.catier{white-space:nowrap}
 .ca-easy{color:#6b8f3a}.ca-medium{color:#3f7fbf}.ca-hard{color:#9a6a2a}.ca-elite{color:#8e5cc0}.ca-master{color:#c0392b}.ca-grandmaster{color:#b8860b}
 .togethertable td{vertical-align:middle}
 .bigquests{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}

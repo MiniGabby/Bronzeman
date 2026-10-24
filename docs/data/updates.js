@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-24", title: "Combat: see what's possible for you", link: "#/combat",
+    items: [
+      "Pick a player at the top of the list and choose \"Possible now\" or \"Not possible yet\". Possible means they have every Slayer level, skill, quest and diary that boss needs, e.g. Slayer 85 for the Abyssal Sire or Priest in Peril for Barrows.",
+      "In the table: ✓ done, ○ possible now, 🔒 not possible yet. Hover the lock to see what's missing, e.g. \"needs Slayer 60 (50)\".",
+      "Each player's card now says how many tasks are possible for them right now and how many points that is. Click it to see that list.",
+      "The site doesn't check how strong you are in combat, or keys and slayer tasks you might need. Those are shown under the boss as \"Also:\"."
+    ]
+  },
+  {
     date: "2026-10-24", title: "New tab: Combat achievements", link: "#/combat",
     items: [
       "A list of all 655 Combat Achievement tasks, with a tick for everyone who has done each one. Filter by tier (easy to grandmaster), show only the tasks nobody or not everyone has done, or search for a boss, e.g. \"Giant Mole\".",
