@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-26", title: "Sailing: what to build, and what's still locked", link: "#/training/sailing",
+    items: [
+      "Every Sailing method that needs a boat part now lists what to build once, e.g. a salvaging hook, the mithril helm and inoculation station for The Jubbly Jive, or the adamant keel and wind catcher for The Gwenith Glide.",
+      "The site checks those materials against the group's unlocks. Locked items show in red and as \"Missing\" in the route, with a tip on how to get the first one. Right now that's mahogany planks (mithril hooks, Jubbly Jive), Relicym's balm (Jubbly Jive), adamant keel parts (Gwenith Glide) and the camphor, ironwood, adamant and rune materials for the best hooks.",
+      "These items also show up as unlock goals on the Unlocked page."
+    ]
+  },
+  {
     date: "2026-10-26", title: "Sailing guide", link: "#/training/sailing",
     items: [
       "Skill training now has routes for Sailing, in three tabs: Fastest (quests and sea charting to 30, then the Barracuda Trials), Relaxed (courier tasks and courier routes between ports) and AFK salvaging (shipwrecks from level 15).",

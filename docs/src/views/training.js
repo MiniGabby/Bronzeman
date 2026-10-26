@@ -9,7 +9,7 @@ import { SKILLS, skillByKey, xpForLevel, levelForXp } from "../core/osrs.js";
 import { store } from "../core/store.js";
 import * as me from "../core/me.js";
 import { esc, gp, short, signed, cls, duration, nf } from "../core/format.js";
-import { createMethodCard } from "../components/methodCard.js";
+import { createMethodCard, buildList } from "../components/methodCard.js";
 import GUIDES from "../../data/skill-guides.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, timeValue, setTimeValue, missingQuests, doableAlt } from "../core/autoRoute.js";
@@ -138,7 +138,7 @@ function mountSkill(root, skill) {
   const timeOf = (m, h) => (isDaily(m) ? days(h) : duration(h));
 
   function lockCell(m) {
-    if (!(m.inputs || []).length) return `<span class="muted">No inputs</span>`;
+    if (!(m.inputs || []).length && !(m.builds || []).length) return `<span class="muted">No inputs</span>`;
     const locked = unlocks.lockedInputs(m);
     if (locked == null) return "…";
     return locked.length
@@ -280,7 +280,7 @@ function mountSkill(root, skill) {
         ...unkQ.map(q => `<span class="sub2" title="Not known if ${esc(p.name)} has done it">Needs ${esc(q)} (done?)</span>`)
       ].filter(Boolean);
       return `<tr class="${[here ? "here" : "", needQ.length ? "questneed" : "", st.alternative ? "altrow" : ""].join(" ").trim()}">${lv}
-        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
+        <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${(rec?.m.builds || []).length ? `<div class="sub2 buy">Build once: ${buildList(rec.m).join(" · ")}</div>` : ""}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
         <td class="r num">${rec ? rateOf(rec.m, rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
         <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? timeOf(rec.m, cr.h) : ""}</div></td>

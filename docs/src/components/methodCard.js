@@ -18,6 +18,17 @@ export function reqList(m) {
   ];
 }
 
+/** What a method needs to build once (`builds`), per part: "Part: 3 Mahogany plank, 6 Mithril bar". Locked items in red. */
+export function buildList(m) {
+  const parts = new Map();
+  for (const b of m.builds || []) {
+    if (!parts.has(b.for)) parts.set(b.for, []);
+    const name = unlocks.hasEntry(b) === false ? `<span class="neg" title="Nobody in the group has unlocked this yet">${esc(b.name)}</span>` : esc(b.name);
+    parts.get(b.for).push(`${nf.format(b.qty)} ${name}`);
+  }
+  return [...parts].map(([part, items]) => `<b>${esc(part)}</b>: ${items.join(", ")}`);
+}
+
 export function groupChips(m) {
   if (!group.loaded()) return "";
   return group.all().map(p => {
@@ -169,6 +180,7 @@ export function createMethodCard(m) {
       }).join("")}</div></div>`).join("");
 
     const notes = [];
+    if ((m.builds || []).length) notes.push(`<div class="note">Build once (you keep it): ${buildList(m).join(" · ")}</div>`);
     const locked = unlocks.lockedInputs(m);
     if (locked?.length) {
       notes.push(`<div class="note warn">Not unlocked yet: <b>${esc(locked.map(x => x.name).join(", "))}</b>. In bronzeman you can't buy ${locked.length > 1 ? "these" : "this"} on the GE until someone in the group has obtained ${locked.length > 1 ? "them" : "it"}.${

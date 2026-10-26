@@ -86,7 +86,20 @@ export default {
   "Grapes": "Pick up the grapes that spawn upstairs in the Cooks' Guild (Cooking 32, wear a chef's hat), or steal from a market stall (Thieving 22). From Farming 36 you can also grow them in the Hosidius vinery.",
   "Raw monkfish": "Catch one in Piscatoris: start the Swan Song quest and have Fishing 62.",
   "Raw karambwan": "Catch one at Karamja (Fishing 65): start Tai Bwo Wannai Trio to get a karambwan vessel, and bait it with raw karambwanji.",
-  "Raw anglerfish": "Catch one at Port Piscarilius with sandworms as bait: Fishing 82."
+  "Raw anglerfish": "Catch one at Port Piscarilius with sandworms as bait: Fishing 82.",
+
+  // Sailing: boat parts and facilities
+  "Camphor plank": "Turn one camphor log into a plank at a sawmill (2,500 coins). Camphor logs: chop one (Woodcutting 66) on the Great Conch, which you reach partway through Troubled Tortugans, or grow a camphor tree in a hardwood patch (Farming 66).",
+  "Camphor logs": "Chop one camphor tree (Woodcutting 66) on the Great Conch, which you reach partway through Troubled Tortugans. Or grow one in a hardwood patch (Farming 66).",
+  "Ironwood plank": "Turn one ironwood log into a plank at a sawmill (5,000 coins). Ironwood logs: chop one (Woodcutting 80) on Sunbleak Island, where you can only dock from Sailing 72.",
+  "Ironwood logs": "Chop one ironwood tree (Woodcutting 80) on Sunbleak Island, where you can only dock from Sailing 72. Or grow one in a hardwood patch (Farming 80).",
+  "Adamantite nails": "Smith one adamantite bar into 15 nails at an anvil: Smithing 74. If the bar isn't unlocked yet, smelt one first (adamantite ore and 6 coal, Smithing 70).",
+  "Rune nails": "Smith one runite bar into 15 nails at an anvil: Smithing 89.",
+  "Adamant keel parts": "Smith one at an anvil from 5 adamantite bars: Smithing 74.",
+  "Nickel ore": "Mine one nickel rock: Mining 74. There's a nickel mine at Deepfin Point (Sailing).",
+  "Cupronickel bar": "Smelt one from 2 copper ore and 1 nickel ore at a furnace: Smithing 74. Nickel ore is mined at Mining 74 (Deepfin Point).",
+  "Magic stone": "Nobody has to find one: the Stonemason in Keldagrim and Metla at the Stonecutter Outpost sell them, for 975,000 coins each.",
+  "Relicym's balm(4)": "Make it yourself (Herblore 8): rogue's purse and snake weed in a vial of water. You need Zogre Flesh Eaters done far enough for Sithik Ints to tell you the recipe. Both herbs are on Karamja near Tai Bwo Wannai: snake weed in the marshy jungle vines to the south-west (during or after Jungle Potion), rogue's purse on the fungus-covered walls of the Pothole Dungeon to the north-east; jogres in that dungeon drop both. A new balm has 3 doses: make two and pour one into the other for a 4-dose one. Or give Uglug Nar in Jiggig one balm, and he sells 3-dose balms for 200 coins."
 };
 
 // Skill levels needed to get ONE of an item yourself, used for "who can get it" in Unlock goals.
@@ -97,7 +110,8 @@ const SEED = farming => ({ Thieving: 38, Farming: farming });
 // Unlocks that need a quest or an achievement diary instead of (or on top of) skill levels:
 // the player needs ONE of `any` ("quest:<name>" or "diary:<Area> <Tier>"). `label` is shown when nobody has it.
 export const GATES = {
-  "Battlestaff": { any: ["diary:Varrock Easy", "quest:What Lies Below"], label: "the easy Varrock Diary or What Lies Below" }
+  "Battlestaff": { any: ["diary:Varrock Easy", "quest:What Lies Below"], label: "the easy Varrock Diary or What Lies Below" },
+  "Relicym's balm(4)": { any: ["quest:Zogre Flesh Eaters"], label: "Zogre Flesh Eaters" }
 };
 
 export const REQS = {
@@ -125,5 +139,12 @@ export const REQS = {
   "Water orb": { Crafting: 46, Magic: 56 }, "Earth orb": { Crafting: 46, Magic: 60 }, "Fire orb": { Crafting: 46, Magic: 63 }, "Air orb": { Crafting: 46, Magic: 66 },
   "Teak logs": { Woodcutting: 35 }, "Mahogany logs": { Woodcutting: 50 }, "Arctic pine logs": { Woodcutting: 54 }, "Redwood logs": { Woodcutting: 90 },
   "Grapes": { Cooking: 32 },   // Cooks' Guild spawn (or Thieving 22 for a market stall)
-  "Raw monkfish": { Fishing: 62 }, "Raw karambwan": { Fishing: 65 }, "Raw anglerfish": { Fishing: 82 }
+  "Raw monkfish": { Fishing: 62 }, "Raw karambwan": { Fishing: 65 }, "Raw anglerfish": { Fishing: 82 },
+  // Sailing materials (Camphor: the Great Conch needs part of Troubled Tortugans, Sailing 45; Ironwood: Sunbleak Island, Sailing 72)
+  "Camphor logs": { Woodcutting: 66, Sailing: 45 }, "Camphor plank": { Woodcutting: 66, Sailing: 45 },
+  "Ironwood logs": { Woodcutting: 80, Sailing: 72 }, "Ironwood plank": { Woodcutting: 80, Sailing: 72 },
+  "Adamantite nails": { Mining: 70, Smithing: 74 }, "Rune nails": { Mining: 85, Smithing: 89 },
+  "Adamant keel parts": { Mining: 70, Smithing: 74 },
+  "Nickel ore": { Mining: 74 }, "Cupronickel bar": { Mining: 74, Smithing: 74 },
+  "Magic stone": {}, "Relicym's balm(4)": { Herblore: 8 }
 };

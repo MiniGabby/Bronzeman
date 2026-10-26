@@ -40,11 +40,14 @@ export function hasEntry(x) {
   return x.name ? state.names.has(x.name.toLowerCase()) : null;
 }
 
-/** Input items of a method that nobody in the group has unlocked yet, as { id, name } (null while loading). */
+/** Input items of a method that nobody in the group has unlocked yet, as { id, name } (null while loading).
+ *  Includes what the method needs to build once (`builds`, e.g. a boat part's planks and bars). */
 export function lockedInputs(method) {
   if (!state.ids) return null;
-  return (method.inputs || [])
+  const seen = new Set();
+  return [...(method.inputs || []), ...(method.builds || [])]
     .filter(x => hasEntry(x) === false)
+    .filter(x => { const k = x.id ?? x.name; return seen.has(k) ? false : seen.add(k); })
     .map(x => {
       const id = prices.resolve(x);
       return { id, name: x.name || (id != null ? prices.item(id).name : `Item ${x.id}`) };

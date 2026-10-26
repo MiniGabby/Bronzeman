@@ -2,8 +2,9 @@
 // From the wiki, 26 Oct 2026: Sailing training, Barracuda Trials (the three trial pages), Courier tasks,
 // Salvaging hook, Skiff and Sloop. The wiki marks parts of its training guide as out of date, so these are
 // guide numbers, not exact ones.
-// Sailing has nothing to buy or sell per hour here. Boats, boat parts and salvaging hooks are built once from
-// planks, nails and bars (bronzeman: they have to be unlocked first); courier loot bags and salvage aren't counted.
+// Sailing has nothing to buy or sell per hour here; courier loot bags and salvage aren't counted.
+// Boat parts and facilities a method needs are built once from planks, nails and bars: those go in `builds`
+// ({ name, qty, for }), which the site checks against the group's unlocks like inputs (recipes from the wiki).
 // - Barracuda Trials: XP per run and the wiki's target time per rank plus 10 seconds to restart.
 // - Everything else only has an hourly rate on the wiki (or none, at low levels: then it's our estimate),
 //   so it's counted in minutes: "60 minutes per hour" gives the full rate, fewer for breaks.
@@ -26,6 +27,7 @@ const minutes = (id, name, level, xpHr, guide, note, reqs = {}) => ({
   inputs: [],
   outputs: [],
   xp: { Sailing: Math.round(xpHr / 60 * 10) / 10 },
+  ...(reqs.builds ? { builds: reqs.builds } : {}),
   note
 });
 
@@ -35,14 +37,17 @@ const RANK_NOTE = {
   Shark: "unlocked by beating the Swordfish time once.",
   Marlin: "unlocked by beating the Shark time once; the hardest time to make, usually with an upgraded boat."
 };
-const trial = (key, name, page, level, items, extra, [rank, xp, secs]) => {
+// What to build once, as [part, Construction level, [[material, qty], ...]].
+const build = parts => parts.flatMap(([part, , mats]) => mats.map(([name, qty]) => ({ name, qty, for: part })));
+const conFor = parts => Math.max(0, ...parts.map(([, con]) => con));
+const trial = (key, name, page, level, items, parts, extra, [rank, xp, secs]) => {
   const runs = Math.round(3600 / (secs + 10) * 10) / 10;
   return {
     id: `sail-${key}-${rank.toLowerCase()}`,
     name: `${name} (${rank} rank)`,
     tags: ["training"],
     guide: `https://oldschool.runescape.wiki/w/${page}`,
-    reqs: { skills: { Sailing: level }, items },
+    reqs: { skills: { Sailing: level, ...(parts.length ? { Construction: conFor(parts) } : {}) }, items },
     action: "run",
     actionLabel: "Runs per hour",
     actionsPerHour: runs,
@@ -50,6 +55,7 @@ const trial = (key, name, page, level, items, extra, [rank, xp, secs]) => {
     inputs: [],
     outputs: [],
     xp: { Sailing: xp },
+    ...(parts.length ? { builds: build(parts) } : {}),
     note: `A Barracuda Trial: an obstacle course at sea against the clock, collecting lost supplies on the way. ${rank} rank: ${RANK_NOTE[rank]} ${xp.toLocaleString("en-US")} XP per run, about ${Math.round(xp * runs / 1000)}K XP per hour at the target time of ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")} (plus 10 seconds to start again). Beating a rank's time the first time gives bonus XP on top. ${extra}`
   };
 };
@@ -58,16 +64,25 @@ const TEMPOR = ["Skiff (Sailing 15, 15,000 coins)"];
 const JUBBLY = ["Skiff", "Mithril helm (for the rapids)", "Inoculation station (for the fetid waters)"];
 const GWENITH = ["Skiff", "Adamant keel", "Wind catcher or gale catcher"];
 const temporNote = "South of the Pandemonium, talk to Rum-dashed Ralph. A teak hull and teak or mahogany mast make the runs much faster. The Shark rank unlocks the keg of whirlpool surprise (+3 Sailing boost).";
-const jubblyNote = "No crewmates allowed in this trial: they have to leave the boat first.";
-const gwenithNote = `No crewmates allowed. The sails must stay trimmed with crystal motes the whole run, hence the wind catcher. ${EXTRACTOR} A rosewood hull (93 Sailing, 84 Construction) makes it about 15% faster.`;
+// Boat parts the later trials need (skiff versions).
+const JUBBLY_PARTS = [
+  ["Mithril skiff helm (Sailing 55)", 47, [["Mahogany plank", 3], ["Mithril bar", 6]]],
+  ["Inoculation station (Sailing 40)", 37, [["Teak plank", 8], ["Steel nails", 32], ["Relicym's balm(4)", 6]]]
+];
+const GWENITH_PARTS = [
+  ["Adamant skiff keel (Sailing 66)", 62, [["Adamant keel parts", 10], ["Lead bar", 5]]],
+  ["Wind catcher (Sailing 53)", 47, [["Teak plank", 4], ["Steel nails", 16], ["Steel bar", 8], ["Lead bar", 4], ["Air rune", 10000]]]
+];
+const jubblyNote = "No crewmates allowed in this trial: they have to leave the boat first. Build the mithril helm and the inoculation station at a shipyard (shipwrights do it for a fee).";
+const gwenithNote = `No crewmates allowed. The sails must stay trimmed with crystal motes the whole run, hence the wind catcher; building it needs a captured wind mote, which you get for the Shark rank of The Jubbly Jive. ${EXTRACTOR} A rosewood hull (93 Sailing, 84 Construction) makes it about 15% faster.`;
 
 const trials = [
   ...[["Swordfish", 634, 108], ["Shark", 1103, 171], ["Marlin", 1907, 270]]
-    .map(r => trial("tempor", "The Tempor Tantrum", "The_Tempor_Tantrum", 30, TEMPOR, temporNote, r)),
+    .map(r => trial("tempor", "The Tempor Tantrum", "The_Tempor_Tantrum", 30, TEMPOR, [], temporNote, r)),
   ...[["Swordfish", 2392, 123], ["Shark", 4270, 180], ["Marlin", 8176, 321]]
-    .map(r => trial("jubbly", "The Jubbly Jive", "The_Jubbly_Jive", 55, JUBBLY, jubblyNote, r)),
+    .map(r => trial("jubbly", "The Jubbly Jive", "The_Jubbly_Jive", 55, JUBBLY, JUBBLY_PARTS, jubblyNote, r)),
   ...[["Swordfish", 4100, 120], ["Shark", 9315, 222], ["Marlin", 19410, 369]]
-    .map(r => trial("gwenith", "The Gwenith Glide", "The_Gwenith_Glide", 72, GWENITH, gwenithNote, r))
+    .map(r => trial("gwenith", "The Gwenith Glide", "The_Gwenith_Glide", 72, GWENITH, GWENITH_PARTS, gwenithNote, r))
 ];
 
 // Courier tasks and sea charting before the trials. The wiki gives no hourly rates below 22, so 4K and 7K are our estimates.
@@ -107,19 +122,22 @@ const couriers = [
 // Shipwreck salvaging: wiki rates with one deckhandiness-4 crewmate and the player salvaging, sorting included,
 // sailing to and from port not included. [key, wreck, level, hook, hooks, xp/hr, Construction for the hook]
 const HOOK = {
-  Bronze: [15, 1, "4 planks, 16 bronze nails, 6 bronze bars and a rope"],
-  Iron: [21, 9, "4 oak planks, 16 iron nails, 6 iron bars and a rope"],
-  Steel: [27, 18, "4 teak planks, 16 steel nails, 6 steel bars, 3 lead bars and a rope"],
-  Mithril: [44, 30, "4 mahogany planks, 16 mithril nails, 6 mithril bars, 3 lead bars and a rope"],
-  Adamant: [59, 52, "4 camphor planks, 16 adamantite nails, 6 adamantite bars, 3 lead bars and a rope"],
-  Rune: [74, 66, "4 ironwood planks, 16 rune nails, 6 runite bars, 4 lead bars, 4 cupronickel bars and a rope"]
+  Bronze: [15, 1, [["Plank", 4], ["Bronze nails", 16], ["Bronze bar", 6], ["Rope", 1]]],
+  Iron: [21, 9, [["Oak plank", 4], ["Iron nails", 16], ["Iron bar", 6], ["Rope", 1]]],
+  Steel: [27, 18, [["Teak plank", 4], ["Steel nails", 16], ["Steel bar", 6], ["Lead bar", 3], ["Rope", 1]]],
+  Mithril: [44, 30, [["Mahogany plank", 4], ["Mithril nails", 16], ["Mithril bar", 6], ["Lead bar", 3], ["Rope", 1]]],
+  Adamant: [59, 52, [["Camphor plank", 4], ["Adamantite nails", 16], ["Adamantite bar", 6], ["Lead bar", 3], ["Rope", 1]]],
+  Rune: [74, 66, [["Ironwood plank", 4], ["Rune nails", 16], ["Runite bar", 6], ["Lead bar", 4], ["Cupronickel bar", 4], ["Rope", 1]]]
 };
+// From 42 the salvaging station on the boat (schematic from Chinchompa Island): the rates from 44 up count on it.
+const STATION = ["Salvaging station (Sailing 42)", 34, [["Teak plank", 4], ["Steel nails", 16]]];
 const salvage = (key, wreck, level, hook, hooks, xpHr, extra = "") => {
   const [hookLvl, con, mats] = HOOK[hook];
+  const parts = [[`${hook} salvaging hook${hooks > 1 ? " ×2" : ""} (Sailing ${hookLvl})`, con, mats.map(([n, q]) => [n, q * hooks])], ...(level >= 35 && hookLvl >= 44 ? [STATION] : [])];
   return minutes(`salvage-${key}`, `Salvaging: ${wreck} (${hook.toLowerCase()} hook${hooks > 1 ? " ×2" : ""})`, Math.max(level, hookLvl),
     xpHr, "https://oldschool.runescape.wiki/w/Shipwreck_salvaging",
-    `Sail to a ${wreck.toLowerCase()} (Sailing ${level}) and salvage it with ${hooks > 1 ? "two salvaging hooks" : "a salvaging hook"} on the boat, then sort the salvage. About ${Math.round(xpHr / 1000)}K XP per hour with one good crewmate on a hook (wiki${hooks > 1 ? "; two hooks need the room of a sloop, Sailing 50" : ""}). A ${hook.toLowerCase()} hook needs Construction ${con} and ${mats}. Safe apart from getting there. The salvage itself isn't counted. ${extra}`.trim(),
-    { skills: { Construction: con }, items: [`${hook} salvaging hook`] });
+    `Sail to a ${wreck.toLowerCase()} (Sailing ${level}) and salvage it with ${hooks > 1 ? "two salvaging hooks" : "a salvaging hook"} on the boat, then sort the salvage. About ${Math.round(xpHr / 1000)}K XP per hour with one good crewmate on a hook (wiki${hooks > 1 ? "; two hooks need the room of a sloop, Sailing 50" : ""}). A ${hook.toLowerCase()} hook needs Construction ${con}; the materials are listed under "Build once". Safe apart from getting there. The salvage itself isn't counted. ${extra}`.trim(),
+    { skills: { Construction: conFor(parts) }, items: [`${hook} salvaging hook`], builds: build(parts) });
 };
 const salvaging = [
   salvage("small", "Small shipwreck", 15, "Bronze", 1, 2400, "With an iron hook (Sailing 21) it's 3K to 3.2K XP per hour."),
