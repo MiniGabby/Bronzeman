@@ -29,6 +29,7 @@ import mining from "./mining.js";
 import fishing from "./fishing.js";
 import woodcutting from "./woodcutting.js";
 import prayer from "./prayer.js";
+import sailing from "./sailing.js";
 
 export default [
   sapphireRings,
@@ -60,5 +61,6 @@ export default [
   ...fishing,           // fly and barbarian fishing, Tempoross, monkfish, karambwans, minnows
   ...woodcutting,       // teak, sulliusceps, blisterwood and banked willow to redwood
   ...prayer,            // every bone: buried, on a gilded altar and at the Chaos Temple
-  ...agility            // rooftops, Brimhaven, the Agility Pyramid, Wilderness course and Hallowed Sepulchre
+  ...agility,           // rooftops, Brimhaven, the Agility Pyramid, Wilderness course and Hallowed Sepulchre
+  ...sailing            // courier tasks and charting, Barracuda Trials, courier routes and shipwreck salvaging
 ];

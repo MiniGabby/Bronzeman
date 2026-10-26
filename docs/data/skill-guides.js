@@ -795,5 +795,63 @@ export default {
           "pray-chaos-big-bones", "pray-chaos-babydragon-bones", "pray-chaos-wyrm-bones", "pray-chaos-dragon-bones", "pray-chaos-wyvern-bones", "pray-chaos-drake-bones", "pray-chaos-lava-dragon-bones", "pray-chaos-hydra-bones", "pray-chaos-dagannoth-bones", "pray-chaos-superior-dragon-bones"]
       }
     ]
+  },
+  sailing: {
+    intro: "Sailing starts with the Pandemonium quest, which gives you a raft. From then on you sail between ports: courier tasks (carry crates from one port to another) and sea charting tasks (one-off jobs all over the sea) are the first ways to train, and both pay better the further you sail. The quests are worth a lot of XP: Prying Times (12, 800 XP), Current Affairs (22, 1,400), Crab Quest (40, 10,000), Troubled Tortugans (45, 10,000), The Red Reef (52, 15,000) and Fallen From Grace (62, 12,500); do each as soon as you can. At 15 you can buy a skiff (15,000 coins), and from 30 the Barracuda Trials are the fastest XP. Sailing costs no gold per hour, but your boat does: hulls, sails, keels and salvaging hooks are built from planks, nails and metal bars. Bronzeman: those have to be unlocked first, so look at what the next upgrade needs early. The wiki says parts of its Sailing guide are out of date, so treat the rates below as a guide. The numbers below 22 are our own estimates.",
+    routes: [
+      {
+        key: "fastest", name: "Fastest",
+        intro: "Quests, charting and courier tasks to 30, then the Barracuda Trials: The Tempor Tantrum from 30 (20K to 25K XP per hour), The Jubbly Jive from 55 (65K to 90K) and The Gwenith Glide from 72 (115K to 185K, 200K+ with the best boat). Each trial has three ranks; the route uses the middle one (Shark) and shows the hardest rank (Marlin) as an extra row. Every trial needs a skiff, the later ones boat upgrades too.",
+        route: [
+          { from: 1, to: 4, quest: "Pandemonium", url: "https://oldschool.runescape.wiki/w/Pandemonium", note: "Starts the skill: 300 XP and your first boat, a raft, plus the captain's log that tracks sea charting." },
+          { from: 4, to: 12, method: "sail-early-4" },
+          { from: 12, to: 14, quest: "Prying Times", url: "https://oldschool.runescape.wiki/w/Prying_Times", note: "800 XP and the crowbar for the crate charting tasks. Needs Smithing 30." },
+          { from: 14, to: 22, method: "sail-early-12" },
+          { from: 22, to: 24, quest: "Current Affairs", url: "https://oldschool.runescape.wiki/w/Current_Affairs", note: "1,400 XP and the current duck for the current charting tasks. Needs Fishing 10." },
+          { from: 24, to: 30, method: "sail-early-22" },
+          { from: 30, to: 55, method: "sail-tempor-shark", note: "Start on Swordfish rank. Fit in Crab Quest at 40 (10,000 XP, Fishing 30) and Troubled Tortugans at 45 (10,000 XP) if you can." },
+          { from: 30, to: 55, method: "sail-tempor-marlin", alternative: "Faster" },
+          { from: 55, to: 72, method: "sail-jubbly-shark", note: "The Red Reef at 52 (15,000 XP) and Fallen From Grace at 62 (12,500 XP) on the way." },
+          { from: 55, to: 72, method: "sail-jubbly-marlin", alternative: "Faster" },
+          { from: 72, to: 99, method: "sail-gwenith-shark" },
+          { from: 72, to: 99, method: "sail-gwenith-marlin", alternative: "Faster" }
+        ]
+      },
+      {
+        key: "relaxed", name: "Relaxed",
+        intro: "No racing against the clock: keep charting and doing courier tasks, then fixed courier routes that pass the same ports over and over. 10K XP per hour to 45, 20K on the Summer Shore route, 66K to 99K around Rellekka from 62 and 130K to 160K from Lunar Isle at 76. The routes from 45 need a few quests, and the XP depends on which tasks the notice boards happen to offer.",
+        route: [
+          { from: 1, to: 4, quest: "Pandemonium", url: "https://oldschool.runescape.wiki/w/Pandemonium", note: "Starts the skill: 300 XP and your first boat, a raft, plus the captain's log that tracks sea charting." },
+          { from: 4, to: 12, method: "sail-early-4" },
+          { from: 12, to: 14, quest: "Prying Times", url: "https://oldschool.runescape.wiki/w/Prying_Times", note: "800 XP and the crowbar for the crate charting tasks. Needs Smithing 30." },
+          { from: 14, to: 22, method: "sail-early-12" },
+          { from: 22, to: 24, quest: "Current Affairs", url: "https://oldschool.runescape.wiki/w/Current_Affairs", note: "1,400 XP and the current duck for the current charting tasks. Needs Fishing 10." },
+          { from: 24, to: 45, method: "sail-early-22", note: "Crab Quest at 40 (10,000 XP, Fishing 30) skips two levels." },
+          { from: 45, to: 62, method: "sail-courier-summer-shore", note: "Needs Troubled Tortugans (Slayer 51, Construction 48, Hunter 45, Woodcutting 40, Crafting 34). The Red Reef at 52 gives 15,000 XP." },
+          { from: 62, to: 65, method: "sail-courier-rellekka-62" },
+          { from: 65, to: 76, method: "sail-courier-rellekka-65" },
+          { from: 70, to: 76, method: "sail-courier-prifddinas", alternative: true },
+          { from: 76, to: 99, method: "sail-courier-lunar-isle" }
+        ]
+      },
+      {
+        key: "afk", name: "AFK salvaging",
+        intro: "Shipwreck salvaging from 15: sail to a wreck, hook up salvage and sort it, with a crewmate working a second hook. Slow at first (2K to 10K XP per hour below 44), but very relaxed and it gets good: 25K at 53, 45K at 64, 75K to 80K from 80. Every better hook needs a higher Construction level and planks, nails and bars to build, and two hooks need a sloop (Sailing 50). Below 15 there's nothing to salvage, so the route starts with the quests and courier tasks.",
+        route: [
+          { from: 1, to: 4, quest: "Pandemonium", url: "https://oldschool.runescape.wiki/w/Pandemonium", note: "Starts the skill: 300 XP and your first boat." },
+          { from: 4, to: 12, method: "sail-early-4" },
+          { from: 12, to: 15, method: "sail-early-12" },
+          { from: 15, to: 27, method: "sail-salvage-small" },
+          { from: 27, to: 35, method: "sail-salvage-fisherman" },
+          { from: 35, to: 44, method: "sail-salvage-barracuda" },
+          { from: 44, to: 53, method: "sail-salvage-barracuda-mithril" },
+          { from: 53, to: 64, method: "sail-salvage-large" },
+          { from: 64, to: 73, method: "sail-salvage-pirate" },
+          { from: 73, to: 80, method: "sail-salvage-mercenary" },
+          { from: 80, to: 87, method: "sail-salvage-fremennik" },
+          { from: 87, to: 99, method: "sail-salvage-merchant" }
+        ]
+      }
+    ]
   }
 };

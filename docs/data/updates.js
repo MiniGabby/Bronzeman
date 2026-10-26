@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-26", title: "Sailing guide", link: "#/training/sailing",
+    items: [
+      "Skill training now has routes for Sailing, in three tabs: Fastest (quests and sea charting to 30, then the Barracuda Trials), Relaxed (courier tasks and courier routes between ports) and AFK salvaging (shipwrecks from level 15).",
+      "Do the Sailing quests as soon as you can: Prying Times at 12 and Current Affairs at 22 give tools you need for sea charting, and the later ones give 10,000 to 15,000 XP each.",
+      "Bronzeman: Sailing costs nothing per hour, but boat upgrades and salvaging hooks are built from planks, nails and bars that have to be unlocked first.",
+      "Most rates come from the wiki, which says parts of its Sailing guide are out of date. Below level 22 the numbers are our own estimates."
+    ]
+  },
+  {
     date: "2026-10-24", title: "Combat: see what's possible for you", link: "#/combat",
     items: [
       "Pick a player at the top of the list and choose \"Possible now\" or \"Not possible yet\". Possible means they have every Slayer level, skill, quest and diary that boss needs, e.g. Slayer 85 for the Abyssal Sire or Priest in Peril for Barrows.",
