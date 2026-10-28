@@ -10,6 +10,7 @@ import { store } from "../core/store.js";
 import * as me from "../core/me.js";
 import { esc, gp, short, signed, cls, duration, nf } from "../core/format.js";
 import { createMethodCard, buildList } from "../components/methodCard.js";
+import { createDhideCompare } from "../components/dhideCompare.js";
 import GUIDES from "../../data/skill-guides.js";
 import { tipFor } from "../core/unlockTips.js";
 import { stepsOf, timeValue, setTimeValue, missingQuests, doableAlt } from "../core/autoRoute.js";
@@ -97,6 +98,7 @@ function mountSkill(root, skill) {
     </form>
     ${methods.some(m => m.burn) ? `<p class="fine">Burnt food is counted, with the game's exact chance to cook each fish at each level, on a fire or a range (from the wiki). Route steps use the average over their levels, the table and cards use your current level. Gauntlets help with lobsters, monkfish, sharks and anglerfish, and on a fire with swordfish.</p>` : ""}
     <section class="section" data-f="route" hidden></section>
+    ${skill.key === "crafting" ? `<div data-f="dhide"></div>` : ""}
     <h2 class="pagetitle small">All ${esc(skill.name)} methods</h2>
     <section class="board"><table>
       <thead><tr><th>Method</th><th class="r">Level</th><th class="r">${esc(skill.name)} ${ui.t("XP / hr", "XP per hour")}</th><th class="r">${ui.t("GP / XP", "Coins per XP")}</th><th class="r">${ui.t("Profit / hr", "Profit per hour")}</th><th class="r">${ui.t("Time to target", "Time to your goal")}</th><th class="r">${ui.t("Cost to target", "Cost to your goal")}</th><th>${ui.t("Inputs unlocked", "Items unlocked")}</th></tr></thead>
@@ -108,6 +110,9 @@ function mountSkill(root, skill) {
   const $ = s => root.querySelector(s);
   const playerSel = $("#t-player"), cur = $("#t-current"), tgt = $("#t-target"), sortSel = $("#t-sort");
   const cards = new Map();
+  // Crafting only: buying leather or hides, and selling or alching the dragonhide items.
+  const dhide = skill.key === "crafting" ? createDhideCompare({ onTimeValue: () => render() }) : null;
+  if (dhide) $('[data-f="dhide"]').replaceWith(dhide.el);
   const openLevels = new Set();   // route steps whose "per level" table is open
 
   function fillPlayers() {
@@ -369,6 +374,7 @@ function mountSkill(root, skill) {
     </tr>`).join("");
 
     renderRoute(rows, lvlNow, xpNow);
+    dhide?.update({ need, lvl: lvlNow });
 
     const host = $('[data-f="cards"]');
     for (const r of rows) {

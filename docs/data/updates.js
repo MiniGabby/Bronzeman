@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-10-28", title: "Crafting: dragonhide leather or hides, sell or alch", link: "#/training/crafting",
+    items: [
+      "The Crafting page has a new Dragonhide block: for every d'hide body, chaps and vambraces, what it costs with bought dragon leather or with bought hides you tan yourself, and what it brings in sold on the GE or High Alched.",
+      "Click an item to see all four ways side by side, with profit and time for as many as you want to make (or exactly enough for your target level), split into crafting, tanning and alching time.",
+      "It also says what tanning and alching earn per hour spent on them, so you can see if the extra step is worth your time. \"Best\" uses the same \"Your time is worth\" value as the Best of both route."
+    ]
+  },
+  {
     date: "2026-10-26", title: "Sailing: what to build, and what's still locked", link: "#/training/sailing",
     items: [
       "Every Sailing method that needs a boat part now lists what to build once, e.g. a salvaging hook, the mithril helm and inoculation station for The Jubbly Jive, or the adamant keel and wind catcher for The Gwenith Glide.",
