@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-10-28T00:32:01Z",
- "newestUnlockAt": "2026-10-27T21:09:23Z",
+ "generatedAt": "2026-10-28T18:21:56Z",
+ "newestUnlockAt": "2026-10-28T18:20:24Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,36 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 1057,
+   "name": "Red halloween mask",
+   "at": "2026-10-28T18:20:24Z",
+   "by": "Dreammancer"
+  },
+  {
+   "id": 1959,
+   "name": "Pumpkin",
+   "at": "2026-10-28T18:20:24Z",
+   "by": "Dreammancer"
+  },
+  {
+   "id": 1053,
+   "name": "Green halloween mask",
+   "at": "2026-10-28T18:20:24Z",
+   "by": "Dreammancer"
+  },
+  {
+   "id": 1055,
+   "name": "Blue halloween mask",
+   "at": "2026-10-28T18:20:24Z",
+   "by": "Dreammancer"
+  },
+  {
+   "id": 2293,
+   "name": "Meat pizza",
+   "at": "2026-10-28T15:46:59Z",
+   "by": "Dreammancer"
+  },
   {
    "id": 1035,
    "name": "Zamorak monk top",
