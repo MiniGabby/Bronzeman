@@ -141,6 +141,15 @@ function mountSkill(root, skill) {
   const rateOf = (m, v, f = short) => f(v == null ? v : v * calc.periodHours(m)) + perTag(m);
   const days = h => (h == null || !isFinite(h) ? "–" : h < 36 ? `${Math.max(1, Math.round(h))} h` : `${h < 240 ? (h / 24).toFixed(1) : nf.format(Math.round(h / 24))} days`);
   const timeOf = (m, h) => (isDaily(m) ? days(h) : duration(h));
+  // How many actions (gems cut, bars made, casts…) a stretch of hours takes, named after the method's
+  // actionLabel ("Gems per hour" → "gems"). Methods counted in minutes of play already show that as time.
+  const countOf = (m, c, h) => {
+    if (m.action === "minute" || !c.perHour || !isFinite(h)) return "";
+    const noun = (m.actionLabel || "Actions per hour").replace(/ per (hour|day)$/i, "").toLowerCase();
+    const n = Math.ceil(h * c.perHour);
+    const buy = c.ins.filter(x => x.qty).map(x => `${nf.format(Math.ceil(n * x.qty))} × ${x.it.name}`).join(", ");
+    return `<div class="sub2"${buy ? ` title="To buy: ${esc(buy)}"` : ""}>${nf.format(n)} ${esc(noun)}</div>`;
+  };
 
   function lockCell(m) {
     if (!(m.inputs || []).length && !(m.builds || []).length) return `<span class="muted">No inputs</span>`;
@@ -288,7 +297,7 @@ function mountSkill(root, skill) {
         <td class="wrapcell"><a href="#/training/${skill.key}" data-jump="${rec?.m.id || ""}">${esc(rec ? rec.m.name : st.method)}</a>${buy}${(rec?.m.builds || []).length ? `<div class="sub2 buy">Build once: ${buildList(rec.m).join(" · ")}</div>` : ""}${daily}${st.note ? `<div class="sub2">${esc(st.note)}</div>` : ""}</td>
         <td class="r num">${rec ? rateOf(rec.m, rec.xpHr) : "–"}</td>
         <td class="r num ${cls(rec?.gpXp)}">${fmtGpXp(rec?.gpXp)}</td>
-        <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? timeOf(rec.m, cr.h) : ""}</div></td>
+        <td class="r num ${cls(cr?.gp)}">${cr ? signed(cr.gp) : "–"}<div class="sub2">${cr ? timeOf(rec.m, cr.h) : ""}</div>${cr ? countOf(rec.m, rec.c, cr.h) : ""}</td>
         <td class="wrapcell">${status.length ? status.join(" ") : `<span class="pill good">All unlocked</span>`}${blocked
           ? (alt ? `<div class="sub2">Until then: <b>${esc(alt.m.name)}</b> (${rateOf(alt.m, alt.xpHr)} XP${isDaily(alt.m) ? "" : "/hr"}, ${fmtGpXp(alt.gpXp)} gp/XP)</div>` : `<div class="sub2">Nothing else on the site fits this level yet.</div>`) : ""}</td>
       </tr>${rec?.m.burn && openLevels.has(lvKey) ? levelRows(rec.m, st, lvlNow) : ""}`;
@@ -369,7 +378,7 @@ function mountSkill(root, skill) {
       <td class="r num ${cls(r.gpXp)}">${r.gpXp == null ? "–" : (r.gpXp > 0 ? "+" : "") + r.gpXp.toFixed(1)}</td>
       <td class="r num ${cls(r.c.profitHr)}">${rateOf(r.m, r.c.profitHr, signed)}</td>
       <td class="r num">${need ? timeOf(r.m, r.hrs) : "–"}</td>
-      <td class="r num ${cls(r.total)}">${need ? signed(r.total) : "–"}</td>
+      <td class="r num ${cls(r.total)}">${need ? signed(r.total) + countOf(r.m, r.c, r.hrs) : "–"}</td>
       <td class="wrapcell">${lockCell(r.m)}</td>
     </tr>`).join("");
 
