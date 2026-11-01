@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-11-01", title: "Boat upgrades: shopping list, and saved on GitHub", link: "#/boats",
+    items: [
+      "Tick \"Plan\" next to the upgrades you want to build next. The new Shopping list at the top adds up the materials for all of them, on all your boats, with GE prices and what's still locked. A part drops off the list once you tick it as built.",
+      "Press \"Save to GitHub\" to keep your boats safe: it opens a pre-filled GitHub issue, press Create and the site saves them within a minute or two. They then show on every device, also after clearing your browser.",
+      "No GitHub account? It still works, but your boats are only kept in your own browser. The page tells you whether your latest changes are saved."
+    ]
+  },
+  {
     date: "2026-11-01", title: "Sailing: boat upgrades per account", link: "#/boats",
     items: [
       "The Sailing guide has a new Boat upgrades page (link at the top of the Sailing page). Pick your account and boat, and tick every part and facility that's on it.",

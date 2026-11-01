@@ -1,0 +1,23 @@
+name: Save boat upgrades
+description: Opened by the Boat upgrades page on the site. Just press Create; a GitHub Action saves it and closes the issue.
+title: "[Boats] "
+labels: ["boat-save"]
+body:
+  - type: markdown
+    attributes:
+      value: This was filled in by the Boat upgrades page. Press **Create** and the site saves these boats within a minute or two. No need to change anything.
+  - type: input
+    id: account
+    attributes:
+      label: Account
+      description: The RuneScape name these boats belong to.
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Saved boats
+      description: Filled in by the site. Don't edit.
+      render: json
+    validations:
+      required: true

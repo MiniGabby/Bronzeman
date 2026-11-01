@@ -1,0 +1,43 @@
+# Saves boat upgrades from the site: the Boat upgrades page opens an issue labelled "boat-save"
+# (template .github/ISSUE_TEMPLATE/boat-save.yml), and this writes the newest save per account to docs/data/boats.json.
+name: Save boat upgrades
+
+on:
+  issues:
+    types: [opened, edited]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: sync-boats
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'boat-save')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build boats.json from issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const build = require('./.github/scripts/build-boats.js');
+            await build({ github, context });
+
+      - name: Commit if changed
+        run: |
+          if [ -z "$(git status --porcelain -- docs/data/boats.json)" ]; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/boats.json
+          git commit -m "Save boat upgrades"
+          git pull --rebase
+          git push
