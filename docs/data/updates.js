@@ -3,6 +3,15 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-11-01", title: "Sailing: boat upgrades per account", link: "#/boats",
+    items: [
+      "The Sailing guide has a new Boat upgrades page (link at the top of the Sailing page). Pick your account and boat, and tick every part and facility that's on it.",
+      "It then lists what's left up to your Sailing level (or any level you type in), and adds up the materials: e.g. an oak hull on a skiff is 10 oak hull parts, 300 iron nails and 20 swamp tar. With GE prices, a total, and which items nobody has unlocked yet.",
+      "Several boats per account (raft, skiff or sloop), each with its own list. \"Only the best of each kind\" skips upgrades you'd replace anyway, like an oak hull when a mahogany one is within reach.",
+      "What you tick is saved in your own browser, so each of you fills in your own boats."
+    ]
+  },
+  {
     date: "2026-10-28", title: "Crafting: dragonhide leather or hides, sell or alch", link: "#/training/crafting",
     items: [
       "The Crafting page has a new Dragonhide block: for every d'hide body, chaps and vambraces, what it costs with bought dragon leather or with bought hides you tan yourself, and what it brings in sold on the GE or High Alched.",

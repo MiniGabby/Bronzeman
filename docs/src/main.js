@@ -16,10 +16,11 @@ import * as updates from "./views/updates.js";
 import * as player from "./views/player.js";
 import * as together from "./views/together.js";
 import * as combat from "./views/combat.js";
+import * as boats from "./views/boats.js";
 
 // To add a page: create src/views/<name>.js exporting mount(root, params) and title,
 // add it here, and add a link with href="#/<name>" to the nav in index.html.
-const ROUTES = { player, money, training, alchemy, merch, group: groupView, together, combat, unlocked, requests, updates };
+const ROUTES = { player, money, training, alchemy, merch, group: groupView, together, combat, unlocked, requests, updates, boats };
 
 const view = document.getElementById("view");
 let cleanup = null;
@@ -34,6 +35,7 @@ const PAGE_HELP = {
   group: "Everyone's levels side by side, and who has gained XP lately.",
   together: "Quests you can do together, and how close everyone is to the big group quests.",
   combat: "Every combat achievement task, and who in the group has done it.",
+  boats: "Tick what is built on your boat, and see which materials the next upgrades need.",
   unlocked: "Every item the group can already buy on the Grand Exchange.",
   requests: "Ask here for a new guide on the site.",
   updates: "What's new on the site, newest first."
@@ -49,8 +51,9 @@ function route() {
   cleanup = ROUTES[page].mount(view, params);
   pageHelp.hidden = !ui.simple();
   pageHelp.textContent = PAGE_HELP[page] || "";
+  const tab = page === "boats" ? "training" : page;   // Boat upgrades is part of the Sailing guide
   document.querySelectorAll(".tabs a").forEach(a =>
-    a.toggleAttribute("aria-current", a.getAttribute("href") === "#/" + page));
+    a.toggleAttribute("aria-current", a.getAttribute("href") === "#/" + tab));
   if (a11yFocus) view.focus({ preventScroll: true });
   window.scrollTo(0, 0);
 }

@@ -78,6 +78,7 @@ function mountSkill(root, skill) {
   root.innerHTML = `
     <nav class="crumb"><a href="#/training">All skills</a> / ${esc(skill.name)}</nav>
     <h2 class="pagetitle">${esc(skill.name)} training</h2>
+    ${skill.key === "sailing" ? `<p class="lead"><a href="#/boats"><b>Boat upgrades →</b></a> Keep track of what's built on each of your boats, and what materials the next upgrades need.</p>` : ""}
     <form class="toolbar" data-f="form">
       <div class="field"><label for="t-player">Player</label>
         <select id="t-player"><option value="">Custom level</option></select></div>
