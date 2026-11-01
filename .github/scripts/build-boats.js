@@ -34,7 +34,7 @@ function clean(d, allowed) {
     account,
     savedAt: new Date(d.savedAt).toISOString(),
     target,
-    best: !!d.best,
+    all: !!d.all,
     boats: d.boats.map(b => {
       if (!TYPES.includes(b.type)) throw new Error('Bad boat type.');
       return { id: str(b.id, 30), name: str(b.name, 40), type: b.type, done: names(b.done), planned: names(b.planned || []) };

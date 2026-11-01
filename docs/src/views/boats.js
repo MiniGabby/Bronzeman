@@ -47,7 +47,7 @@ const loadSaved = () => savedLoading ||= fetch("data/boats.json", { cache: "no-c
 
 export function mount(root) {
   let account = "";
-  let state = null;   // { boats, current, target, best, updatedAt, pushedAt } for the account
+  let state = null;   // { boats, current, target, all, updatedAt, pushedAt } for the account
 
   root.innerHTML = `
     <nav class="crumb"><a href="#/training">All skills</a> / <a href="#/training/sailing">Sailing</a> / Boat upgrades</nav>
@@ -57,7 +57,7 @@ export function mount(root) {
       <div class="field"><label for="b-player">Account</label><select id="b-player"></select></div>
       <div class="field"><label for="b-boat">Boat</label><select id="b-boat"></select></div>
       <div class="field"><label for="b-target">Up to Sailing level</label><input id="b-target" type="number" min="1" max="99" inputmode="numeric"></div>
-      <label class="check"><input type="checkbox" id="b-best"> Only the best of each kind</label>
+      <label class="check"><input type="checkbox" id="b-all"> Count every upgrade</label>
     </form>
     <div class="boatbar" data-f="boatbar"></div>
     <div class="boatsync" data-f="sync"></div>
@@ -67,7 +67,7 @@ export function mount(root) {
     <p class="fine">Recipes from the wiki's <a href="https://oldschool.runescape.wiki/w/Sailing/Level_up_table" target="_blank" rel="noopener">Sailing level up table</a> and each part's page. A sloop needs Sailing 50 for every part. Facilities (cargo hold, hooks, cannon and so on) only fit on a skiff or sloop, and how many fit depends on the boat; this page counts one of each. Hull and keel parts are made at a shipyard workbench from planks and bars.</p>`;
 
   const $ = s => root.querySelector(s);
-  const playerSel = $("#b-player"), boatSel = $("#b-boat"), tgt = $("#b-target"), best = $("#b-best");
+  const playerSel = $("#b-player"), boatSel = $("#b-boat"), tgt = $("#b-target"), every = $("#b-all");
 
   const player = () => group.all().find(p => p.name.toLowerCase() === account.toLowerCase());
   const lvl = skill => { const p = player(); return p?.skills ? group.level(p, skill) : null; };
@@ -84,7 +84,7 @@ export function mount(root) {
     if (remote && (!local || (local.updatedAt || "") < remote.savedAt)) {
       state = {
         boats: remote.boats.map(b => ({ id: b.id || newId(), name: b.name, type: b.type, done: [...b.done], planned: [...(b.planned || [])] })),
-        target: remote.target ?? null, best: !!remote.best, updatedAt: remote.savedAt, pushedAt: remote.savedAt
+        target: remote.target ?? null, all: !!remote.all, updatedAt: remote.savedAt, pushedAt: remote.savedAt
       };
       state.current = state.boats.find(b => b.id === local?.current)?.id || state.boats[0]?.id || null;
       store.set(key(), state);
@@ -93,7 +93,7 @@ export function mount(root) {
       state.boats.forEach(b => (b.planned ||= []));
     } else {
       const b = newBoat((lvl("Sailing") || 1) >= 15 ? "Skiff" : "Raft");
-      state = { boats: [b], current: b.id, target: null, best: false };
+      state = { boats: [b], current: b.id, target: null, all: false };
     }
   }
 
@@ -110,19 +110,20 @@ export function mount(root) {
       .filter(r => r.recipe)
       .map(r => ({ ...r, need: Math.max(r.part.sailing, r.recipe.sailing || 0), con: r.recipe.construction ?? r.part.construction }));
     const done = new Set(b.done), planned = new Set(b.planned);
-    // Best part of each kind already built, and the best one within reach.
+    // Best part of each kind already built, and the best one within reach that you can get the materials for.
     const bestDone = new Map(), bestReach = new Map();
     for (const r of list) {
       if (done.has(r.part.name)) bestDone.set(r.kind, Math.max(bestDone.get(r.kind) || 0, r.need));
-      if (r.need <= lv) bestReach.set(r.kind, Math.max(bestReach.get(r.kind) || 0, r.need));
+      if (r.need <= lv && usable(r.recipe)) bestReach.set(r.kind, Math.max(bestReach.get(r.kind) || 0, r.need));
     }
     return list.map(r => {
       let status;
       if (done.has(r.part.name)) status = "done";
       else if (r.need > lv) status = "later";
       else if ((bestDone.get(r.kind) || 0) > r.need) status = "skip";            // a better one is built
-      else if (state.best && bestReach.get(r.kind) > r.need) status = "skip";    // only build the best
-      else status = "todo";
+      else if (state.all) status = "todo";
+      else if ((bestReach.get(r.kind) || 0) > r.need) status = "skip";          // a better one you can make
+      else status = usable(r.recipe) ? "todo" : "locked";                        // better, but materials still locked
       const quest = r.part.quest && p && group.questDone(p, r.part.quest) === false ? r.part.quest : null;
       return { ...r, status, planned: planned.has(r.part.name), conShort: con != null && r.con > con ? r.con : null, quest };
     });
@@ -131,6 +132,8 @@ export function mount(root) {
   const itemName = name => unlocks.hasName(name) === false
     ? `<span class="neg" title="Nobody in the group has unlocked this yet">${esc(name)}</span>` : esc(name);
   const mats = recipe => recipe.materials.map(([n, q]) => `${nf.format(q)} ${itemName(n)}`).join(", ");
+  // Can the group get every material? Unlocked, or easy to unlock (a tip in data/unlock-tips.js). Unknown while loading = yes.
+  const usable = recipe => recipe.materials.every(([n]) => unlocks.hasName(n) !== false || tipFor(n));
 
   // Materials of a list of recipes added up, as a table with GE prices. Returns { html, cost, locked }.
   function materialTable(recipes) {
@@ -164,30 +167,31 @@ export function mount(root) {
   }
 
   function renderNeeds(list) {
-    const todo = list.filter(r => r.status === "todo");
+    const todo = list.filter(r => r.status === "todo"), locked = list.filter(r => r.status === "locked");
     const t = materialTable(todo.map(r => r.recipe));
     $('[data-f="needs"]').innerHTML = `
       <div class="sechead"><h2 class="pagetitle small">Everything up to Sailing ${target()}</h2></div>
-      ${todo.length ? `<p class="fine">For the ${todo.length} upgrade${todo.length === 1 ? "" : "s"} still to build on this ${esc(boat().type.toLowerCase())}${state.best ? " (only the best of each kind)" : ""}: ${t.summary}</p>
-      ${t.html}` : `<p class="muted">Nothing left to build on this boat up to Sailing ${target()}.</p>`}`;
+      ${todo.length ? `<p class="fine">For the ${todo.length} upgrade${todo.length === 1 ? "" : "s"} still to build on this ${esc(boat().type.toLowerCase())}${state.all ? "" : ", only the best of each kind you can get the materials for"}: ${t.summary}</p>
+      ${t.html}` : `<p class="muted">Nothing left to build on this boat up to Sailing ${target()}.</p>`}
+      ${locked.length ? `<p class="fine"><span class="neg">Not counted, materials still locked:</span> ${locked.map(r => esc(r.part.name)).join(", ")}. Once the group unlocks them (or there's an easy way to), they take the place of the lower ones.</p>` : ""}`;
   }
 
   function renderParts(list) {
     const shown = list.filter(r => r.status !== "later" || r.planned);
     const next = list.filter(r => r.status === "later" && !r.planned).sort((a, b) => a.need - b.need).slice(0, 6);
-    const label = { done: `<span class="pill good">Built</span>`, todo: `<span class="pill warn">To build</span>`, skip: `<span class="muted">Not needed</span>`, later: `<span class="muted">Later</span>` };
+    const label = { done: `<span class="pill good">Built</span>`, todo: `<span class="pill warn">To build</span>`, skip: `<span class="muted">Not needed</span>`, locked: `<span class="pill bad" title="Some materials aren't unlocked and have no easy way to unlock them">Locked items</span>`, later: `<span class="muted">Later</span>` };
     const row = r => `<tr class="${r.status === "skip" || r.status === "later" ? "locked" : ""}">
       <td><input type="checkbox" data-part="${esc(r.part.name)}" aria-label="${esc(r.part.name)} built"${r.status === "done" ? " checked" : ""}${r.status === "later" ? " disabled" : ""}></td>
       <td><input type="checkbox" data-plan="${esc(r.part.name)}" aria-label="Plan ${esc(r.part.name)}"${r.planned ? " checked" : ""}${r.status === "done" ? " disabled" : ""}></td>
       <td><a href="${wiki(r.part.page)}" target="_blank" rel="noopener">${esc(r.part.name)}</a>
-        ${r.status === "skip" && r.kind !== r.part.name ? `<div class="sub2">You have or will build a better ${esc(r.kind.toLowerCase())}.</div>` : ""}</td>
+        ${r.status === "skip" && r.kind !== r.part.name ? `<div class="sub2">You have or can make a better ${esc(r.kind.toLowerCase())}: no need to build this one first.</div>` : ""}</td>
       <td class="r num">${r.need}</td>
       <td class="r num${r.conShort ? " neg" : ""}" ${r.conShort ? `title="Your Construction level is too low"` : ""}>${r.con ?? "–"}</td>
       <td>${label[r.status]}${r.planned ? ` <span class="pill">Planned</span>` : ""}${r.quest ? ` <span class="pill bad" title="Quest not done yet">${esc(r.quest)}</span>` : ""}</td>
       <td class="wrapcell">${mats(r.recipe)}</td></tr>`;
     $('[data-f="parts"]').innerHTML = `
       <div class="sechead"><h2 class="pagetitle small">Upgrades on this ${esc(boat().type.toLowerCase())}</h2></div>
-      <p class="fine">Tick "Built" once a part is on the boat, and "Plan" for what you want to build next. A part is "not needed" when a better one of the same kind is built${state.best ? " or within reach" : ""}. A red Construction level is above yours: you can still have a shipwright build it for a fee.</p>
+      <p class="fine">Tick "Built" once a part is on the boat, and "Plan" for what you want to build next. You don't have to build the lower ones first: a part is "not needed" when a better one of the same kind is built${state.all ? "" : ", or within reach with materials the group has (or can easily get)"}. A red Construction level is above yours: you can still have a shipwright build it for a fee.</p>
       <div class="board"><table><thead><tr><th>Built</th><th>Plan</th><th>Part</th><th class="r">Sailing</th><th class="r">Construction</th><th>Status</th><th>Materials (${esc(boat().type)})</th></tr></thead><tbody>
         ${shown.map(row).join("")}
         ${next.length ? `<tr><td colspan="7" class="muted"><b>Coming up</b></td></tr>${next.map(row).join("")}` : ""}
@@ -224,7 +228,7 @@ export function mount(root) {
     fillPlayers();
     tgt.value = target();
     tgt.placeholder = lvl("Sailing") ?? "";
-    best.checked = !!state.best;
+    every.checked = !!state.all;
     renderBoatbar();
     renderSync();
     renderPlan();
@@ -239,7 +243,7 @@ export function mount(root) {
   async function push() {
     if (!state.updatedAt) save();
     const data = JSON.stringify({
-      account, savedAt: state.updatedAt, target: state.target ?? null, best: !!state.best,
+      account, savedAt: state.updatedAt, target: state.target ?? null, all: !!state.all,
       boats: state.boats.map(({ id, name, type, done, planned }) => ({ id, name, type, done, planned }))
     });
     const params = new URLSearchParams({ template: "boat-save.yml", title: `[Boats] ${account}`, account, data });
@@ -264,7 +268,7 @@ export function mount(root) {
     state.target = !tgt.value || v === lvl("Sailing") ? null : v;   // empty or your own level: follow the account
     save(); render();
   });
-  best.addEventListener("change", () => { state.best = best.checked; save(); render(); });
+  every.addEventListener("change", () => { state.all = every.checked; save(); render(); });
   const toggle = (list, name, on) => (on ? [...new Set([...list, name])] : list.filter(n => n !== name));
   root.addEventListener("change", e => {
     const b = boat();

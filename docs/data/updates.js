@@ -15,7 +15,7 @@ export default [
     items: [
       "The Sailing guide has a new Boat upgrades page (link at the top of the Sailing page). Pick your account and boat, and tick every part and facility that's on it.",
       "It then lists what's left up to your Sailing level (or any level you type in), and adds up the materials: e.g. an oak hull on a skiff is 10 oak hull parts, 300 iron nails and 20 swamp tar. With GE prices, a total, and which items nobody has unlocked yet.",
-      "Several boats per account (raft, skiff or sloop), each with its own list. \"Only the best of each kind\" skips upgrades you'd replace anyway, like an oak hull when a mahogany one is within reach.",
+      "Several boats per account (raft, skiff or sloop), each with its own list. By default it only counts the best of each kind you can get the materials for (unlocked, or easy to unlock): you don't need an oak hull before a mahogany one. Tick \"Count every upgrade\" to count them all.",
       "What you tick is saved in your own browser, so each of you fills in your own boats."
     ]
   },
