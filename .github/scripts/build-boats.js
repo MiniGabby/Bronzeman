@@ -44,6 +44,12 @@ function clean(d, allowed) {
 
 module.exports = async ({ github, context }) => {
   const { owner, repo } = context.repo;
+  // The template's label is only added when it exists in the repository: create it and add it if needed.
+  const issue = context.payload.issue;
+  if (issue && /^\[Boats\]/.test(issue.title) && !issue.labels.some(l => l.name === 'boat-save')) {
+    try { await github.rest.issues.createLabel({ owner, repo, name: 'boat-save', color: 'aaaaaa', description: 'Boat upgrades saved from the site' }); } catch {}
+    await github.rest.issues.addLabels({ owner, repo, issue_number: issue.number, labels: ['boat-save'] });
+  }
   const issues = (await github.paginate(github.rest.issues.listForRepo, { owner, repo, labels: 'boat-save', state: 'all', per_page: 100 }))
     .filter(i => !i.pull_request)
     .sort((a, b) => a.created_at.localeCompare(b.created_at));
