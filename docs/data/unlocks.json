@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-02T00:42:42Z",
- "newestUnlockAt": "2026-11-01T23:07:07Z",
+ "generatedAt": "2026-11-02T21:43:16Z",
+ "newestUnlockAt": "2026-11-02T21:39:39Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,48 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 1117,
+   "name": "Bronze platebody",
+   "at": "2026-11-02T21:39:39Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4436,
+   "name": "Airtight pot",
+   "at": "2026-11-02T21:20:51Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4440,
+   "name": "Pot lid",
+   "at": "2026-11-02T21:20:47Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4438,
+   "name": "Unfired pot lid",
+   "at": "2026-11-02T21:20:40Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4419,
+   "name": "Guthix rest(3)",
+   "at": "2026-11-02T20:49:36Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4460,
+   "name": "Cup of hot water",
+   "at": "2026-11-02T20:49:32Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4456,
+   "name": "Bowl of hot water",
+   "at": "2026-11-02T20:34:56Z",
+   "by": "Lil Fool"
+  },
   {
    "id": 855,
    "name": "Yew longbow",
