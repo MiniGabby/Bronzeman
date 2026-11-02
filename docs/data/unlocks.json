@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-01T19:39:50Z",
- "newestUnlockAt": "2026-11-01T17:20:18Z",
+ "generatedAt": "2026-11-02T00:42:42Z",
+ "newestUnlockAt": "2026-11-01T23:07:07Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,12 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 855,
+   "name": "Yew longbow",
+   "at": "2026-11-01T23:07:07Z",
+   "by": "Dreammancer"
+  },
   {
    "id": 31475,
    "name": "Bolt of canvas",
