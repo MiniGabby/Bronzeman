@@ -402,3 +402,5 @@ li.questneed{background:var(--warn-soft);border-radius:6px;padding:2px 6px;margi
 .boatsync .chips{align-items:center;gap:8px}
 .boatsync .fine{margin-top:6px}
 .potions td.buyas{color:var(--warn)}
+/* Potions table: wider than the page column on big screens (up to 1800px), centred; never wider than the window. */
+.potions .board{margin-inline:calc(50% - min(50vw - 16px, 900px))}
