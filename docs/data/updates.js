@@ -7,7 +7,7 @@ export default [
     items: [
       "The Herblore page has a new Potions block: every potion with its live price as (1), (2), (3) and (4), and the price per dose after GE tax.",
       "It shows the best size to sell as and the cheapest size per dose to buy as. Bob Barter in the Grand Exchange decants for free, so buy one size, decant, and sell the other.",
-      "The last column is the profit for one full GE buy limit of that, after tax. Search, sort, and check how much of each size trades before you rely on it."
+      "Every size shows its trades per hour. The last column is the profit per 4 hours (one GE buy limit), after tax: no more than the buy limit, and no more than your share of what the buy and sell sizes trade in 4 hours (25% by default, you can change it)."
     ]
   },
   {
