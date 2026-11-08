@@ -28,47 +28,54 @@ function potions() {
   return list;
 }
 
-/** Live numbers for one potion: per size the sell and buy price per dose, the best size to sell and to buy. */
+/** Live numbers for one potion: per size the price and price per dose, the best size to sell and to buy as. */
 function numbers(p, minVol) {
   const sizes = DOSES.map(d => {
     const id = p.ids[d], it = prices.item(id);
     const sell = prices.price(id, "sell").p, buy = prices.price(id, "buy").p;
     const net = sell == null ? null : sell - geTax(Math.floor(sell));
-    return { d, id, name: it.name, vol: it.vol, limit: it.limit,
+    return { d, id, vol: it.vol, limit: it.limit, sell, buy,
       sellDose: net == null ? null : net / d, buyDose: buy == null ? null : buy / d };
   });
-  // Only sizes that trade enough count as best: a high price on a size nobody trades may never fill.
-  const priced = sizes.filter(s => s.sellDose != null && s.vol >= minVol);
-  const best = priced.sort((a, b) => b.sellDose - a.sellDose)[0] || null;
-  const cheap = sizes.filter(s => s.buyDose != null && s.vol >= minVol).sort((a, b) => a.buyDose - b.buyDose)[0] || null;
-  const four = sizes[3];
-  // What selling the best size earns on top of selling as (4), per 4 doses.
-  const gain = best && four.sellDose != null ? (best.sellDose - four.sellDose) * 4 : null;
-  // Decant flip: buy the cheapest size per dose, decant, sell the best size. Per 4 doses.
-  const flip = best && cheap && cheap.d !== best.d ? (best.sellDose - cheap.buyDose) * 4 : null;
+  // A size whose price per dose is less than half or more than double the potion's median is a stray
+  // trade (e.g. someone selling a (2) for 2 coins), not a price you can get. It doesn't count.
+  const mids = sizes.map(s => s.sell == null || s.buy == null ? null : (s.sell + s.buy) / 2 / s.d).filter(v => v != null).sort((a, b) => a - b);
+  const median = mids.length ? (mids[(mids.length - 1) >> 1] + mids[mids.length >> 1]) / 2 : null;
+  for (const s of sizes) {
+    const lo = Math.min(s.sell ?? Infinity, s.buy ?? Infinity) / s.d, hi = Math.max(s.sell ?? 0, s.buy ?? 0) / s.d;
+    s.odd = median != null && (lo < median / 2 || hi > median * 2);
+    s.ok = !s.odd && s.vol >= minVol;
+  }
+  // Only sizes that trade enough count: a good price on a size nobody trades may never fill.
+  const best = sizes.filter(s => s.sellDose != null && s.ok).sort((a, b) => b.sellDose - a.sellDose)[0] || null;
+  const cheap = sizes.filter(s => s.buyDose != null && s.ok).sort((a, b) => a.buyDose - b.buyDose)[0] || null;
+  // Buy as the cheapest size per dose, decant for free at Bob Barter, sell as the best size (after tax).
+  const perDose = best && cheap ? best.sellDose - cheap.buyDose : null;
+  const perPotion = perDose == null ? null : perDose * cheap.d;   // per potion of the size you buy
+  const perLimit = perPotion == null || !cheap.limit ? null : perPotion * cheap.limit;
   const vol = sizes.reduce((s, x) => s + x.vol, 0);
-  return { sizes, best, cheap, four, gain, flip, vol };
+  return { sizes, best, cheap, perDose, perPotion, perLimit, vol };
 }
 
 const SORTS = {
-  name: { label: "Name", fn: (a, b) => a.p.name.localeCompare(b.p.name) },
-  value: { label: "Value per 4 doses", fn: (a, b) => (b.n.best?.sellDose ?? -1) - (a.n.best?.sellDose ?? -1) },
-  gain: { label: "Gain vs selling (4)", fn: (a, b) => (b.n.gain ?? -1e9) - (a.n.gain ?? -1e9) },
-  flip: { label: "Decant flip profit", fn: (a, b) => (b.n.flip ?? -1e9) - (a.n.flip ?? -1e9) },
-  vol: { label: "Traded last hour", fn: (a, b) => b.n.vol - a.n.vol }
+  limit: { label: "Profit per GE limit", fn: (a, b) => (b.n.perLimit ?? -1e12) - (a.n.perLimit ?? -1e12) },
+  dose: { label: "Margin per dose", fn: (a, b) => (b.n.perDose ?? -1e12) - (a.n.perDose ?? -1e12) },
+  vol: { label: "Traded last hour", fn: (a, b) => b.n.vol - a.n.vol },
+  name: { label: "Name", fn: (a, b) => a.p.name.localeCompare(b.p.name) }
 };
 
 export function createPotionDoses() {
   const el = document.createElement("section");
   el.className = "section potions";
-  const state = Object.assign({ q: "", sort: "gain", minVol: 10 }, store.get("potionDoses", {}));
+  const state = Object.assign({ q: "", sort: "limit", minVol: 10 }, store.get("potionDoses", {}));
+  if (!SORTS[state.sort]) state.sort = "limit";
   const save = () => store.set("potionDoses", state);
   let built = false;
 
   function shell() {
     el.innerHTML = `
-      <div class="sechead"><h2 class="pagetitle small">Potions: which dose to sell</h2></div>
-      <p class="lead">Every potion sells for a different price per dose as (1), (2), (3) or (4). Bob Barter in the Grand Exchange decants potions for free, so you can turn your doses into whichever size pays the most before you sell. This table shows the live price per dose of each size after GE tax, and the best one.</p>
+      <div class="sechead"><h2 class="pagetitle small">Potions: which dose to buy and sell</h2></div>
+      <p class="lead">Every potion has a different price per dose as (1), (2), (3) or (4). Bob Barter in the Grand Exchange decants potions for free, so you can buy the size that's cheapest per dose and sell the size that pays the most per dose. This table shows each size's live price and price per dose, the best size to sell and to buy as, and the margin for one GE buy limit.</p>
       <div class="toolbar">
         <div class="field grow"><label for="pd-q">Find a potion</label>
           <input id="pd-q" type="search" placeholder="e.g. prayer, super restore" value="${esc(state.q)}"></div>
@@ -78,7 +85,7 @@ export function createPotionDoses() {
           <input id="pd-min" type="number" min="0" step="5" inputmode="numeric" value="${state.minVol}"></div>
       </div>
       <div class="board"><table>
-        <thead><tr><th>Potion</th>${DOSES.map(d => `<th class="r${d === 1 || d === 3 ? " simple-hide" : ""}">(${d}) ${ui.t("/ dose", "per dose")}</th>`).join("")}<th>${ui.t("Sell as", "Best to sell as")}</th><th class="r">${ui.t("4 doses", "4 doses bring in")}</th><th class="r">${ui.t("Gain vs (4)", "More than selling (4)")}</th><th class="r simple-hide">Decant flip / 4 doses</th></tr></thead>
+        <thead><tr><th>Potion</th>${DOSES.map(d => `<th class="r">(${d})${d > 1 ? ` <span class="sub2">${ui.t("/ dose", "per dose")}</span>` : ""}</th>`).join("")}<th>${ui.t("Sell as", "Best to sell as")}</th><th>${ui.t("Buy as", "Best to buy as")}</th><th class="r">${ui.t("Margin / GE limit", "Profit per buy limit")}</th></tr></thead>
         <tbody data-f="pd-rows"></tbody>
       </table></div>
       <p class="fine" data-f="pd-note"></p>`;
@@ -89,23 +96,25 @@ export function createPotionDoses() {
     const q = state.q.trim().toLowerCase();
     const minVol = Math.max(0, Number(state.minVol) || 0);
     const all = potions().map(p => ({ p, n: numbers(p, minVol) }));
-    const shown = all.filter(r => (!q || r.p.name.toLowerCase().includes(q)) && r.n.best)
-      .sort(SORTS[state.sort]?.fn || SORTS.gain.fn);
+    const shown = all.filter(r => (!q || r.p.name.toLowerCase().includes(q)) && r.n.best && r.n.cheap)
+      .sort(SORTS[state.sort].fn);
     el.querySelector('[data-f="pd-rows"]').innerHTML = shown.length ? shown.map(({ p, n }) => {
-      const cells = n.sizes.map(s => `<td class="r num${s.vol < minVol ? " muted" : ""}${s.d === 1 || s.d === 3 ? " simple-hide" : ""}${s === n.best ? " pos" : ""}">${s === n.best ? "<b>" : ""}${gp(s.sellDose)}${s === n.best ? "</b>" : ""}${
-        ui.simple() ? "" : `<div class="sub2">${s.vol ? `${nf.format(s.vol)} traded` : "not traded"}</div>`}</td>`).join("");
-      const flipLocked = n.cheap && unlocks.has(n.cheap.id) === false;
-      const flip = n.flip == null ? "–" : `${signed(n.flip, gp)}<div class="sub2">buy (${n.cheap.d}), sell (${n.best.d})${flipLocked ? ` <span class="pill bad">(${n.cheap.d}) locked</span>` : ""}</div>`;
+      const cells = n.sizes.map(s => {
+        const mark = s === n.best ? " pos" : s === n.cheap ? " buyas" : "";
+        return `<td class="r num${s.ok ? mark : " muted"}">${gp(s.sell)}${
+          s.d > 1 ? `<div class="sub2">${gp(s.sellDose)} / dose</div>` : ""}${
+          s.odd ? `<div class="sub2">odd price</div>` : ui.simple() ? "" : `<div class="sub2">${s.vol ? `${nf.format(s.vol)} traded` : "not traded"}</div>`}</td>`;
+      }).join("");
+      const locked = unlocks.has(n.cheap.id) === false;
       return `<tr>
         <td>${esc(p.name)}${ui.simple() ? "" : `<div class="sub2">${short(n.vol)} traded last hour</div>`}</td>
         ${cells}
-        <td><b>(${n.best.d})</b>${n.best.d === 4 ? "" : ` <span class="pill good">decant</span>`}</td>
-        <td class="r num">${gp(n.best.sellDose * 4)}</td>
-        <td class="r num ${cls(n.gain)}">${n.gain ? signed(n.gain, gp) : "–"}</td>
-        <td class="r num simple-hide ${cls(n.flip)}">${flip}</td>
+        <td><b>(${n.best.d})</b><div class="sub2">${gp(n.best.sellDose)} / dose</div></td>
+        <td><b>(${n.cheap.d})</b>${locked ? ` <span class="pill bad">Locked</span>` : ""}<div class="sub2">${gp(n.cheap.buyDose)} / dose</div></td>
+        <td class="r num ${cls(n.perLimit ?? n.perDose)}">${n.perLimit == null ? "–" : signed(n.perLimit)}<div class="sub2">${signed(n.perPotion, gp)} per (${n.cheap.d}) · limit ${n.cheap.limit ? nf.format(n.cheap.limit) : "?"}</div></td>
       </tr>`;
-    }).join("") : `<tr><td colspan="9">No potions match.</td></tr>`;
-    el.querySelector('[data-f="pd-note"]').innerHTML = `${nf.format(shown.length)} of ${nf.format(all.length)} potions${all.length - shown.length && !q ? ` (the others have no size traded ${minVol}+ times last hour)` : ""}. Prices per dose are what you get after the 2% GE tax (none under 50 coins), at your price mode. "4 doses" is what one (4) worth of doses brings in when sold as the best size; "Gain vs (4)" is how much more that is than selling them as (4). Decant flip: buy the size with the cheapest price per dose, decant at Bob Barter and sell as the best size, per 4 doses after tax. Only sizes traded at least ${minVol} times last hour count as best or cheapest (greyed out otherwise): a high price on a size nobody trades may not fill. Set it to 0 to count every size. Bronzeman: you can only buy items the group has unlocked.`;
+    }).join("") : `<tr><td colspan="8">No potions match.</td></tr>`;
+    el.querySelector('[data-f="pd-note"]').innerHTML = `${nf.format(shown.length)} of ${nf.format(all.length)} potions${all.length - shown.length && !q ? ` (the others have no size traded ${minVol}+ times last hour)` : ""}. Size prices are what a potion sells for at your price mode; "/ dose" is that after the 2% GE tax (none under 50 coins), split over its doses. Green is the best size to sell as, orange the cheapest size per dose to buy. Margin: buy one GE buy limit (every 4 hours) of the "buy as" size, decant at Bob Barter and sell as the "sell as" size, after tax. When both are the same size it's a plain flip without decanting. Only sizes traded at least ${minVol} times last hour count (greyed out otherwise): a good price on a size nobody trades may not fill. A size whose price per dose is under half or over double the other sizes' is a stray trade and marked "odd price". Bronzeman: you can only buy items the group has unlocked.`;
   }
 
   function render() {

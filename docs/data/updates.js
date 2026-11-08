@@ -3,11 +3,11 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
-    date: "2026-11-08", title: "Herblore: which potion dose to sell", link: "#/training/herblore",
+    date: "2026-11-08", title: "Herblore: which potion dose to buy and sell", link: "#/training/herblore",
     items: [
-      "The Herblore page has a new Potions block: every potion with its live price per dose as (1), (2), (3) and (4), after GE tax.",
-      "It shows which size pays the most per dose. Bob Barter in the Grand Exchange decants for free, so decant your doses into that size before you sell. \"Gain vs (4)\" is how much more 4 doses bring in that way than selling them as (4).",
-      "It also shows a decant flip: buy the size that's cheapest per dose, decant and sell as the best size, with the profit per 4 doses. Search, sort, and check how much of each size trades before you rely on it."
+      "The Herblore page has a new Potions block: every potion with its live price as (1), (2), (3) and (4), and the price per dose after GE tax.",
+      "It shows the best size to sell as and the cheapest size per dose to buy as. Bob Barter in the Grand Exchange decants for free, so buy one size, decant, and sell the other.",
+      "The last column is the profit for one full GE buy limit of that, after tax. Search, sort, and check how much of each size trades before you rely on it."
     ]
   },
   {
