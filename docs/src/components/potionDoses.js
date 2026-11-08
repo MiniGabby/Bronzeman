@@ -5,7 +5,7 @@
 import * as prices from "../core/prices.js";
 import * as unlocks from "../core/unlocks.js";
 import { store } from "../core/store.js";
-import { esc, gp, short, signed, cls, nf, geTax } from "../core/format.js";
+import { esc, gp, signed, cls, nf, geTax } from "../core/format.js";
 import * as ui from "../core/ui.js";
 
 const DOSES = [1, 2, 3, 4];
@@ -103,11 +103,11 @@ export function createPotionDoses() {
         const mark = s === n.best ? " pos" : s === n.cheap ? " buyas" : "";
         return `<td class="r num${s.ok ? mark : " muted"}">${gp(s.sell)}${
           s.d > 1 ? `<div class="sub2">${gp(s.sellDose)} / dose</div>` : ""}${
-          s.odd ? `<div class="sub2">odd price</div>` : ui.simple() ? "" : `<div class="sub2">${s.vol ? `${nf.format(s.vol)} traded` : "not traded"}</div>`}</td>`;
+          `<div class="sub2">${nf.format(s.vol)} trades / hr</div>`}${s.odd ? `<div class="sub2">odd price</div>` : ""}</td>`;
       }).join("");
       const locked = unlocks.has(n.cheap.id) === false;
       return `<tr>
-        <td>${esc(p.name)}${ui.simple() ? "" : `<div class="sub2">${short(n.vol)} traded last hour</div>`}</td>
+        <td>${esc(p.name)}<div class="sub2">${nf.format(n.vol)} trades / hr, all sizes</div></td>
         ${cells}
         <td><b>(${n.best.d})</b><div class="sub2">${gp(n.best.sellDose)} / dose</div></td>
         <td><b>(${n.cheap.d})</b>${locked ? ` <span class="pill bad">Locked</span>` : ""}<div class="sub2">${gp(n.cheap.buyDose)} / dose</div></td>
