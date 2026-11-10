@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-08T17:56:38Z",
- "newestUnlockAt": "2026-11-08T17:26:12Z",
+ "generatedAt": "2026-11-10T03:34:41Z",
+ "newestUnlockAt": "2026-11-09T21:24:26Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,12 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 29084,
+   "name": "Sulphur blades",
+   "at": "2026-11-09T21:24:26Z",
+   "by": "Mini Gabby"
+  },
   {
    "id": 22257,
    "name": "Maple shield",
