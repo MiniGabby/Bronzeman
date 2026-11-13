@@ -83,6 +83,10 @@ export function mount(root) {
     <section class="section">
       <h2 class="pagetitle small">Quests</h2>
       <p class="fine">Every quest and miniquest, A to Z. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; the site checks for new data every 3 hours). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ✓ done, Started, ✗ not started, ? unknown. "Methods" is how many methods on this site need the quest.</p>
+      <div class="toolbar qfilter" data-f="qfilter">
+        <label class="check"><input type="checkbox" data-q="hideAll"> Hide quests everyone has done</label>
+        <label class="check"><input type="checkbox" data-q="hideNone"> Hide quests nobody has done</label>
+      </div>
       <div data-f="quests"></div>
     </section>`;
 
@@ -130,6 +134,31 @@ export function mount(root) {
     store.set("gainsPeriod", period);
     group.loadGains(period);
     render();
+  });
+
+  // Quest tables: sort column ("name" or a player's name), direction, and the two filters, per browser.
+  const qv = Object.assign({ sort: "name", dir: 1, hideAll: false, hideNone: false }, store.get("groupQuests", {}));
+  const saveQv = () => store.set("groupQuests", qv);
+  root.querySelectorAll('[data-f="qfilter"] [data-q]').forEach(c => { c.checked = !!qv[c.dataset.q]; });
+
+  $('[data-f="qfilter"]').addEventListener("change", e => {
+    const k = e.target.dataset.q;
+    if (!k) return;
+    qv[k] = e.target.checked;
+    saveQv();
+    renderQuests();
+    me.markColumns(root);
+  });
+
+  // Click a column head: same column flips the direction, a new column starts A–Z / done first.
+  $('[data-f="quests"]').addEventListener("click", e => {
+    const b = e.target.closest("[data-sort]");
+    if (!b) return;
+    if (qv.sort === b.dataset.sort) qv.dir = -qv.dir;
+    else { qv.sort = b.dataset.sort; qv.dir = 1; }
+    saveQv();
+    renderQuests();
+    me.markColumns(root);
   });
 
   function renderGains() {
@@ -225,14 +254,39 @@ export function mount(root) {
         : `<span class="muted" title="Unknown">?</span>`;
     };
     const wiki = q => `https://oldschool.runescape.wiki/w/${encodeURIComponent(q.replace(/ /g, "_"))}`;
-    const table = (title, list) => {
-      const done = p => list.filter(q => group.questState(p, q) === 2).length;
-      return `<h3 class="reqgroup">${title} <span class="muted">(${list.length})</span></h3>
+    // Filters look only at players whose state for that quest is known; all unknown hides nothing.
+    const known = q => ps.map(p => group.questState(p, q)).filter(v => v != null);
+    const visible = q => {
+      const k = known(q);
+      if (!k.length) return true;
+      if (qv.hideAll && k.every(v => v === 2)) return false;
+      if (qv.hideNone && k.every(v => v !== 2)) return false;
+      return true;
+    };
+    const sortBy = ps.find(p => p.name === qv.sort);
+    const byName = (a, b) => a.localeCompare(b, "en", { sensitivity: "base" });
+    // Player column: done, started, not started, then unknown always last; ties A–Z.
+    const sorted = list => [...list].sort(sortBy
+      ? (a, b) => {
+          const va = group.questState(sortBy, a), vb = group.questState(sortBy, b);
+          if ((va == null) !== (vb == null)) return va == null ? 1 : -1;
+          return ((vb ?? 0) - (va ?? 0)) * qv.dir || byName(a, b);
+        }
+      : (a, b) => byName(a, b) * qv.dir);
+    // The arrow comes from CSS (aria-sort), so the head's text stays the player's name for me.markColumns.
+    const head = (key, label, cls, hint) => {
+      const on = (sortBy ? sortBy.name : "name") === key;
+      return `<th class="sortable${cls ? ` ${cls}` : ""}"${on ? ` aria-sort="${qv.dir === 1 ? "ascending" : "descending"}"` : ""}><button type="button" class="sortbtn" data-sort="${esc(key)}" title="${esc(hint)}">${esc(label)}</button></th>`;
+    };
+    const table = (title, all) => {
+      const list = sorted(all.filter(visible));
+      const done = p => all.filter(q => group.questState(p, q) === 2).length;
+      return `<h3 class="reqgroup">${title} <span class="muted">(${list.length === all.length ? all.length : `${list.length} of ${all.length}`})</span></h3>
       <div class="board"><table class="qtable">
-        <thead><tr><th>Quest</th><th class="r">Methods</th>${ps.map(p => `<th class="r">${esc(p.name)}</th>`).join("")}</tr>
+        <thead><tr>${head("name", "Quest", "", "Sort A–Z / Z–A")}<th class="r">Methods</th>${ps.map(p => head(p.name, p.name, "r", `Sort by ${p.name}: done first / not done first`)).join("")}</tr>
           <tr class="subhead"><td class="muted">Source</td><td></td>${ps.map(p => `<td class="r">${syncLabel(p)}</td>`).join("")}</tr>
-          <tr class="subhead"><td class="muted">Done</td><td></td>${ps.map(p => `<td class="r num">${group.questSource(p) === "ok" ? `${done(p)}/${list.length}` : "–"}</td>`).join("")}</tr></thead>
-        <tbody>${list.map(q => `<tr><td><a href="${wiki(q)}" target="_blank" rel="noopener">${esc(q)}</a>${MINIQUESTS.has(q) ? ` <span class="pill">Mini</span>` : ""}</td>
+          <tr class="subhead"><td class="muted">Done</td><td></td>${ps.map(p => `<td class="r num">${group.questSource(p) === "ok" ? `${done(p)}/${all.length}` : "–"}</td>`).join("")}</tr></thead>
+        <tbody>${list.length ? "" : `<tr><td class="muted" colspan="${ps.length + 2}">No quests left with these filters.</td></tr>`}${list.map(q => `<tr><td><a href="${wiki(q)}" target="_blank" rel="noopener">${esc(q)}</a>${MINIQUESTS.has(q) ? ` <span class="pill">Mini</span>` : ""}</td>
           <td class="r num">${uses(q) || ""}</td>
           ${ps.map(p => `<td class="r">${cell(p, q)}</td>`).join("")}</tr>`).join("")}</tbody>
       </table></div>`;

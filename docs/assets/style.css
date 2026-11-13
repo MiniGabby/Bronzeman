@@ -349,6 +349,11 @@ tr.detailrow > td{background:var(--surface-2);white-space:normal;padding:16px 18
 /* Quest tables (Group page) */
 .qtable td:first-child{white-space:normal;min-width:220px}
 .qstarted{font-size:12px;font-weight:600;color:var(--warn)}
+.qfilter{margin-bottom:12px}
+.qtable .sortbtn{font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;background:none;border:0;padding:0;cursor:pointer;white-space:nowrap}
+.qtable .sortbtn:hover{text-decoration:underline}
+.qtable th[aria-sort] .sortbtn::after{content:" ▲";font-size:10px;color:var(--ink-3)}
+.qtable th[aria-sort="descending"] .sortbtn::after{content:" ▼"}
 .pill:not(.good):not(.bad):not(.warn){background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line)}
 
 /* "You" picker in the header, and the matching column highlight */

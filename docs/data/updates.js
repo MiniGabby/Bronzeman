@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-11-13", title: "Group page: sort and filter the quest tables", link: "#/group",
+    items: [
+      "Click a column head in the quest tables to sort: the Quest column sorts A–Z or Z–A, a player's column puts their done quests first or last. A small arrow shows which column and which way.",
+      "Two new checkboxes above the tables hide the quests everyone has done and the quests nobody has done, so you see at a glance who's ahead and who's behind.",
+      "Your sorting and filters are remembered in your own browser."
+    ]
+  },
+  {
     date: "2026-11-08", title: "Herblore: which potion dose to buy and sell", link: "#/training/herblore",
     items: [
       "The Herblore page has a new Potions block: every potion with its live price as (1), (2), (3) and (4), and the price per dose after GE tax.",
