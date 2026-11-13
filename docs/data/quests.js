@@ -8,8 +8,7 @@ export default {
   "Key Kode": {},
   "arcanekitten": {},
   "dreammancer": {},
-  "Lil Fool": {},
-  "Medi Uso": {}
+  "Lil Fool": {}
 };
 
 // Every quest and miniquest, in the names WikiSync uses (checked against the wiki's quest and

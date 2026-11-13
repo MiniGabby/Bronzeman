@@ -5,6 +5,5 @@ export default [
   "Key Kode",
   "arcanekitten",
   "dreammancer",
-  "Lil Fool",
-  "Medi Uso"
+  "Lil Fool"
 ];
