@@ -128,6 +128,7 @@ export function mount(root) {
     }
     const totalTop = good.slice(0, 4).reduce((a, p) => a + p.total, 0);
     $('[data-f="list"]').innerHTML = `
+      ${todo(reliableEnough, now)}
       <div class="stats">
         <div class="stat"><span class="label">Best flip per buy limit</span><span class="big num pos">${signed(good[0].total)}</span><span class="muted">${esc(good[0].it.name)}: ${nf.format(good[0].qty)} × ${gp(good[0].each)} gp</span></div>
         <div class="stat"><span class="label">Top 4 together</span><span class="big num pos">${signed(totalTop)}</span><span class="muted">per account per 4 hours, if every offer fills (needs ${short(good.slice(0, 4).reduce((a, p) => a + p.qty * p.buy, 0))} cash)</span></div>
@@ -149,6 +150,49 @@ export function mount(root) {
       if (tablesOpen.has(d.dataset.tbl)) d.open = true;
       d.addEventListener("toggle", () => { d.open ? tablesOpen.add(d.dataset.tbl) : tablesOpen.delete(d.dataset.tbl); });
     });
+  }
+
+  // ---- "Do this now": the best flip you can start right now, in one sentence ----
+  // The next time the clock shows hour h:00, after `from`.
+  function nextAt(h, from) {
+    const d = new Date(from); d.setMinutes(0, 0, 0); d.setHours(h);
+    if (d <= from) d.setDate(d.getDate() + 1);
+    return d;
+  }
+  // "35 min", "5 h", "5 h 20 min"
+  function inTime(ms) {
+    const m = Math.max(1, Math.round(ms / 60_000)), h = Math.floor(m / 60), r = m % 60;
+    return h ? `${h} h${r ? ` ${r} min` : ""}` : `${m} min`;
+  }
+  // Up to 4 flips: first the ones you can buy right now, then the ones whose buy time comes soonest.
+  const SUMMARY = 4;
+  function todo(list, now) {
+    // "Buy now" only when the item stays cheap for at least half an hour more (buy offers need time to fill);
+    // the others wait for their next buy time.
+    const now30 = p => p.until != null && nextAt(p.until, now) - now >= 30 * 60_000;
+    const cheap = list.filter(now30).sort((a, b) => b.total - a.total).slice(0, SUMMARY);
+    const later = list.filter(p => !now30(p))
+      .map(p => ({ p, at: nextAt(p.t.buyHour, now) })).sort((a, b) => a.at - b.at || b.p.total - a.p.total)
+      .slice(0, SUMMARY - cheap.length);
+    if (!cheap.length && !later.length) return "";
+    const day = (d, from) => (d.getDate() !== from.getDate() ? " tomorrow" : "");
+    const sellPart = (p, from) => {
+      const at = nextAt(p.t.sellHour, from);
+      return `Then sell at <b class="num">${gp(p.sell)} gp</b>, around ${history.hourLabel(p.t.sellHour)}${day(at, now)}: in about <b>${inTime(at - now)}</b>.
+        Profit: <b class="num pos">${signed(p.total)}</b> after GE tax (${nf.format(p.qty)} × ${signed(p.each, gp)} gp).`;
+    };
+    const cost = p => `(you invest <b class="num">${gp(p.qty * p.buy)} gp</b>)`;
+    const items = [
+      ...cheap.map(p => `<li><b>Buy now:</b> <b class="num">${nf.format(p.qty)}</b> × <b>${esc(p.it.name)}</b> with a buy offer at <b class="num">${gp(p.buy)} gp</b> ${cost(p)}. It should be bought within <b>${inTime(nextAt(p.until, now) - now)}</b> (by ${history.hourLabel(p.until)}). ${sellPart(p, now)}</li>`),
+      ...later.map(({ p, at }) => `<li><b>In ${inTime(at - now)}:</b> buy <b class="num">${nf.format(p.qty)}</b> × <b>${esc(p.it.name)}</b> with a buy offer at <b class="num">${gp(p.buy)} gp</b> ${cost(p)}, around ${history.hourLabel(p.t.buyHour)}${day(at, now)}. ${sellPart(p, new Date(at.getTime() + 3600_000))}</li>`)
+    ];
+    const all = [...cheap, ...later.map(x => x.p)];
+    const cash = all.reduce((a, p) => a + p.qty * p.buy, 0);
+    return `<div class="note flipnow">
+      ${cheap.length ? "" : `<p><b>Nothing is cheap right now.</b> These come up first:</p>`}
+      <ol>${items.join("")}</ol>
+      <p class="muted">${all.length > 1 ? `Together: <b class="num pos">${signed(all.reduce((a, p) => a + p.total, 0))}</b> profit, needs ${short(cash)} cash${cash > opts.cash ? ` (more than your ${short(opts.cash)}: each line uses all of it, so pick or spread)` : ""}.` : ""}${cheap.length && list.filter(now30).length > cheap.length ? ` More items are cheap right now: see "Buy now" in the list.` : ""}</p>
+    </div>`;
   }
 
   // Item details (click a name): open items, and their hourly rows once loaded.

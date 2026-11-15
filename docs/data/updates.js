@@ -3,6 +3,13 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-11-15", title: "Merching: what to buy right now, in four lines", link: "#/merch",
+    items: [
+      "Above the list there's now a short summary of four flips: how many to buy, at what price, how long you have to get it bought, when and for how much to sell, and the profit after GE tax.",
+      "First the items that are cheap right now (with at least half an hour left to buy), then the ones whose buy time comes soonest. Underneath: the profit of all four together and the cash they need."
+    ]
+  },
+  {
     date: "2026-11-15", title: "Merching: how did the suggestions turn out?", link: "#/merch",
     items: [
       "The site now keeps score of the Merching tab. Every day it saves the flips the tab suggests, and afterwards checks against the real prices whether the buy offer would have filled at the \"Buy at\" price and whether the \"Sell at\" price came.",
