@@ -414,3 +414,10 @@ li.questneed{background:var(--warn-soft);border-radius:6px;padding:2px 6px;margi
 /* Potions table: wider than the page column on big screens (up to 1800px), centred; never wider than the window. */
 .potions .board{margin-inline:calc(50% - min(50vw - 16px, 900px))}
 .behind{margin-bottom:14px}.behind .board{max-height:420px;overflow:auto}
+/* Group page: sticky sub-menu with the page's sections */
+.subtabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;margin:-6px 0 4px;padding:8px 0;background:var(--bg);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{font:600 13px var(--sans);border:1px solid transparent;background:transparent;color:var(--ink-2);padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.subtabs button:hover{color:var(--ink);background:var(--surface-2)}
+.subtabs button[aria-current]{color:var(--ink);background:var(--surface);border-color:var(--line)}
+[data-sec]{scroll-margin-top:56px}

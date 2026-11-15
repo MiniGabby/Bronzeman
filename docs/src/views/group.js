@@ -13,6 +13,8 @@ import { blockers } from "../core/questPlan.js";
 
 export const title = "Group";
 
+// The sub-menu under the main tabs: one link per section of this page.
+const SECTIONS = [["goals", "Goals"], ["levels", "Levels"], ["gains", "XP gained"], ["diaries", "Achievement diaries"], ["quests", "Quests"]];
 const PERIODS = { day: "Today", week: "This week", month: "This month" };
 // One update per hour is plenty: hiscores only change when people play, and Wise Old Man
 // asks not to update more often than every 1–6 hours.
@@ -49,6 +51,9 @@ export function mount(root) {
   let message = "";
 
   root.innerHTML = `
+    <nav class="subtabs" aria-label="On this page" data-f="subnav">
+      ${SECTIONS.map(([id, l]) => `<button type="button" data-go="${id}">${l}</button>`).join("")}
+    </nav>
     <p class="lead">Stats come from <a href="https://wiseoldman.net" target="_blank" rel="noopener">Wise Old Man</a>, which reads the OSRS hiscores. The site refreshes everyone automatically every 3 hours. Press <b>Update stats</b> if you want your latest levels right after a session; it can be pressed once an hour.</p>
     <div class="toolbar">
       <button type="button" class="btn primary" data-f="update">Update stats</button>
@@ -56,17 +61,17 @@ export function mount(root) {
       <span class="updmsg" data-f="msg" role="status"></span>
     </div>
 
-    <section class="section">
+    <section class="section" data-sec="goals">
       <h2 class="pagetitle small">Goals</h2>
       <div data-f="goals"></div>
     </section>
 
-    <section class="section">
+    <section class="section" data-sec="levels">
       <h2 class="pagetitle small">Levels</h2>
       <div data-f="levels"></div>
     </section>
 
-    <section class="section">
+    <section class="section" data-sec="gains">
       <div class="sechead">
         <h2 class="pagetitle small">XP gained</h2>
         <div class="seg" role="group" aria-label="Period" data-f="period">
@@ -76,13 +81,13 @@ export function mount(root) {
       <div data-f="gains"></div>
     </section>
 
-    <section class="section">
+    <section class="section" data-sec="diaries">
       <h2 class="pagetitle small">Achievement diaries</h2>
       <p class="fine">Tasks done per diary, from the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (the site checks every 3 hours). A tick means every task of that tier is done. Players without the plugin show "–".</p>
       <div data-f="diaries"></div>
     </section>
 
-    <section class="section">
+    <section class="section" data-sec="quests">
       <h2 class="pagetitle small">Quests</h2>
       <p class="fine">Every quest and miniquest, A to Z. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; the site checks for new data every 3 hours). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ✓ done, Started, ✗ not started, ? unknown. "Methods" is how many methods on this site need the quest.</p>
       <div data-f="behind"></div>
@@ -95,6 +100,22 @@ export function mount(root) {
 
   const $ = s => root.querySelector(s);
   const btn = $('[data-f="update"]');
+
+  // Sub-menu: the URL hash is the page route (#/group), so the links scroll instead of using #anchors.
+  const subnav = $('[data-f="subnav"]');
+  subnav.addEventListener("click", e => {
+    const b = e.target.closest("[data-go]");
+    if (b) root.querySelector(`[data-sec="${b.dataset.go}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  // Mark the section at the top of the screen (just under the sticky sub-menu) as current.
+  function markSection() {
+    const top = subnav.getBoundingClientRect().bottom + 12;
+    let cur = SECTIONS[0][0];
+    for (const [id] of SECTIONS) if (root.querySelector(`[data-sec="${id}"]`).getBoundingClientRect().top <= top) cur = id;
+    subnav.querySelectorAll("[data-go]").forEach(b => b.toggleAttribute("aria-current", b.dataset.go === cur));
+  }
+  window.addEventListener("scroll", markSection, { passive: true });
+  markSection();
 
   // When the group's stats were last updated: the oldest update among players with stats,
   // so it's shared by everyone who opens the site (not just this browser).
@@ -388,5 +409,5 @@ export function mount(root) {
   group.loadGains(period);
   if (GOALS.length && period !== "week") group.loadGains("week");   // goals measure progress from the start of the week
   render();
-  return () => { off(); offMe(); clearInterval(tick); };
+  return () => { off(); offMe(); clearInterval(tick); window.removeEventListener("scroll", markSection); };
 }
