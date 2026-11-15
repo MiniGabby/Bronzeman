@@ -3,6 +3,14 @@
 // what changed in plain words, and optionally a link to the page ("#/merch").
 export default [
   {
+    date: "2026-11-15", title: "Merching: how did the suggestions turn out?", link: "#/merch",
+    items: [
+      "The site now keeps score of the Merching tab. Every day it saves the flips the tab suggests, and afterwards checks against the real prices whether the buy offer would have filled at the \"Buy at\" price and whether the \"Sell at\" price came.",
+      "The new block \"How the suggestions turned out\" (below the list) shows how often the buy filled, how often the sell price came, and how much of the promised profit was really made over the last 30 days. Also split by Reliable, Usually and Weak, so you can see whether those labels mean something.",
+      "Open \"Every checked suggestion\" for each flip: the price it said, the price it really was, and the profit per item promised and made. The first results show up tomorrow."
+    ]
+  },
+  {
     date: "2026-11-13", title: "Group page: sort and filter the quest tables", link: "#/group",
     items: [
       "Click a column head in the quest tables to sort: the Quest column sorts A–Z or Z–A, a player's column puts their done quests first or last. A small arrow shows which column and which way.",

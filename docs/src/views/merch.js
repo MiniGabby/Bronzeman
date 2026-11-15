@@ -7,6 +7,7 @@ import { store } from "../core/store.js";
 import { esc, gp, short, signed, cls, nf, geTax } from "../core/format.js";
 import { detailHTML, bindCharts } from "../components/priceDetail.js";
 import { CANDIDATES, plans as flipPlans } from "../core/flips.js";
+import * as predictionLog from "../components/predictionLog.js";
 
 export const title = "Merching";
 
@@ -46,6 +47,7 @@ export function mount(root) {
     </div>
     <div data-f="mine"></div>
     <div data-f="list"></div>
+    <div data-f="log"></div>
     <section class="section guide">
       <h2 class="pagetitle small">How to merch with this list</h2>
       <ol>
@@ -53,6 +55,7 @@ export function mount(root) {
         <li><b>"Buy now"</b> means the item is in the cheapest part of its day right now (the cheapest quarter of its daily price range); set <i>When</i> to "Cheap to buy right now" to see only those.</li>
         <li><b>Buy around the "Buy" time</b> with a buy offer at the "Buy at" price. Offers at a low price only fill when someone sells into them, so give it up to an hour or two. Don't raise the price to chase it.</li>
         <li><b>Sell around the "Sell" time</b> with a sell offer at the "Sell at" price. "+1 day" means the sell time comes after the next midnight.</li>
+        <li><b>See how the suggestions did.</b> Under "How the suggestions turned out" the site keeps score: how often the buy offers filled and the sell prices came, and how much of the promised profit was really made, also per pattern strength.</li>
         <li><b>Track what you bought.</b> Open an item and fill in "Bought some?": it shows up under My flips with your profit, and turns green (and can send a notification) when your sell price is reached.</li>
         <li><b>Mind the buy limit.</b> It counts per account and resets 4 hours after your first purchase. Every group member has their own limit, so the same item can be flipped on each account.</li>
         <li><b>Tax is already counted:</b> 2% of the sell price for items of 50 gp and up, at most 5M per item.</li>
@@ -86,6 +89,15 @@ export function mount(root) {
     return `<div class="timingrow">${history.sparkline(ratios, hour, what)}
       <div><span class="tprice num">${gp(price)} <small>gp</small></span>
       <div class="sub2">around <b class="num">${history.hourLabel(hour)}</b>${extra}<br><span class="pill ${r.pill}" title="${rel} on ${hitDays} of ${days} days">${r.label}</span> <span class="num">${hitDays}/${days} days</span></div></div></div>`;
+  }
+
+  // How earlier suggestions turned out (data/merch-predictions.json); only changes when that file loads.
+  let logOpen = false;
+  function renderLog() {
+    const host = $('[data-f="log"]');
+    predictionLog.render(host, renderLog);
+    const d = host.querySelector("details");
+    if (d) { d.open = logOpen; d.addEventListener("toggle", () => { logOpen = d.open; }); }
   }
 
   function render() {
@@ -233,5 +245,6 @@ export function mount(root) {
 
   const offs = [prices.onChange(redraw), unlocks.onChange(redraw), history.onChange(redraw)];
   render();
+  renderLog();
   return () => { offs.forEach(off => off()); clearTimeout(hourTimer); };
 }

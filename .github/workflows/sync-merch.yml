@@ -1,0 +1,44 @@
+# Keeps track of how the Merching tab's flip suggestions turn out: once a day it saves the flips the tab
+# would suggest, and every 6 hours it checks saved flips whose sell time has passed against the real
+# hourly prices. Everything goes in docs/data/merch-predictions.json; see .github/scripts/build-merch.mjs.
+name: Track merching predictions
+
+on:
+  schedule:
+    - cron: "41 */6 * * *"   # every 6 hours
+  workflow_dispatch:          # "Run workflow" button on the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-merch
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Save new predictions and check old ones
+        run: node .github/scripts/build-merch.mjs
+        env:
+          TZ: Europe/Amsterdam   # buy and sell hours are Dutch time, like the group sees them
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- docs/data/merch-predictions.json && ! git ls-files --others --exclude-standard -- docs/data/merch-predictions.json | grep -q .; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/merch-predictions.json
+          git commit -m "Update merching predictions"
+          git pull --rebase
+          git push
