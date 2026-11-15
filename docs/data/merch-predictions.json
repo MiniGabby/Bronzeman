@@ -1,4 +1,4 @@
-{"generatedAt":"2026-11-15T11:50:49.000Z","settings":{"cash":1000000,"minVol":100,"candidates":40,"shown":25},"predictions":[
+{"generatedAt":"2026-11-15T19:04:55.000Z","settings":{"cash":1000000,"minVol":100,"candidates":40,"shown":25},"predictions":[
   {"made":1794743449,"id":2323,"name":"Apple pie","buyAt":1794758400,"sellAt":1794762000,"buy":68,"sell":94,"each":25,"qty":10000,"buyHit":0.57,"sellHit":0.54},
   {"made":1794743449,"id":22949,"name":"Battlefront teleport (tablet)","buyAt":1794758400,"sellAt":1794769200,"buy":2626,"sell":3241,"each":551,"qty":380,"buyHit":0.92,"sellHit":0.64},
   {"made":1794743449,"id":973,"name":"Charcoal","buyAt":1794812400,"sellAt":1794837600,"buy":127,"sell":156,"each":26,"qty":7874,"buyHit":0.78,"sellHit":0.73},
