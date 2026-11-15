@@ -8,6 +8,8 @@ import METHODS from "../../data/methods/index.js";
 import { store } from "../core/store.js";
 import * as me from "../core/me.js";
 import { esc, ago, nf, short, gp } from "../core/format.js";
+import ORDER from "../../data/quest-order.js";
+import { blockers } from "../core/questPlan.js";
 
 export const title = "Group";
 
@@ -83,6 +85,7 @@ export function mount(root) {
     <section class="section">
       <h2 class="pagetitle small">Quests</h2>
       <p class="fine">Every quest and miniquest, A to Z. They load automatically from the wiki for players who use the <a href="https://oldschool.runescape.wiki/w/RuneScape:WikiSync" target="_blank" rel="noopener">WikiSync</a> plugin in RuneLite (turn it on and log in once; the site checks for new data every 3 hours). For everyone else they're filled in by hand: tell Claude in the Bronzeman project, e.g. "Mini Gabby finished The Tourist Trap". ✓ done, Started, ✗ not started, ? unknown. "Methods" is how many methods on this site need the quest.</p>
+      <div data-f="behind"></div>
       <div class="toolbar qfilter" data-f="qfilter">
         <label class="check"><input type="checkbox" data-q="hideAll"> Hide quests everyone has done</label>
         <label class="check"><input type="checkbox" data-q="hideNone"> Hide quests nobody has done</label>
@@ -240,6 +243,54 @@ export function mount(root) {
     return `<span class="sub2">…</span>`;
   };
 
+  // Summary for the player picked in the header ("Who are you?"): quests someone else in the group
+  // has finished that you haven't. Most-done first, then in Optimal Ironman order, then A–Z.
+  function renderBehind() {
+    const host = $('[data-f="behind"]');
+    const ps = group.all();
+    const mine = ps.find(p => p.name.toLowerCase() === me.get().toLowerCase());
+    if (!mine) {
+      host.innerHTML = `<p class="muted">Pick your name under "Who are you?" at the top to see which quests you're behind on.</p>`;
+      return;
+    }
+    const others = ps.filter(p => p !== mine);
+    const orderIdx = new Map(ORDER.map((x, i) => [x.name, i]));
+    const behind = group.allQuests()
+      .map(q => ({ q, mineState: group.questState(mine, q), by: others.filter(p => group.questState(p, q) === 2) }))
+      .filter(x => x.by.length && x.mineState != null && x.mineState !== 2)
+      .sort((a, b) => b.by.length - a.by.length
+        || (orderIdx.get(a.q) ?? 1e9) - (orderIdx.get(b.q) ?? 1e9)
+        || a.q.localeCompare(b.q, "en", { sensitivity: "base" }));
+    if (!behind.length) {
+      host.innerHTML = `<div class="behind"><h3 class="reqgroup">${esc(me.get())}: quests you're behind on</h3><p><span class="pill good">All caught up</span> <span class="muted">Every quest someone else in the group has done, you've done too.</span></p></div>`;
+      return;
+    }
+    // Can you do it now? Only for quests in the Optimal Ironman list (that's where the requirements are).
+    const ready = q => {
+      const item = ORDER.find(x => x.name === q);
+      if (!item) return `<span class="muted">?</span>`;
+      const b = blockers(mine, item);
+      const need = [...b.skills.map(s => `${s.skill} ${s.need} (you have ${s.have})`), ...b.quests];
+      return need.length
+        ? `<span class="sub2" title="${esc("Still needed: " + need.join(", "))}">Needs ${esc(need.slice(0, 2).join(", "))}${need.length > 2 ? ` +${need.length - 2}` : ""}</span>`
+        : `<span class="pill good">Ready</span>`;
+    };
+    const wiki = q => `https://oldschool.runescape.wiki/w/${encodeURIComponent(q.replace(/ /g, "_"))}`;
+    const readyCount = behind.filter(x => { const item = ORDER.find(o => o.name === x.q); if (!item) return false; const b = blockers(mine, item); return !b.skills.length && !b.quests.length; }).length;
+    const everyone = others.length > 1 ? behind.filter(x => x.by.length === others.length).length : 0;
+    host.innerHTML = `<div class="behind">
+      <h3 class="reqgroup">${esc(me.get())}: quests you're behind on <span class="muted">(${behind.length})</span></h3>
+      <p class="fine">Quests someone else in the group has finished and you haven't${everyone ? `; ${everyone} of them everyone else has done` : ""}. ${readyCount ? `<b>${readyCount}</b> you can start right now.` : "None of them can be started yet: check what's still needed."}</p>
+      <div class="board"><table class="qtable">
+        <thead><tr><th>Quest</th><th>Done by</th><th>You</th><th>Can you do it?</th></tr></thead>
+        <tbody>${behind.map(x => `<tr>
+          <td><a href="${wiki(x.q)}" target="_blank" rel="noopener">${esc(x.q)}</a>${MINIQUESTS.has(x.q) ? ` <span class="pill">Mini</span>` : ""}${F2P.has(x.q) ? ` <span class="pill">F2P</span>` : ""}</td>
+          <td>${esc(x.by.map(p => p.name).join(", "))}</td>
+          <td>${x.mineState === 1 ? `<span class="qstarted">Started</span>` : `<span class="neg">✗</span>`}</td>
+          <td>${ready(x.q)}</td></tr>`).join("")}</tbody>
+      </table></div></div>`;
+  }
+
   // All quests A–Z in two tables: free-to-play and members (miniquests are members, marked "Mini").
   function renderQuests() {
     const host = $('[data-f="quests"]');
@@ -324,6 +375,7 @@ export function mount(root) {
   function render() {
     renderGoals();
     renderDiaries();
+    renderBehind();
     renderQuests();
     renderButton();
     renderGains();

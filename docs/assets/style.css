@@ -413,3 +413,4 @@ li.questneed{background:var(--warn-soft);border-radius:6px;padding:2px 6px;margi
 .potions td.buyas{color:var(--warn)}
 /* Potions table: wider than the page column on big screens (up to 1800px), centred; never wider than the window. */
 .potions .board{margin-inline:calc(50% - min(50vw - 16px, 900px))}
+.behind{margin-bottom:14px}.behind .board{max-height:420px;overflow:auto}
