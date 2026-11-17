@@ -1,4 +1,4 @@
-{"generatedAt":"2026-11-16T22:28:59.000Z","settings":{"cash":1000000,"minVol":100,"candidates":40,"shown":25},"predictions":[
+{"generatedAt":"2026-11-17T08:27:05.000Z","settings":{"cash":1000000,"minVol":100,"candidates":40,"shown":25},"predictions":[
   {"made":1794743449,"id":2323,"name":"Apple pie","buyAt":1794758400,"sellAt":1794762000,"buy":68,"sell":94,"each":25,"qty":10000,"buyHit":0.57,"sellHit":0.54,"checked":{"bought":false,"sold":false,"buyReal":72,"sellReal":93}},
   {"made":1794743449,"id":22949,"name":"Battlefront teleport (tablet)","buyAt":1794758400,"sellAt":1794769200,"buy":2626,"sell":3241,"each":551,"qty":380,"buyHit":0.92,"sellHit":0.64,"checked":{"bought":false,"sold":true,"buyReal":3354,"sellReal":3493}},
   {"made":1794743449,"id":973,"name":"Charcoal","buyAt":1794812400,"sellAt":1794837600,"buy":127,"sell":156,"each":26,"qty":7874,"buyHit":0.78,"sellHit":0.73,"checked":{"bought":false,"sold":true,"buyReal":133,"sellReal":157}},
@@ -29,7 +29,7 @@
   {"made":1794868139,"id":31472,"name":"Bolt of linen","buyAt":1794916800,"sellAt":1794992400,"buy":287,"sell":420,"each":125,"qty":3484,"buyHit":0.75,"sellHit":0.73},
   {"made":1794868139,"id":12631,"name":"Stamina potion(1)","buyAt":1794945600,"sellAt":1795014000,"buy":504,"sell":684,"each":167,"qty":1984,"buyHit":0.73,"sellHit":0.73},
   {"made":1794868139,"id":345,"name":"Raw herring","buyAt":1794891600,"sellAt":1794909600,"buy":106,"sell":142,"each":34,"qty":9433,"buyHit":0.73,"sellHit":0.64},
-  {"made":1794868139,"id":3420,"name":"Limestone brick","buyAt":1794884400,"sellAt":1794891600,"buy":352,"sell":471,"each":110,"qty":2840,"buyHit":0.77,"sellHit":0.8},
+  {"made":1794868139,"id":3420,"name":"Limestone brick","buyAt":1794884400,"sellAt":1794891600,"buy":352,"sell":471,"each":110,"qty":2840,"buyHit":0.77,"sellHit":0.8,"checked":{"bought":true,"sold":false,"buyReal":304,"sellReal":421}},
   {"made":1794868139,"id":2448,"name":"Superantipoison(4)","buyAt":1794916800,"sellAt":1794988800,"buy":1720,"sell":2242,"each":478,"qty":581,"buyHit":0.82,"sellHit":0.64},
   {"made":1794868139,"id":1953,"name":"Pastry dough","buyAt":1794870000,"sellAt":1794942000,"buy":104,"sell":132,"each":26,"qty":9615,"buyHit":0.7,"sellHit":0.77},
   {"made":1794868139,"id":19623,"name":"West ardougne teleport (tablet)","buyAt":1794895200,"sellAt":1794960000,"buy":5789,"sell":7260,"each":1326,"qty":172,"buyHit":0.79,"sellHit":0.67},
