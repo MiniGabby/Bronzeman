@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-18T00:57:45Z",
- "newestUnlockAt": "2026-11-17T20:18:08Z",
+ "generatedAt": "2026-11-18T20:29:11Z",
+ "newestUnlockAt": "2026-11-18T18:32:16Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,42 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 528,
+   "name": "Burnt bones",
+   "at": "2026-11-18T18:32:16Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4405,
+   "name": "Team-46 cape",
+   "at": "2026-11-18T18:23:15Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 10089,
+   "name": "Blue feather",
+   "at": "2026-11-18T16:49:46Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4834,
+   "name": "Ourg bones",
+   "at": "2026-11-18T12:02:39Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4812,
+   "name": "Zogre bones",
+   "at": "2026-11-18T11:47:31Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4850,
+   "name": "Ogre coffin key",
+   "at": "2026-11-18T11:47:30Z",
+   "by": "Lil Fool"
+  },
   {
    "id": 21690,
    "name": "Mushroom pie",
