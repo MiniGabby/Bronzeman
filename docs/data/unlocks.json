@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-19T20:32:20Z",
- "newestUnlockAt": "2026-11-19T20:08:06Z",
+ "generatedAt": "2026-11-20T02:18:55Z",
+ "newestUnlockAt": "2026-11-19T22:45:55Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,24 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 4627,
+   "name": "Bandit's brew",
+   "at": "2026-11-19T22:45:55Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4668,
+   "name": "Garlic powder",
+   "at": "2026-11-19T22:33:39Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 1361,
+   "name": "Black axe",
+   "at": "2026-11-19T21:50:47Z",
+   "by": "Lil Fool"
+  },
   {
    "id": 3472,
    "name": "Black plateskirt (t)",
