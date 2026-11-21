@@ -1,6 +1,7 @@
 // The detailed card for one method: item table, actions-per-hour input, totals, notes.
 // Used on the Money makers page and the Skill training page.
-import { esc, gp, short, signed, cls, qty, nf, plural } from "../core/format.js";
+import { esc, gp, short, signed, cls, qty, nf, plural, geTax } from "../core/format.js";
+import * as history from "../core/history.js";
 import * as prices from "../core/prices.js";
 import * as calc from "../core/calc.js";
 import * as burn from "../core/burn.js";
@@ -63,7 +64,7 @@ export function createMethodCard(m) {
       <div class="ledger"><table>
         <thead><tr><th>Item</th><th class="r">${perHourTable ? "Per " + unit : "Per " + esc(m.action)}</th><th class="r">Price</th><th class="r simple-hide">GE tax</th><th class="r">Total</th><th class="r simple-hide">Traded / hr</th><th class="r simple-hide">Buy limit</th></tr></thead>
         <tbody data-f="ledger"></tbody>
-      </table><div class="invest" data-f="invest" hidden></div></div>
+      </table><div class="invest" data-f="invest" hidden></div><div class="invest besttime" data-f="best" hidden></div></div>
       <div class="side">
         <div class="field">
           <label for="aph-${m.id}">${esc(m.actionLabel || "Actions per hour")}</label>
@@ -95,7 +96,62 @@ export function createMethodCard(m) {
     if (t.classList.contains("reset")) prices.setOwn(t.dataset.id, t.dataset.side, 0);
   });
 
+  // Best buy and sell prices from each item's daily price pattern (the same math as the Merching page).
+  // The price history is fetched only once the card scrolls into view.
+  let lastC = null, seen = false;
+  new IntersectionObserver((entries, obs) => {
+    if (!entries.some(e => e.isIntersecting)) return;
+    obs.disconnect();
+    seen = true;
+    if (lastC) renderBest(lastC);
+  }, { rootMargin: "300px" }).observe(el);
+  history.onChange(() => { if (seen && lastC && el.isConnected) renderBest(lastC); });
+
+  function renderBest(c) {
+    const host = el.querySelector('[data-f="best"]');
+    const rows = [...c.ins.map(r => [r, "buy"]), ...c.outs.map(r => [r, "sell"])].filter(([r]) => r.id != null);
+    if (!rows.length) { host.hidden = true; return; }
+    history.want(rows.map(([r]) => r.id));
+    const perHourTable = m.ledger === "hour", mult = perHourTable ? c.perHour * H : 1;
+    const per = perHourTable ? `per ${unit}` : `per ${esc(m.action)}`;
+    let best = 0, complete = true;
+    const items = rows.map(([r, side]) => {
+      const t = history.get(r.id), name = esc(r.it.name);
+      if (t === undefined) { complete = false; return `<li>${name}: <span class="muted">loading price history…</span></li>`; }
+      if (!t || !t.lowAvg || !t.highAvg || t.lowVol < 10 || t.highVol < 10) {
+        complete = false;
+        return `<li>${name}: <span class="muted">too few trades to find a best time</span></li>`;
+      }
+      const buy = side === "buy";
+      const p = buy ? Math.floor(t.lowAvg * t.low[t.buyHour]) : Math.ceil(t.highAvg * t.high[t.sellHour]);
+      const hour = buy ? t.buyHour : t.sellHour;
+      const rel = history.reliability(buy ? t.buyHit : t.sellHit);
+      const range = history.dayRange(t, side);
+      best += buy ? -p * r.qty : (p - geTax(p)) * r.qty;
+      const diff = r.price ? (p - r.price) / r.price * 100 : null;
+      return `<li><b>${buy ? "Buy" : "Sell"}</b> ${name} with a ${buy ? "buy" : "sell"} offer at <b class="num">${gp(p)} gp</b> around <b class="num">${history.hourLabel(hour)}</b>
+        <span class="pill ${rel.pill}" title="${buy ? "Cheaper" : "Dearer"} than the day's average at that hour on ${buy ? t.buyHitDays : t.sellHitDays} of ${buy ? t.buyDays : t.sellDays} days">${rel.label}</span>
+        ${history.sparkline(buy ? t.low : t.high, hour, buy ? "buy offer price" : "sell offer price")}
+        <div class="sub2">${range ? `Usual range over a day: ${gp(range[0])}–${gp(range[1])} gp.` : ""}${diff != null && Math.abs(diff) >= 0.5 ? ((diff < 0) === buy
+          ? ` ${Math.abs(diff).toFixed(1)}% better than the ${r.own ? "price you typed" : "price used above"}.`
+          : ` The ${r.own ? "price you typed" : "price used above"} (${gp(r.price)} gp) is ${buy ? "lower" : "higher"} right now, so ${buy ? "buying" : "selling"} now is fine too.`) : ""}
+        <button type="button" class="linkbtn usebest" data-id="${r.id}" data-side="${side}" data-p="${p}">use this price</button></div></li>`;
+    });
+    if (complete) best -= c.fees.reduce((s, f) => s + f.each, 0) - (c.coins || 0);
+    host.hidden = false;
+    host.innerHTML = `<div class="investhead">Best prices to trade at</div>
+      <ul class="bestlist">${items.join("")}</ul>
+      ${complete ? `<div class="sub2">At these prices you make <b class="num ${cls(best)}">${signed(best * mult, gp)} gp</b> ${per} (${signed(best * c.perHour * H, gp)} gp per ${unit}), but offers take longer to fill than instant trades. Based on hourly prices of the last ${t0Days(rows)} days.</div>` : ""}`;
+  }
+  const t0Days = rows => Math.min(...rows.map(([r]) => history.get(r.id)?.days || 0));
+  el.addEventListener("click", e => {
+    const b = e.target.closest(".usebest");
+    if (b) prices.setOwn(b.dataset.id, b.dataset.side, Number(b.dataset.p));
+  });
+
   function update(c) {
+    lastC = c;
+    if (seen) renderBest(c);
     const hero = el.querySelector('[data-f="hero"]');
     const profitP = c.profitHr == null ? null : c.profitHr * H;
     hero.textContent = signed(profitP);
