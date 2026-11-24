@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-23T01:41:17Z",
- "newestUnlockAt": "2026-11-22T21:10:36Z",
+ "generatedAt": "2026-11-24T02:11:48Z",
+ "newestUnlockAt": "2026-11-23T22:36:43Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,114 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 32886,
+   "name": "Chain",
+   "at": "2026-11-23T22:36:43Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 31671,
+   "name": "Red crab",
+   "at": "2026-11-23T22:18:52Z",
+   "by": "Arcanekitten"
+  },
+  {
+   "id": 4757,
+   "name": "Verac's brassard",
+   "at": "2026-11-23T20:35:54Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 4708,
+   "name": "Ahrim's hood",
+   "at": "2026-11-23T20:24:14Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 13511,
+   "name": "Ensouled dragon head",
+   "at": "2026-11-23T17:42:31Z",
+   "by": "Key Kode"
+  },
+  {
+   "id": 9238,
+   "name": "Pearl bolts (e)",
+   "at": "2026-11-23T17:30:08Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 9240,
+   "name": "Sapphire bolts (e)",
+   "at": "2026-11-23T17:29:44Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 9236,
+   "name": "Opal bolts (e)",
+   "at": "2026-11-23T17:29:34Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 880,
+   "name": "Pearl bolts",
+   "at": "2026-11-23T17:28:52Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 879,
+   "name": "Opal bolts",
+   "at": "2026-11-23T17:28:34Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 9337,
+   "name": "Sapphire bolts",
+   "at": "2026-11-23T17:27:22Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 9188,
+   "name": "Topaz bolt tips",
+   "at": "2026-11-23T17:26:50Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 9303,
+   "name": "Mithril bolts (p++)",
+   "at": "2026-11-23T17:02:53Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 187,
+   "name": "Weapon poison",
+   "at": "2026-11-23T17:02:46Z",
+   "by": "Mini Gabby"
+  },
+  {
+   "id": 9241,
+   "name": "Emerald bolts (e)",
+   "at": "2026-11-23T16:46:06Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 9338,
+   "name": "Emerald bolts",
+   "at": "2026-11-23T16:45:31Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 9190,
+   "name": "Emerald bolt tips",
+   "at": "2026-11-23T16:44:32Z",
+   "by": "Lil Fool"
+  },
+  {
+   "id": 9185,
+   "name": "Rune crossbow",
+   "at": "2026-11-23T14:27:41Z",
+   "by": "Lil Fool"
+  },
   {
    "id": 808,
    "name": "Steel dart",
