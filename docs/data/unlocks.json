@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-24T23:53:49Z",
- "newestUnlockAt": "2026-11-24T22:28:48Z",
+ "generatedAt": "2026-11-25T19:14:32Z",
+ "newestUnlockAt": "2026-11-25T17:18:59Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,18 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 10069,
+   "name": "Spotted cape",
+   "at": "2026-11-25T17:18:59Z",
+   "by": "Arcanekitten"
+  },
+  {
+   "id": 10125,
+   "name": "Spotted kebbit fur",
+   "at": "2026-11-25T09:21:00Z",
+   "by": "Arcanekitten"
+  },
   {
    "id": 12297,
    "name": "Black pickaxe",
