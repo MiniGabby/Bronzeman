@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-11-27T21:14:40Z",
- "newestUnlockAt": "2026-11-27T21:13:06Z",
+ "generatedAt": "2026-11-28T03:18:53Z",
+ "newestUnlockAt": "2026-11-27T23:19:17Z",
  "exports": 12,
  "members": [
   "Arcanekitten",
@@ -12,6 +12,12 @@
   "Mini Gabby"
  ],
  "items": [
+  {
+   "id": 173,
+   "name": "Ranging potion(1)",
+   "at": "2026-11-27T23:19:17Z",
+   "by": "Lil Fool"
+  },
   {
    "id": 2444,
    "name": "Ranging potion(4)",
